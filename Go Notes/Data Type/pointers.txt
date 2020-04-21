@@ -1,0 +1,285 @@
+## Pointers
+
+A pointer is a variable that stores the memory address of another variable. Pointers have the power to mutate data they are pointing
+A pointer is a variable which points to the memory location of another variable.
+
+Note:     Hence definition of A pointer is a variable which stores the memory address of another variable is strictly not true. A pointer is a variable which stores a memory address is more accurate.
+
+Declaration :
+
+var var_name *var-type
+var p *int
+
+The type *T is a pointer to a T value. Its zero value is nil. A newly declared pointer which has not been assigned to a variable has the nil value.
+zero value of a pointer is nil which means it is not pointing to any variable or memory at this moment. 
+
+## How to access the memory address of a variable?
+To access an address of a variable memory, go provides a simple operator & (ampersand) which if used in front of the variable name, returns the memory address.
+The & operator generates a pointer to its operand. 
+The address-of operator &, when placed before a variable gives us the memory address of the variable. 
+
+i := 42
+var p *int
+p = &i
+or
+p := &i
+
+a := 0x00
+fmt.Println("&a =", &a) // &a = 0x414020
+
+Not only it saves the memory address of another variable but it also knows where that memory is located and how to find out the value stored in that memory
+
+
+## Dereferencing the pointer
+To find out value a pointer it points to, we need to use * operator, also called dereferencing operator which if placed before a pointer variable (like & operator to get memory address), returns the value in that memory.
+The * operator denotes the pointer's underlying value.
+fmt.Println(*p) // read i through the pointer p
+*p = 21         // set i through the pointer p
+a := 1
+pa := &a
+fmt.Println(pa, *pa) // 0x414020 1
+
+
+## Changing the value of a pointer
+a := 1
+pa := &a
+*pa = 4
+fmt.Println(pa, *pa) // 0x414020 1
+
+This is known as "dereferencing" or "indirecting".
+Unlike C, Go has no pointer arithmetic.
+
+Pointer can not store the address of other type of variable.
+var ptr *int
+a:=2.4
+ptr = &a // cannot use &a (type *float64) as type *int in assignment
+
+With pointers, we can pass a reference to a variable (for example, as a parameter to a function), instead of passing a copy of the variable which can reduce memory usage and increase efficiency.
+
+
+## new function
+Go provides new function which allocates memory and returns a pointer. 
+func new(Type) *Type
+
+pa := new(int)
+fmt.Printf("data at %v is %v\n", pa, *pa) // data at 0x414020 is 0
+
+go stores zero-value of data type passed in new function and returns the memory address of it. 
+
+
+package main
+import "fmt"
+func main() {
+	i, j := 42, 2701
+	p := &i         // point to i
+	fmt.Println(*p) // 42 read i through the pointer
+	*p = 21         // set i through the pointer
+	fmt.Println(i)  // 21 see the new value of i
+	p = &j         // point to j
+	*p = *p / 37   // divide j through the pointer
+	fmt.Println(j) // 73 see the new value of j
+}
+
+
+## Nil Pointers in Go :
+Go compiler assign a Nil value to a pointer variable in case you do not have exact address to be assigned. This is done at the time of variable declaration. A pointer that is assigned nil is called a nil pointer.
+
+The nil pointer is a constant with a value of zero defined in several standard libraries. 
+func main() {    
+   //var ptr *int
+   //fmt.Println(ptr) <nil>
+   //fmt.Println("Before change ptr",*ptr)  //panic: runtime error: invalid memory address or nil pointer dereference
+   
+   ptr := new(int) // this is not a nil pointer
+   fmt.Println("Before change ptr",*ptr) // Before change ptr 0
+   fmt.Println(ptr) //0xc000054058
+   changePtr(ptr)  
+   fmt.Println("After change ptr",*ptr)  // After change ptr 10
+}  
+func changePtr(ptr *int)  {  
+   *ptr = 10  
+}
+
+
+To check for a nil pointer you can use an if statement as follows -
+if(ptr != nil)     /* succeeds if p is not nil */
+if(ptr == nil)    /* succeeds if p is null */
+
+
+
+## Pointer to pointer
+A pointer to a pointer is a form of chain of pointers. Normally, a pointer contains the address of a variable. When we define a pointer to a pointer, the first pointer contains the address of the second pointer, which points to the location that contains the actual value
+
+var ptr **int;
+
+func main() {
+   var a int
+   var ptr *int
+   var pptr **int
+   var ppptr ***int
+   a = 3000
+   ptr = &a
+   pptr = &ptr
+   ppptr = &pptr
+   fmt.Printf("Value of a = %d\n", a ) // 3000
+   fmt.Printf("Value available at *ptr = %d\n", *ptr ) // 3000
+   fmt.Printf("Value available at **pptr = %d\n", **pptr) // 3000
+   fmt.Printf("Value available at **pptr = %d\n", ***ppptr) // 3000
+}
+
+
+
+## Array of pointers
+There may be a situation when we want to maintain an array, which can store pointers to an int or string or any other data type available.
+var pointer_arrayname [size]*data_type;
+
+const MAX int = 3
+func main() {
+   a := []int{10,100,200}
+   var i int
+   var ptr [MAX]*int;
+   for  i = 0; i < MAX; i++ {
+      ptr[i] = &a[i] /* assign the address of integer. */
+   }
+   for  i = 0; i < MAX; i++ {
+      fmt.Printf("Value of a[%d] = %d\n", i,*ptr[i] )
+   }
+}
+
+
+
+
+## Passing pointers to functions
+Go programming language allows you to pass a pointer to a function. To do so, simply declare the function parameter as a pointer type.
+
+package main
+import "fmt"
+func main() {
+   /* local variable definition */
+   var a int = 100
+   var b int = 200
+   m := &a
+   n := &b
+   fmt.Printf("Before swap, value of a : %d\n", a ) // 100
+   fmt.Printf("Before swap, value of b : %d\n", b ) // 200
+   //swap(&a, &b); This is common for all data type, they need to pass the address with & operator, this will apply in function call as well
+   swap(m,n)
+   fmt.Printf("After swap, value of a : %d\n", a ) // 200
+   fmt.Printf("After swap, value of b : %d\n", b ) // 100
+}
+func swap(x *int, y *int) {
+   var temp int
+   temp = *x    /* save the value at address x */
+   *x = *y      /* put y into x */
+   *y = temp    /* put temp into y */
+}
+
+Passing array pointer
+func changeValue(p *[3]int) {
+	//*p == original array `a`
+	// *p[0] != (*p)[0]
+	(*p)[0] *= 2
+	(*p)[1] *= 3
+	(*p)[2] *= 4
+}
+func changeValue(p *[3]int) {
+	// (*p)[0] == p[0]
+	p[0] *= 2
+	p[1] *= 3
+	p[2] *= 4
+}
+func main() {
+	a := [3]int{1, 2, 3}
+	changeValue(&a)
+	fmt.Printf("a = %v\n", a) // a = [2 6 12]
+}
+
+
+## Pointers to structs
+Struct fields can be accessed through a struct pointer.
+To access the field X of a struct when we have the struct pointer p we could write (*p).X. However, that notation is cumbersome, so the language permits us instead to write just p.X, without the explicit dereference.
+
+type Vertex struct {
+	X int
+	Y int
+}
+
+func main() {
+	v := Vertex{1, 2}
+	fmt.Println(v.X,v.Y) // 1 2
+	p := &v
+	p.X = 1e2
+	fmt.Println(v.X,v.Y) // 100 2
+	fmt.Println(p.X,p.Y) // 100 2
+	fmt.Println((*p).X,(*p).Y)// 100 2
+	//fmt.Println(*p.X,*p.Y) // invalid indirect of p.X (type int)
+	fmt.Println(p) // &{100 2}
+	fmt.Println(*p) // {100 2}
+}
+
+
+
+/*
+i := 1
+pi := &i
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // 1
+
+i := 3.123
+pi := &i
+fmt.Println(pi) // 0xc000010090
+fmt.Println(*pi) // 3.123
+
+i := true
+pi := &i
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+i := "abcd"
+pi := &i
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+i := 3+7i
+pi := &i
+fmt.Printf("%T",i) // complex128
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+
+var pi *[]int
+i := []int{1,2,3}
+pi = &i
+fmt.Println((*pi)[0])
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+
+var pi *int
+i := []int{1,2,3}
+pi = i // cannot use i (type []int) as type *int in assignment(This is possible in C Language)
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+var pi *map[int]int
+i := map[int]int{1:1,2:2,3:3}
+pi = &i 
+fmt.Println((*pi)[1])
+//fmt.Println(pi[1])invalid operation: pi["1"] (type *map[string]int does not support indexing)
+fmt.Println(pi) // 0xc000054058
+fmt.Println(*pi) // true
+
+
+type Test struct{
+a int
+b int
+}
+var pi *Test
+i := Test{1,3}
+pi = &i 
+fmt.Println(pi) // &{1 3}
+fmt.Println(*pi) // {1 3}
+fmt.Println(pi.a,pi.b) //1,3
+fmt.Println((*pi).a,(*pi).b) //1,3
+//fmt.Println(*pi.a,*pi.a) // invalid indirect of pi.a (type int)
+*/

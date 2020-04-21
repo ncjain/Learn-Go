@@ -1,0 +1,287 @@
+vars := mux.Vars(request)
+category := vars["category"]
+
+
+
+r := mux.NewRouter()
+r.Host("www.example.com")
+r.HandleFunc("/products", ProductsHandler).Host("www.example.com").Methods("GET").Schemes("http")
+s.HandleFunc("/products/{key}", ProductHandler)
+s.HandleFunc("/articles/{category}/{id:[0-9]+}"), ArticleHandler)
+r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler).Name("article")
+r.Host("{subdomain}.domain.com").Path("/articles/{category}/{id:[0-9]+}").Queries("filter", "{filter}").HandlerFunc(ArticleHandler).Name("article")
+
+
+r.HeadersRegexp("Content-Type", "application/(text|json)")
+r.PathPrefix("/products/")
+...or HTTP methods:
+
+r.Methods("GET", "POST")
+...or URL schemes:
+
+r.Schemes("https")
+...or header values:
+
+r.Headers("X-Requested-With", "XMLHttpRequest")
+...or query values:
+
+r.Queries("key", "value")
+
+
+r.Context().Value("firstname")
+
+id := mux.Vars(r)["id"]
+    key := r.FormValue("key")
+
+    u, err := router.URL("id", id, "key", key)
+    if err != nil {
+        http.Error(w, err.Error(), 500)
+        return
+    }
+count64, err := strconv.ParseUint(count, 10, 32)
+json.NewEncoder(w).Encode(response)
+
+
+func createNewArticle(w http.ResponseWriter, r *http.Request) {
+    // get the body of our POST request
+    // unmarshal this into a new Article struct
+    // append this to our Articles array.    
+    reqBody, _ := ioutil.ReadAll(r.Body)
+    var article Article 
+    json.Unmarshal(reqBody, &article)
+    // update our global Articles array to include
+    // our new Article
+    Articles = append(Articles, article)
+
+    json.NewEncoder(w).Encode(article)
+}
+func createEvent(w http.ResponseWriter, r *http.Request) {
+	var newEvent event
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
+	}
+	
+	json.Unmarshal(reqBody, &newEvent)
+	events = append(events, newEvent)
+	w.WriteHeader(http.StatusCreated)
+
+	json.NewEncoder(w).Encode(newEvent)
+}
+func getAllEvents(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(events)
+}
+
+    keys, ok := r.URL.Query()["key"]
+    
+    if !ok || len(keys[0]) < 1 {
+        log.Println("Url Param 'key' is missing")
+        return
+    }
+
+func parseRequest(req *http.Request) error {
+    var err error
+
+    if err = req.ParseForm(); err != nil {
+        log.Error("Error parsing form: %s", err)
+        return err
+    }
+
+    _ = req.Form.Get("xxx")
+
+    return nil
+}
+
+
+ func QueryReply(w http.ResponseWriter, r *http.Request) {
+         query := r.URL.Query()
+
+         fmt.Println("GET parameters string : ", query)
+
+         first := query.Get("first")
+         second := query.Get("second")
+
+         w.Write([]byte("First value : " + first + "\n"))
+         w.Write([]byte("Second value : " + second + "\n"))
+
+         // because query is a map, we can use it like a hash table
+         // map[first:[1] second:[2]]
+
+         // query by the key "first" example
+         firstvalue := query["first"]
+         fmt.Println(firstvalue)
+
+ }
+
+type URL struct {
+	Scheme     string
+	Opaque     string    // encoded opaque data
+	User       *Userinfo // username and password information
+	Host       string    // host or host:port
+	Path       string    // path (relative paths may omit leading slash)
+	RawPath    string    // encoded path hint (see EscapedPath method)
+	ForceQuery bool      // append a query ('?') even if RawQuery is empty
+	RawQuery   string    // encoded query values, without '?'
+	Fragment   string    // fragment for references, without '#'
+}
+
+func (u *URL) Query() Values {
+	v, _ := ParseQuery(u.RawQuery)
+	return v
+}
+r.URL.Query().Add("msg")
+r.URL.Query().Set("msg")
+r.URL.Query().Get("msg")
+r.URL.Query().Del("msg")
+r.URL.Query().Get("country_code")
+num, _ := strconv.ParseInt(r.URL.Query().Get("num_discover"), 10, 32)
+w.Header().Set("Content-Type", "application/json")
+
+
+Header() Header
+Write([]byte) (int, error)
+WriteHeader(statusCode int)
+
+m := make(map[string][]types.JSONText)
+m["templates"] = []types.JSONText{template.Template}
+//resp_json, err := template.Template.MarshalJSON()
+resp_json, err := json.Marshal(m)
+
+w.Header().Set("Content-Type", "application/json")
+w.Write(resp_json)
+
+func HealthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain") # Add, Set, Get, Del
+	w.Write(resp_json)
+	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusInternalServerError)
+}
+http.StatusBadRequest
+
+
+	// Form contains the parsed form data, including both the URL
+	// field's query parameters and the POST or PUT form data.
+	// This field is only available after ParseForm is called.
+	// The HTTP client ignores Form and uses Body instead.
+
+	// PostForm contains the parsed form data from POST, PATCH,
+	// or PUT body parameters.
+	//
+	// This field is only available after ParseForm is called.
+	// The HTTP client ignores PostForm and uses Body instead.
+
+	// MultipartForm is the parsed multipart form, including file uploads.
+	// This field is only available after ParseMultipartForm is called.
+	// The HTTP client ignores MultipartForm and uses Body instead.
+err := r.ParseForm()
+	if err != nil {
+		return nil, utils.NewCustomError("Server could not parse request", http.StatusBadRequest, nil)
+	}
+strings.Split(r.Form.Get("group_ids"), ",")
+r.Form.Get("product_id")
+protoReq.ApiKey = r.Form.Get("api_key")
+protoReq.UserId = r.Form.Get("user_id")
+
+
+
+func getTokenFromRequest(r *http.Request) string {
+	return r.Header.Get("Authorization")
+}
+auth_token := r.Header.Add("Authorization")
+auth_token := r.Header.Set("Authorization")
+auth_token := r.Header.Get("Authorization")
+auth_token := r.Header.Del("Authorization")
+http.Error(w, err.Error(), http.StatusNotFound)
+		return
+
+if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+
+
+
+
+	r.Methods("GET").Path("/_ah/health").HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("ok"))
+		})
+
+r.Methods("POST").PathPrefix("/bluekai-callbacks").Handler(&AnalyticsEventHandler{PubsubTopic: "bluekai_callbacks", Queue: messageQueue})
+
+
+func encodeAndSendJSON(w http.ResponseWriter, response interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(response)
+}
+
+func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
+	notifier.Notify(err)
+	w.Header().Set("Content-Type", "application/json")
+	var resp interface{}
+	// check for custom error
+	// build a resp object
+	json.NewEncoder(w).Encode(resp)
+}
+
+
+srv = &http.Server{
+	Handler:      r,
+	Addr:         config.ListenAddress + ":" + strconv.Itoa(config.ListenPort),
+	WriteTimeout: config.WriteTimeout.Duration,
+	ReadTimeout:  config.ReadTimeout.Duration,
+}
+
+registerSignalHandler(configFile)
+
+log.Fatal(srv.ListenAndServe())
+vars := mux.Vars(r)
+	id, ok := vars["id"]
+w.Write([]byte("ok"))
+
+type customError struct {
+	Message    string
+	StatusCode int
+}
+
+Request{
+		Method:     method,
+		URL:        u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(Header),
+		Body:       rc,
+		Host:       u.Host,
+	}
+	account := &models.Account{}
+	err := json.NewDecoder(r.Body).Decode(account)
+
+type Response struct {
+	Status     string // e.g. "200 OK"
+	StatusCode int    // e.g. 200
+	Proto      string // e.g. "HTTP/1.0"
+	ProtoMajor int    // e.g. 1
+	ProtoMinor int    // e.g. 0
+	closeBody
+	Write
+	Body
+	Header
+
+func DecodeGetSavedSearch31Request(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	protoReq := new(Savedsearch_proto.GetSavedSearchRequest)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return "", utils.NewCustomError("read request body error", http.StatusBadRequest, nil)
+	}
+	err = proto.Unmarshal(body, protoReq)
+	if err != nil {
+		return "", utils.NewCustomError("convert body to proto error", http.StatusBadRequest, nil)
+	}
+	token := getTokenFromRequest(r)
+	protoReq.AuthToken = token
+
+	return protoReq, nil
+}

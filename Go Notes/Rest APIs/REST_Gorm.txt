@@ -1,0 +1,140 @@
+type UserMapping struct {
+	ID                string    `gorm:"column:id; PRIMARY_KEY" json:"id"`
+	OlxUserID         int64     `gorm:"column:olx_user_id" json:"olx_user_id"`
+	UserID            int64     `gorm:"column:user_id" json:"user_id"`
+	RegisterStatus    string    `gorm:"column:register_status" json:"register_status"`
+	RegisterMessage   string    `gorm:"column:register_message" json:"register_message"`
+	UserJSON          string    `gorm:"column:user_json" json:"user_json"`
+	OlxEmail          string    `gorm:"column:olx_email" json:"olx_email"`
+	OlxMobile         string    `gorm:"column:olx_mobile" json:"olx_mobile"`
+	UserJSONHash      string    `gorm:"column:user_json_hash" json:"user_json_hash"`
+	ExpressConsent    string    `gorm:"column:express_consent" json:"express_consent"`
+	MigrateConsent    string    `gorm:"column:migrate_consent" json:"migrate_consent"`
+	NominateFlag      string    `gorm:"column:nominate_flag" json:"nominate_flag"`
+	AutomatchFlag     string    `gorm:"column:automatch_flag" json:"automatch_flag"`
+	IsDuplicateMobile bool      `gorm:"column:is_dup_mobile" json:"is_dup_mobile"`
+	ClaimStatus       bool      `gorm:"column:claim_status" json:"claim_status"`
+	CreatedDate       time.Time `gorm:"column:created_date" json:"created_date"`
+	UpdatedDate       time.Time `gorm:"column:updated_date" json:"updated_date"`
+}
+
+func (o *UserMapping) TableName() (n string) {
+	n = "user_mapping"
+	return
+}
+
+type P24PropertyTypes struct {
+	ID            int64     `gorm:"column:id;PRIMARY_KEY;AUTO_INCREMENT" json:"id"`
+	PropertyID    int64     `gorm:"column:property_id;type:decimal(13,0);unique_index" json:"property_id"`
+	PropertyType  string    `gorm:"column:property_type;type:varchar(100);not null" json:"property_type"`
+	CarousellType string    `gorm:"column:carousell_type;type:varchar(100);not null" json:"carousell_type"`
+	CreatedDate   time.Time `gorm:"column:created_date;not null;type:TIMESTAMP" json:"created_date"`
+	ModifiedDate  time.Time `gorm:"column:modified_date;not null;type:TIMESTAMP" json:"modified_date"`
+}
+
+// TableName for P24PropertyTypes
+func (P24PropertyTypes) TableName() string {
+	return "p24_property_type"
+}
+
+
+
+
+
+
+
+
+func loadCountryCollection() {
+
+	db, err := gorm.Open("postgres", dsnDjangoDB)
+	if err != nil {
+		panic("postgres main_db is unavailable " + err.Error())
+	}
+	defer db.Close()
+
+	err = db.
+		Model(&CountryCollection{}).
+		Where("enabled = ?", true).
+		Where("country_id = ?", countryID).
+		Order("id asc").
+		Find(&countryCollections).Error
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+rr = db.Where("rule_group_id = ?", ruleGroupIdToOverwrite).Delete(&price_control.PricingBumpRule{}).Error
+if err != nil {
+	panic(err.Error())
+}
+
+for _, r := range finalRules {
+	now := time.Now()
+	err = db.Save(&price_control.PricingBumpRule{
+		RuleGroupID:         ruleGroupIdToOverwrite,
+		CountryCollectionID: r.CCId,
+		Amount:              decimal.New(r.Price, 0),
+		Enabled:             true,
+		CreatedAt:           now,
+		UpdatedAt:           now,
+	}).Error
+	if err != nil {
+		panic(err.Error())
+	}
+}
+Table("user_migration_information").Select("olx_user_id,status,message,created_date,updated_date").Where("created_date >= ? and created_date <= ?", startTime, endTime)
+	query := s.pgSlave.Select("id,claim_status").Where("user_id = ?", userID)
+
+	if err := s.findFirst(ctx, "storeGetUserMapping", &userMap, query); 
+
+Select("user_id,claim_status,is_dup_mobile,express_consent,migrate_consent").Where(columnName+" = ?", columnValue)
+
+		if err := s.findFirst(ctx, "storeGetUserMapping", &userMap, query); err != nil {
+			if err.Error() == "record not found" {
+				return userMap, errors.New("no_user_found")
+			}
+			return userMap, err
+		}
+var userMap data.UserMapping
+
+	query := s.pgSlave.Where("user_id = ?", userID)
+
+	if err := s.findFirst(ctx, "storeGetUserMapping", &userMap, query); err != nil {
+		return err
+	}
+
+	// the user is claimed
+	userMap.ClaimStatus = true
+	userMap.UpdatedDate = time.Now()
+	s.pgMaster.Save(&userMap)
+
+err = db.
+	Model(&PricingBuyBump{}).
+	Where("enabled = ?", true).
+	Where("marketplace = ?", marketplace).
+	Where("option = ?", productType).
+	Order("id asc").Find(&pricingBuyBumps).Error
+
+	query := s.pgSlave.Where("olx_user_id in (?)", olxUserIDs)
+
+	if err := s.find(ctx, "FetchUserMapsByOlxUserIds", query, &userMaps); err != nil {
+		return nil, err
+	}
+
+	config.MainDB.AutoMigrate(&pickup.TrxPickupItem{}).AddUniqueIndex(
+		"unique_order_id",
+		"order_id",
+	)
+	config.MainDB.AutoMigrate(
+		&topup_coin_creditcard.TrxTopupCoinCreditCard{},
+	).AddIndex(
+		"trx_topup_coin_creditcard_index_user_id",
+		"marketplace", "user_id",
+	).AddIndex(
+		"trx_topup_coin_creditcard_index_lumos_user_id",
+		"lumos_user_id",
+	).AddIndex(
+		"trx_topup_coin_creditcard_index_external_ref_no",
+		"external_ref_no",
+	)

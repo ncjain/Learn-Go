@@ -1,0 +1,27 @@
+1. go-command-line-arguments
+2. self calling function and func init() execution sequece of init and multiple main() (Lexical order **** We can not declare same variable in package scope)
+func f(){
+statement
+}()
+3. struct
+4. interface
+5. string
+6. regex
+7. reflect rune byte
+8. range
+9. pointer
+10 package import and structure
+11. Error defer recover panic
+12. Go concurrency and select statement
+13. File handling
+14. blank identifier
+15. Gloabal variable Local variable
+
+Do not need go setup to run, Go.exe file anywhere
+Archive file is use to avoid recompilation of code
+User can have multiple go path for multiple project
+_  File, init method will get called when even we have blank ideantifier in import
+
+we can have multiple main, when one package is not depending on some other package.
+If we have main function in multiple package, one package is dependent on other package then it will throw error
+if they are not dependent then it can have multiple main in difference package

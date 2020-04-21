@@ -1,0 +1,57 @@
+Go Reflect
+Go Reflection is the ability of a program to examine its own structure, particularly through the types; it's a form of meta-programming.
+Reflect can be used to investigate types and variables at runtime, e.g. its size, its methods, and it can also call these methods 'dynamically'.
+Go Reflect example
+
+package main  
+import(  
+   "fmt"  
+   "reflect"  
+)  
+func main()  {  
+   age := 27.5  
+   fmt.Printf("%T\n" ,age)  // float64
+   fmt.Println(reflect.TypeOf(age)) // float64
+
+   arr := []int{1,3}  
+   fmt.Printf("%T\n" ,arr) // []int
+   fmt.Println(reflect.TypeOf(arr).Kind()) // slice
+}
+ 
+
+Go Rune Type
+The type rune is an alias for type int32. The rune literals are an integer value. It store the 
+If you store string value in rune literal, it will provide the ASCII value of the character. For example, the rune literal of 'A' will be 65
+package main  
+import(  
+   "fmt"  
+   "reflect"  
+)  
+func main()  {  
+   var age rune
+   age = 'A' // age = ASCII value of 'A'
+   // age := 'A' by default it take datatype as rune or int32
+   //age = 'Abc' invalid character literal (more than one character)
+   fmt.Print(age+1) // 66
+   fmt.Printf("%T\n" ,age) // int32
+   fmt.Println(reflect.TypeOf(age).Kind()) // int32
+}
+
+Go Byte Type
+The type byte is an alias for type uint8.
+package main  
+import(  
+   "fmt"  
+   "reflect"  
+)  
+func main()  {  
+   var age byte
+   age = 'A' // age = ASCII value of 'A'
+   //age = 'Abc' //invalid character literal (more than one character)
+   fmt.Print(age+1)// 66
+   fmt.Printf("%T\n" ,age)  // uint8
+   fmt.Println(reflect.TypeOf(age).Kind())  // uint8
+}
+
+
+check the data type of error object

@@ -1,0 +1,486 @@
+A nil interface has a nil type.
+
+## Interfaces in Go
+An interface is a great and only way to achieve Polymorphism in Go
+
+What is an interface?
+An interface is a collection of method signatures that an Object can implement. Hence interface defines the behavior of the object.
+
+The primary job of an interface is to provide only method signatures consisting of the method name, input arguments and return types. It is up to a Type (e.g. struct type) to declare methods and implement them.
+
+For example, a Dog can walk and bark. If an interface declares method signatures of walk and bark while Dog implements walk and bark methods, then Dog is said to implement that interface.
+
+## Implement:
+If you are an OOP programmer, you might have used implement keyword a lot while implementing an interface. But in Go, you do not explicitly mention if a type implements an interface. If a type implements a method of signature that is defined in an interface, then that type is said to implement that interface. Like saying if it walks like a duck, swims like a duck and quacks like a duck, then it’s a duck.
+
+
+## Declaring interface
+
+type Shape interface {
+    Area() float64
+    Perimeter() float64
+}
+
+## Types of interface
+The interface has two types. 
+1. A static type of the interface is interface itself, for example Shape in the above program. 
+2. An interface does not have a static value, rather it points to a dynamic value. A variable of an interface type can hold a value of the Type that implements the interface. The value of that Type becomes dynamic value of the interface and that type becomes the dynamic type of the interface.
+
+Example 1:
+
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+func main() {
+	var s Shape
+	fmt.Println("value of s is", s) // value of s is <nil>
+	fmt.Printf("type of s is %T\n", s) // type of s is <nil>
+}
+From the above result, we can see that zero value and type of the interface is nil. This is because, at this moment, the interface has no idea who is implementing it. When we use Println function from fmt package with interface argument, it points to the dynamic value of the interface and %T syntax in Printf function refers to the dynamic type of interface. 
+
+
+## Implementing interface
+
+Example 2:
+
+package main
+import "fmt"
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+type Rect struct {
+	width  float64
+	height float64
+}
+func (r Rect) Area() float64 {
+	return r.width * r.height
+}
+func (r Rect) Perimeter() float64 {
+	return 2 * (r.width + r.height)
+}
+
+func main() {
+	var s Shape
+	s = Rect{5.0, 4.0}
+	r := Rect{5.0, 4.0}
+	fmt.Printf("type of s is %T\n", s) // type of s is main.Rect
+	fmt.Printf("value of s is %v\n", s) // value of s is {5 4}
+	fmt.Println("area of rectange s", s.Area()) // area of rectange s 20
+	fmt.Println("s == r is", s == r) // s == r is true
+}
+We can confirm that by creating nil interface s and assigning struct of type Rect to it that. Since Rect implements Shape interface, this is perfectly valid. From the above result, we can see that, dynamic type of s is now Rect and dynamic value of s is the value of the struct Rect which is {5 4}. Dynamic because we can assign new struct to it of a different type which also implements the interface Shape.
+
+
+
+
+Example 3:
+
+package main
+import (
+	"fmt"
+	"math"
+)
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+type Rect struct {
+	width  float64
+	height float64
+}
+type Circle struct {
+	radius float64
+}
+func (r Rect) Area() float64 {
+	return r.width * r.height
+}
+func (r Rect) Perimeter() float64 {
+	return 2 * (r.width + r.height)
+}
+func (c Circle) Area() float64 {
+	return math.Pi * c.radius * c.radius
+}
+func (c Circle) Perimeter() float64 {
+	return 2 * math.Pi * c.radius
+}
+func main() {
+	var s Shape = Rect{10, 3}
+	
+	fmt.Printf("type of s is %T\n", s) // type of s is main.Rect
+	fmt.Printf("value of s is %v\n", s) // value of s is {10 3}
+	fmt.Printf("value of s is %0.2f\n\n", s.Area()) // value of s is 30.00
+
+	s = Circle{10}
+	fmt.Printf("type of s is %T\n", s) // type of s is main.Circle
+	fmt.Printf("value of s is %v\n", s) // value of s is {10}
+	fmt.Printf("value of s is %0.2f\n", s.Area()) // value of s is 314.16
+}
+
+
+## Note: Now I guess you can understand why the type and value of the interface are dynamic. Like what we saw in slices lesson that a slice hold reference to an array, we can say that interface is also works in a similar way by dynamically holding a reference to the underlying type.
+
+
+##### It is not mandatory to implement all the methods from interface but In order to successfully implement an interface, you need to implement all methods declared by the interface.
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+type Rect struct {
+	width  float64
+	height float64
+}
+func (r Rect) Area() float64 {
+	return r.width * r.height
+}
+func main() {
+	s := Rect{10, 3}
+	fmt.Println(s.Area())
+}
+
+## Error
+func main() {
+	var s Shape = Rect{10, 3}
+	fmt.Println(s)
+}
+./prog.go:20:6: cannot use Rect literal (type Rect) as type Shape in assignment:
+	Rect does not implement Shape (missing Perimeter method)
+
+
+
+## Empty interface
+When an interface has zero methods, it is called an empty interface. This is represented by interface{}. Since empty interface has zero methods, all types implement this interface.
+
+Example 1:
+type MyString string
+type Rect struct {
+	width  float64
+	height float64
+}
+func explain(i interface{}) {
+	fmt.Printf("value given to explain function is of type '%T' with value %v\n", i, i)
+}
+func main() {
+	ms := MyString("Hello World!")
+	r := Rect{5.5, 4.5}
+	i :=10
+	explain(ms) // value given to explain function is of type 'main.MyString' with value Hello World!
+	explain(r) // value given to explain function is of type 'main.Rect' with value {5.5 4.5}
+	explain(i) // value given to explain function is of type 'int' with value 10
+}
+
+
+
+Example 2:
+type MyString string
+type Rect struct {
+	width  float64
+	height float64
+}
+func explain(items ...interface{}){
+	for _,item := range items{
+		fmt.Printf("value given to explain function is of type '%T' with value %v\n", item, item)
+	}
+	
+}
+func main() {
+	ms := MyString("Hello World!")
+	r := Rect{5.5, 4.5}
+	i :=10
+	explain(ms, r, i) // value given to explain function is of type 'main.MyString' with value Hello World!
+}
+value given to explain function is of type 'main.MyString' with value Hello World!
+value given to explain function is of type 'main.Rect' with value {5.5 4.5}
+value given to explain function is of type 'int' with value 10
+
+
+
+
+## Multiple interfaces
+A type can implement multiple interfaces.
+
+type Shape interface {
+	Area() float64
+}
+type Object interface {
+	Volume() float64
+}
+type Cube struct {
+	side float64
+}
+func (c Cube) Area() float64 {
+	return 6 * (c.side * c.side)
+}
+func (c Cube) Volume() float64 {
+	return c.side * c.side * c.side
+}
+func main() {
+	c := Cube{3}
+	var s Shape = c
+	var o Object = c
+	fmt.Println("Area of s of interface type Shape is", s.Area()) // Area of s of interface type Shape is 54
+	fmt.Println("volume of o of interface type Object is", o.Volume()) // Volume of o of interface type Object is 27
+}
+
+
+what will happen if we used Volume method on s and Area method on o.
+Let’s make changes to the above program to see what happens
+
+fmt.Println("area of s of interface type Shape is", s.Volume())
+fmt.Println("volume of o of interface type Object is", o.Area())
+
+Above changes yield the following result
+
+program.go:31: s.Volume undefined (type Shape has no field or method Volume)
+program.go:32: o.Area undefined (type Object has no field or method Area)
+
+The program won’t compile because of the static type of s is Shape and of o is Object. To make it work, we need to somehow extract the underlying value of these interfaces. This can be done using type assertion.
+
+
+
+## Type assertion
+We can find out the underlying dynamic value of an interface using the syntax i.(Type) where i is an interface and Type is a type that implements the interface i. Go will check if dynamic type of i is identical to Type.
+
+type Shape interface {
+	Area() float64
+}
+
+type Object interface {
+	Volume() float64
+}
+
+type Cube struct {
+	side float64
+}
+
+func (c Cube) Area() float64 {
+	return 6 * (c.side * c.side)
+}
+
+func (c Cube) Volume() float64 {
+	return c.side * c.side * c.side
+}
+
+func main() {
+	var s Shape = Cube{3}
+	c := s.(Cube)
+	fmt.Println("area of c of type Cube is", c.Area()) // area of c of type Cube is 54
+	fmt.Println("volume of c of type Cube is", c.Volume()) // volume of c of type Cube is 27
+}
+
+In type assertion syntax i.(Type), if Type does not implement the interface (the type of) i then Go compiler will throw an error. But if Type implements the interface but i does not have a concrete value of Type then Go will panic in runtime.
+
+
+In the above syntax, we can check using ok variable if Type implements interface (the type of) i and i has concrete type Type. If it does, then ok will be true, else false with the value being zero value of struct.
+
+value, ok := i.(Type)
+
+
+## How would we know if the underlying value of an interface implements any other interfaces? 
+This is also possible with type assertion. If Type in type assertion syntax is interface, then Go will check if dynamic type of i implements interface Type.
+
+
+
+type Shape interface {
+	Area() float64
+}
+type Object interface {
+	Volume() float64
+}
+type Skin interface {
+	Color() float64
+}
+type Cube struct {
+	side float64
+}
+func (c Cube) Area() float64 {
+	return 6 * (c.side * c.side)
+}
+func (c Cube) Volume() float64 {
+	return c.side * c.side * c.side
+}
+func main() {
+	var s Shape = Cube{3}
+	value1, ok1 := s.(Object)
+	fmt.Printf("dynamic value of Shape 's' with value %v implements interface Object? %v\n", value1, ok1)
+	// dynamic value of Shape 's' with value {3} implements interface Object? true
+	value2, ok2 := s.(Skin)
+	fmt.Printf("dynamic value of Shape 's' with value %v implements interface Skin? %v\n", value2, ok2)
+	// dynamic value of Shape 's' with value <nil> implements interface Skin? false
+}
+
+As Cube struct does not implement Skin interface, we go ok2 as false and value2 as nil. If we would have used the simpler syntax of v := i.(type)syntax, then our program would have panicked with error
+
+panic: interface conversion: main.Cube is not main.Skin: missing method Color
+
+
+Type assertion is not only used to check if an interface has a concrete value of some given type but to convert a given variable of an interface type to a different interface type as well. For example, if a struct implements an interface, then that struct can be converted to a type of interface by using type assertion, check the example here. If the struct does not implement the interface passed to type assertion, it returns nil and ok will be false.
+
+
+## Type switch
+This can be done using Type switch. The syntax for type switch is similar to type assertion and it is i.(type)where i is interface and type is a fixed keyword. Using this we can get the concrete type of the interface instead of value. But this syntax will only work in switch statement.
+
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func explain(i interface{}) {
+	switch i.(type) {
+	case string:
+		fmt.Println("i stored string ", strings.ToUpper(i.(string))) // i stored string  HELLO WORLD
+	case int:
+		fmt.Println("i stored int", i) // i stored int 52
+	default:
+		fmt.Println("i stored something else", i) // i stored something else true
+	}
+}
+
+func main() {
+	explain("Hello World")
+	explain(52)
+	explain(true)
+}
+When an explain function is called with any type, i receives its value and type as the dynamic type. Using i.(type) statement inside switch, we are getting access to that dynamic type.
+
+
+## Embedding interfaces
+
+In Go, an interface cannot implement other interfaces or extend them, but we can create new interface by merging two or more interfaces
+
+package main
+
+import "fmt"
+
+type Shape interface {
+	Area() float64
+}
+
+type Object interface {
+	Volume() float64
+}
+
+type Material interface {
+	Shape
+	Object
+}
+
+type Cube struct {
+	side float64
+}
+
+func (c Cube) Area() float64 {
+	return 6 * (c.side * c.side)
+}
+
+func (c Cube) Volume() float64 {
+	return c.side * c.side * c.side
+}
+
+func main() {
+	c := Cube{3}
+	var m Material = c
+	var s Shape = c
+	var o Object = c
+	fmt.Printf("dynamic type and value of interface m of static type Material is'%T' and '%v'\n", m, m)
+	fmt.Printf("dynamic type and value of interface s of static type Shape is'%T' and '%v'\n", s, s)
+	fmt.Printf("dynamic type and value of interface o of static type Object is'%T' and '%v'\n", o, o)
+}
+dynamic type and value of interface m of static type Material is'main.Cube' and '{3}'
+dynamic type and value of interface s of static type Shape is'main.Cube' and '{3}'
+dynamic type and value of interface o of static type Object is'main.Cube' and '{3}'
+
+
+
+## pointer vs value receiver in Interface
+
+package main
+
+import "fmt"
+
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+
+type Rect struct {
+	width  float64
+	height float64
+}
+
+func (r *Rect) Area() float64 {
+	return r.width * r.height
+}
+
+func (r Rect) Perimeter() float64 {
+	return 2 * (r.width + r.height)
+}
+
+func main() {
+	r := Rect{5.0, 4.0}
+	var s Shape = r
+	area := s.Area()
+	fmt.Println("area of rectangle is", area)
+}
+./prog.go:25:6: cannot use r (type Rect) as type Shape in assignment:
+	Rect does not implement Shape (Area method has pointer receiver)
+
+
+What the hell? We can clearly see that struct type Rect is implementing all methods stated by interface Shape, then why we are getting Rect does not implement Shape error. If you read error carefully, it says Area method has pointer receiver. So what if Area method has pointer receiver.
+
+Well, we have seen ins structs lesson that a method with pointer receiver will work on both pointer or value and if we would have used r.Area() in the above program, it would have compiled just fine.
+
+But in case of interfaces, if a method has a pointer receiver, then the interface will have a pointer of dynamic type rather than the value of dynamic type. Hence, instead of assigning a value to an interface variable, we need to assign a pointer. Let’s rewrite the above program with this concept.
+
+
+
+
+package main
+
+import "fmt"
+
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+
+type Rect struct {
+	width  float64
+	height float64
+}
+
+func (r *Rect) Area() float64 {
+	return r.width * r.height
+}
+
+func (r Rect) Perimeter() float64 {
+	return 2 * (r.width + r.height)
+}
+
+func main() {
+	r := Rect{5.0, 4.0}
+	var s Shape = &r // assigned pointer
+	area := s.Area()
+	perimeter := s.Perimeter()
+	fmt.Println("area of rectangle is", area)
+	fmt.Println("perimeter of rectangle is", perimeter)
+}
+area of rectangle is 20
+perimeter of rectangle is 18
+
+The only change we made is in line no. 25 where instead of value of r, we used the pointer to r. Hence the concrete value of s is now a pointer. The above program will compile fine.
+
+
+
+## Use of interfaces
+
+We have learned interfaces and we saw they can take different forms. That’s the definition of polymorphism. Interfaces are very useful in case of functions and methods where you need argument of many types to be passed to them, like Println function which accepts all types of values. If you see the syntax of Println function, it is like
+
+func Println(a ...interface{}) (n int, err error)
+
+which is also a variadic function.
+
+When multiple types implement the same interface, it becomes easy to work with them using the same code. Hence whenever we can use interfaces, we should.

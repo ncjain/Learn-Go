@@ -1,0 +1,349 @@
+A package is nothing but a directory with some code files, which exposes different variables (features) from a single point of reference.
+
+Imagine you have more than a thousand functions which you need constantly while working on any project. Some of these functions have common behavior. For example, toUpperCase and toLowerCase function transforms case of a string, so you write them in a single file (probably case.go). There are other functions which do some other operations on string data type, so you write them in a separate file as well.
+
+Since you have many files which do something with string data type, so you created a directory named string and put all string related files into it. Finally, you put all of these directories in one parent directory which will be your package. The whole package structure looks like below.
+
+package-name
++-- string
+|  +-- case.go
+|  +-- trim.go
+|  +-- misc.go
++-- number
+   +-- arithmetics.go
+   +-- primes.go
+
+# Package
+Every Go program must be a part of some package. A standalone executable Go program must have package main declaration.
+
+Let’s create an executable package. As we know, to create a binary executable file, we need our program to be a part of main package and it must have main function which is the entry point of execution.
+
+A package name is the name of the directory contained in src directory. In the above case, app is the package since app is the child directory of src directory. Hence, go install app command looked for app sub-directory inside src directory of GOPATH. Then it compiled the package and created app binary executable file inside bin directory which should be executable from the terminal since bin directory in the PATH.
+
+
+go install <package> command looks for any file with main package declaration inside given package directory. If it finds a file, then Go knows this is an executable program and it needs to create a binary file. A package can have many files but only one file with main function, since that file will be the entry point of the execution.
+If a package does not contain a file with main package declaration, then Go creates a package archive (.a) file inside pkg directory.
+
+1. src/github.com/kapiljain1129/app
+package app
+import "fmt"
+func main() {
+	fmt.Println("Hello Go Developer")
+}
+
+go install github.com/kapiljain1129/app
+C:\Users\kapil_jain\go\pkg\windows_amd64\github.com\kapiljain1129\app.a
+
+
+2. src/github.com/kapiljain1129/app
+package main
+import "fmt"
+func main() {
+	fmt.Println("Hello Go Developer")
+}
+go install github.com/kapiljain1129/app
+C:\Users\kapil_jain\go\bin(GOBIN)
+
+## Types of Package
+There are two types of packages. An executable package and a utility package. An executable package is your main application since you will be running it. A utility package is not self-executable, instead, it enhances the functionality of an executable package by providing utility functions and other important assets.
+
+Types of Package:
+1. Executable Package
+2. Reusable(Utility) Package
+	a. User defined Package
+	b. Third Party Package
+	c. In built Package
+
+Basically you can use go build as a check that the packages can be built (along with their dependencies) while go install also (permanently) installs the results in the proper folders of your $GOPATH.
+go build will silently terminate if everything is OK, and will give you error messages if the packages cannot be built/compiled.
+Whenever the go tool installs a package or binary, it also installs whatever dependencies it has, so running go install will also install packages your program depends on (publicly available, "go gettable" packages), automatically.
+
+Third party library:
+Remote packages : go get will fetch, build, and install it automatically: 
+go get github.com/golang/example/hello
+hello
+Hello, Go examples!
+
+
+## Package naming convention
+Go community recommends to use plain and simple names for packages. For example, strutils for string utility functions or http for HTTP requests related functions. A package names with under_scores, hy-phens or mixedCaps should be avoided.
+
+Exported vs Unexported identifiers:
+An identifier may be exported to permit access to it from another package. 
+	1. An identifier is exported if both: the first character of the identifier's name is a Unicode upper case letter (Unicode class "Lu"); and
+    the identifier is declared in the package block or it is a field name or method name. Then it will visible outside the package((type, constant, map, function, struct, array, slice etc.))
+	2. Anything that does not start with a Uppercase letter is not exported, and is visible only inside the same package.
+
+package greet
+morning = "Good Morning"
+Morning = morning + "Kapil"
+In the above program, Morning variable will be exported from the package but morning variable won’t be since it starts with a lowercase letter.
+
+
+1. Creating a package
+a package nothing but a directory, let’s create greet directory inside src and create few files in it. This time, we will write package greet a declaration on the top of each file to state that this is a utility package.
+
+2. Searching Package:
+src/greet/greet.go
+package greet
+morning = "Good Morning"
+Morning = morning + "Kapil"
+
+src/entry/entry.go
+package main
+import "fmt"
+import "greet"
+func main(){
+fmt.Println(greet.morning) // Error inn this line
+}
+
+Note: When you import a package, Go creates a global variable using the package declaration of the package. In the above case, greet is the global variable created by Go because we used package greet declaration in programs contained in greet package.
+
+Go first searches for package directory inside GOROOT/src directory and if it doesn’t find the package, then it looks for GOPATH/src. Since, fmt package is part of Go’s standard library which is located in GOROOT/src, it is imported from there. Since Go cannot find greet package inside GOROOT, it will lookup inside GOPATH/src and we have it there.
+
+
+## Nested package:
+We can nest a package inside a package. Since for Go, a package is just a directory, it’s like creating a subdirectory inside an already existing package. All we have to do is provide a relative path of the nested package.
+
+src/greet/de/greet.go
+package greet
+morning = "Good Morning"
+Morning = morning + "Kapil"
+
+src/entry/entry.go
+package main
+import "fmt"
+import "greet/de"
+func main(){
+fmt.Println(de.Morning) // Error inn this line
+}
+
+
+## Package compilation:
+Go run command compiles and executes a program. We know, go install command compiles packages and creates binary executable files or package archive files. This is to avoid compilation of package(s) every single time a (program where these packages are imported) is compiled . go install pre-compiles a package and Go refers to .a files.
+
+Generally, when you install a 3rd party package, Go compiles the package and create package archive file. If you have written package locally, then your IDE might create package archive as soon as you save the file in the package or when package gets modified. VSCode compiles the package when you save it if you have Go plugin installed.
+
+C:\Users\kapil_jain\go\pkg\windows_amd64\github.com\gorilla\mux.a
+C:\Users\kapil_jain\go\pkg\windows_amd64\github.com\jinzhu\gorm.a
+
+
+## Package scope:
+A scope is a region in code block where a defined variable is accessible. A package scope is a region within a package where a declared variable is accessible from within a package (across all files in the package). This region is the top-most block of any file in the package.
+
+src/app/version.go
+package main
+var version=1.0.0
+
+src/app/entry.go
+package main
+import "fmt"
+func main(){
+fmt.Println(version)
+}
+
+go run entry.go version.go
+Note: go install or go build command requires a package name, which includes all the files inside a package, so we don’t have to specify them like above.
+
+Coming back to our main issue, we can use variable version declared in version.go file from anywhere in the package even though it is not exported (like Version), because it is declared in package scope. If version variable would have been declared in a function, it wouldn’t have been in package scope and above program would have failed to compile.
+Note: You are not allowed to re-declare global variable with the same name in the same package.
+
+
+
+## Variable initialization:
+When a variable a depends on another variable b, b should be defined beforehand, else program won’t compile. Go follows this rule inside functions
+
+But when these variables are defined in package scope, they are declared in initialization cycles.
+
+
+package main
+import "fmt"
+var a int = b
+var b int = c
+var c int = 2
+func main(){
+	//var a int = b // undefined: b
+	//var b int = c // undefined: c
+	//var c int = 2
+	fmt.Println(c)
+}
+Go can handle complex initialization cycles like below.
+
+package main
+import "fmt"
+var (
+a int = b
+b int = f()
+c int = 2
+)
+func main(){
+	fmt.Println(a,b,c)
+}
+
+This function can be in some other file as well
+func f() int{
+	return c + 1
+}
+
+
+
+## Init function
+
+Like main function, init function is called by Go when a package is initialized. 
+1. It does not take any arguments and doesn’t return any value. 
+2. init function is implicitly declared by Go, hence you can not reference it from anywhere (or call it like init()). 
+3. You can have multiple init functions in a file or a package. Order of the execution of init function in a file will be according to the order of their appearances.
+
+You can have init function anywhere in the package. These init functions are called in lexical file name order (alphabetical order). and if multiple init are there in same file then whichever init appear first that will get called first and so on.
+
+Note: After all, init functions are executed, main function is called. Hence, the main job of init function is to initialize global variables that cannot be initialized in the global context. For example, initialization of an array.
+var integer [10]int
+func init(){
+	for i:=0; i<=10; i++{
+	integer[i]=i
+	}
+}
+func main(){
+	fmt.Println(integer)
+}
+
+Note: for syntax is not valid in package scope, we can initialize the array integers of size 10 using for loop inside init function.
+c.go
+package main
+import "fmt"
+
+func main(){
+	fmt.Println("main.go")
+}
+
+func init(){
+	fmt.Println("init1.go")
+}
+func init(){
+	fmt.Println("init2.go")
+}
+
+a.go
+func init(){
+	fmt.Println("init_a.go")
+}
+init_a.go
+init1.go
+init2.go
+main.go
+go run a.go c.go
+
+
+
+## Package alias:
+
+// greet/greet/parent.go
+package greet
+var Message = "Hey there. I am parent."
+
+// greet/child.go
+package greet
+var Message = "Hey there. I am child."
+
+// main.go
+package main
+import (
+	"fmt"
+	_ "greet"
+	child "greet/greet"
+)
+func main(){
+	fmt.Println(child.Message)
+}
+
+we use package alias. We state a variable name in between import keyword and package name which becomes the new variable to reference the package.
+If you notice, we aliased greet package with an underscore. Underscore is a special character in Go which acts as null container. Since we are importing greet package but not using it, Go compiler will complain about it. To avoid that, we are storing reference of that package into _ and Go compiler will simply ignore it.
+
+Note: 1.  Aliasing a package with an underscore which seems to do nothing is quite useful sometimes when you want to initialize a package but not use it.
+
+Note: 2. The main thing to remember is, an imported package is initialized only once per package. Hence if you have any import statements in a package, an imported package is going to be initialized only once in the lifetime of main package execution.
+
+Note: 3. If we use . (dot) as an alias like import . "greet/greet" then all the export members of greet package will be available in the local file block scope and we can reference Message without using qualifier child. Hence, fmt.Println(Message) would work just fine. This type of import is called as Dot Import and Go community is not very fond of it as it can cause some issues.
+
+
+
+go run *.go
++-- Main package is executed
++-- All imported packages are initialized()
+|  +-- All imported packages are initialized (recursive definition)
+|  +-- All global variables are initialized 
+|  +-- init functions are called in lexical file name order
++-- Main package is initialized
+   +-- All global variables are initialized
+   +-- init functions are called in lexical file name order
+   
+   
+version/get-version.go
+package version
+import "fmt"
+func init() {
+ fmt.Println("version/get-version.go ==> init()")
+}
+func getVersion() string {
+ fmt.Println("version/get-version.go ==> getVersion()")
+ return "1.0.0"
+}
+
+
+version/entry.go
+package version
+import "fmt"
+func init() {
+ fmt.Println("version/entry.go ==> init()")
+}
+var Version = getLocalVersion()
+func getLocalVersion() string {
+ fmt.Println("version/entry.go ==> getLocalVersion()")
+ return getVersion()
+}
+
+
+app/fetch-version.go
+package main
+import (
+ "fmt"
+ "version"
+)
+func init() {
+ fmt.Println("app/fetch-version.go ==> init()")
+}
+func fetchVersion() string {
+ fmt.Println("app/fetch-version.go ==> fetchVersion()")
+ return version.Version
+}
+
+
+
+app/entry.go
+package main
+import "fmt"
+func init() {
+ fmt.Println("app/entry.go ==> init()")
+}
+var myVersion = fetchVersion()
+func main() {
+ fmt.Println("app/fetch-version.go ==> fetchVersion()")
+ fmt.Println("version ===> ", myVersion)
+}
+
+
+## Installing 3rd party package:
+Installing a 3rd party package is nothing but cloning the remote code into a local src/<package> directory. Unfortunately, Go does not support package version or provide package manager
+
+Since Go does not have a centralize official package registry, it asks you to provide hostname and path to the package.
+
+$ go get -u github.com/jinzhu/gorm
+
+Above command imports files from http://github.com/jinzhu/gorm URL and saves it inside src/github.com/jinzhu/gorm directory. As discussed in nested packages, you can import gorm package like below.
+
+package mainimport "github.com/jinzhu/gorm"// use ==> gorm.SomeExportedMember
+
+
+So, if you made a package and want people to use it, just publish it on GitHub and you are good to go. If your package is executable, people can use it as a command line tool else they can import it in a program and use it as a utility module. The only thing they need to do is use below command.
+
+$ go get github.com/your-username/repo-name

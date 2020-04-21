@@ -1,0 +1,289 @@
+In Go, Struct can be used to create user-defined types.
+Struct is a composite type means it can have different properties and each property can have their own type and value.
+Struct can represent real-world entity with these properties. We can access a property data as a single entity. 
+
+## Definacation:
+type struct_variable_type struct {
+   member definition;
+   member definition;
+   ...
+   member definition;
+}
+Examples:
+1. with semi colon
+type Vertex struct{
+Lat float64;
+Long float64;
+}
+
+2. without semi colon
+type Vertex struct{
+Lat float64
+Long float64
+}
+
+3. Not mandatory to put curly brcket in same line
+type Vertex struct
+{Lat float64
+Long float64}
+
+4. type Vertex struct{Lat float64;Long float64}
+
+5. type Vertex struct{Lat , Long float64}
+
+
+## Object creation(Initialization):
+var variable_name = structure_variable_type {value1, value2...valuen}
+
+Examples:
+1. var v = Vertex{100, 100} // when creating a struct without field names, you need to provide all field values in sequential order unlike.
+
+2. var v = Vertex{Lat : 100, Long : 100} // Order of appearance of the fields does not matter
+
+3. var v = Vertex{} // default value {0 0}
+   v.Lat = 100
+   v.Long = 100
+4. var v Vertex  // default value {0 0}
+   v.Lat = 100
+   v.Long = 100
+5. var v = Vertex{Lat: 100}  // Long:0 is implicit
+	v.Long = 100
+6. var v = &Vertex{1, 2} // v type *Vertex
+
+7. var v  = new(Vertex) // v type *Vertex &{0 0}
+
+
+Note: 
+1. lat will not be exported outside the package since first char is in small case
+type Vertex struct{lat , Long float64}
+
+2. We can define struct inside the function
+
+
+## Accessing and Assignmennt: 
+To access any member of a structure, we use the member access operator dot (.)
+struct_variable.attribute = value
+
+type Vertex struct{
+Lat, Long float64
+}
+var v Vertex
+v.Lat=10
+fmt.Println(v.Long) 
+
+## Anonymous struct
+An anonymous struct is a struct with no explicitly defined struct type alias. In case of an anonymous struct, we do not define any struct type alias and create struct from inline struct type and initial values defined in the same syntax.
+func main() {
+	monica := struct {
+		firstName, lastName string
+		salary              int
+		fullTime            bool
+	}{
+		firstName: "Monica",
+		lastName:  "Geller",
+		salary:    1200,
+	}
+	fmt.Println(monica)
+}
+This is useful when you don’t want to re-use a struct type.
+Using fmt.Printf and %T format syntax, we got the following result
+struct { firstName string; lastName string; salary int; fullTime bool }
+
+## Anonymous fields
+You can define a struct type without any field names. You can just mention the field types and Go will use type as a field name.
+type Data struct {
+	string
+	int
+	bool
+}
+func main() {
+	sample1 := Data{"Monday", 1200, true}
+	sample1.bool = false
+	fmt.Println(sample1.string, sample1.int, sample1.bool)//Monday 1200 false
+}
+type Employee struct {
+	firstName, lastName string
+	salary              int
+	bool
+}
+
+## Embedded(Nested) Struct :
+Struct is a data type and can be used as an anonymous field (having only the type). One struct can be inserted or "embedded" into other struct.
+It is a simple 'inheritance' which can be used to implement implementations from other type or types.
+
+type Person struct {  
+   Fname string  
+   Lname string}  
+type Employee struct {  
+   Person  or p Person // both are valid
+   EmpId int  
+}
+func main() {
+	p1 := Person{ Fname : "Kapil", Lname : "Jain" }
+	e1 := Employee{ Person : p1, EmpId : 11}
+	fmt.Println(e1) // {{Kapil Jain} 11}
+	fmt.Println(e1.Person) // {Kapil Jain}
+	fmt.Println(e1.Person.Fname) // Kapil
+	p2 := Person{ Fname : "Tik", Lname : "Toi" }
+	e1.Person = p2
+	fmt.Println(e1) // {{Tik Toi} 11}
+	fmt.Println(e1.Person) // {Tik Toi}
+	fmt.Println(e1.Person.Fname) // Tik
+}
+Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted. Only non-conflicting fields will get promoted.
+
+## Exported fields
+As we have seen in packages lesson, any variable or type which starts from the capital letter is exported from that package.
+
+// employee.go
+package orgtype Employee struct {
+	FirstName, LastName string
+	salary              int
+	fullTime            bool
+}
+
+// main.go
+package mainimport (
+	"fmt"
+	"org"
+)
+func main() {
+	ross := org.Employee{
+		FirstName: "Ross",
+		LastName:  "Geller",
+		salary:    1200,
+	}	fmt.Println(ross)
+}
+Above program won’t compile and the compiler will throw below error.
+unknown field 'salary' in struct literal of type org.Employee
+
+/ main.go
+package mainimport (
+	"fmt"
+	"org"
+)type Employee org.Employeefunc main() {
+	ross := Employee{
+		FirstName: "Ross",
+		LastName:  "Geller",
+	}	fmt.Println(ross)
+}
+Above program yields below result
+{Ross Geller 0 false}
+
+This is useful when you want to protect some fields but still make them useful for an outsider.
+
+
+## Function fields
+
+If you remember function as type and function as value topics from functions lesson, you can pretty much guess that struct fields can also be functions.
+
+type FullNameType func(string, string) string
+
+type Employee struct {
+	FirstName, LastName string
+	FullName            FullNameType
+}
+func main() {
+	e := Employee{
+		FirstName: "Ross",
+		LastName:  "Geller",
+		FullName: func(firstName string, lastName string) string {
+			return firstName + " " + lastName
+		},
+	}
+	fmt.Println(e.FullName(e.FirstName, e.LastName)) // Ross Geller
+}
+
+
+## struct comparison
+
+Two structs are comparable if they belong to the same type and have the same field values.
+
+However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
+
+type Employee struct {
+	firstName, lastName string
+	salary              int
+	leaves              map[string]int
+}
+
+type Employee struct {
+	firstName, lastName string
+	salary              int
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		salary:    1200,
+	}
+	rossCopy := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		salary:    1200,
+	}
+	fmt.Println(ross == rossCopy) // True
+}
+
+
+
+## Structures as method Arguments: 
+ 
+func (p Person) details() {  
+   fmt.Println(p, " "+" I am a person")  
+}  
+func (e Employee) details() {  
+   fmt.Println(e, " "+"I am a employee")  
+}  
+func main() {  
+   p1 := Person{"Raj", "Kumar"}  
+   p1.details()  
+   e1 := employee{Person:Person{"John", "Ponting"}, empId: 11}  
+   e1.details()  
+}
+
+
+## Pointers to Struct:
+Instead of creating a struct, we can create a pointer which points to the struct in one statement. This saves one step to create a struct (variable) and then create a pointer to that variable.
+The syntax to create a pointer struct is
+s := &StructType{...}
+
+You can define pointers to structures
+var struct_pointer *Person
+
+Now, you can store the address of a structure variable
+struct_pointer = &Person1;
+
+To access the members of a structure using a pointer to that structure
+struct_pointer.title;
+(*struct_pointer).title;
+
+
+## Struct as function parameter:
+1. Call by value
+func printPerson( person Person ) {
+fmt.Printf(person.Fname);
+}
+printPerson(p1)
+
+2. Call by reference
+func printPerson( person *Person ) {
+fmt.Printf(person.Fname);
+}
+printPerson(&p1)
+
+
+## struct field meta-data
+
+Struct gives one more ability to add meta-data to the fields. Usually, it is used to provide transformation info on how a struct field is encoded to or decoded from another format (or stored/retrieved from a database), but you can use it to store whatever meta-info you want to, either intended for another package or for your own use.
+
+This meta information is defined by string literal (read strings lesson) like below
+
+type Employee struct {
+	firstName string `json:"firstName"`
+	lastName  string `json:"lastName"`
+	salary    int    `json: "salary"`
+	fullTime  int    `json: "fullTime"`
+}
+
+In the above struct, we are using struct type Employee for JSON encoding/decoding purpose. You will learn more struct meta-data in upcoming lessons like json, validation and others.

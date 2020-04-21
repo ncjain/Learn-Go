@@ -1,0 +1,376 @@
+Since there is no class-object architecture and the closest thing to class we have is structure. Function with struct receiver is a way to achieve methods in Go.
+
+We have seen in structures lesson, especially in the function field section that, struct field can also be a function. We can add a bark field of type function which takes no arguments and returns a string woof woof!. But this does not adhere to the OOP concept as struct fields do not have any idea of struct they belong to. Hence methods come to the rescue.
+
+
+A method is nothing but a function, but it belongs to a certain type. A method is defined with different syntax than normal function. It required an additional parameter known as a receiver which is a type to which the method belongs. A method can access properties of the receiver it belongs to.
+
+The syntax for defining a method is
+
+func (r Type) functionName(...Type) Type {
+    ...
+}
+Type is any legal type in Go and function arguments and return value are optional.
+
+
+## without method
+type Employee struct {
+	FirstName, LastName string
+}
+
+func fullName(firstName string, lastName string) (fullName string) {
+	fullName = firstName + " " + lastName
+	return
+}
+func main() {
+	e := Employee{
+		FirstName: "Ross",
+		LastName:  "Geller",
+	}
+	fmt.Println(fullName(e.FirstName, e.LastName))
+}
+
+
+## value receiver
+Type.methodName(...)syntax
+
+type Employee struct {
+	FirstName, LastName string
+}
+func (e Employee) fullName() string {
+	return e.FirstName + " " + e.LastName
+}
+func main() {
+	e := Employee{
+		FirstName: "Ross",
+		LastName:  "Geller",
+	}
+	fmt.Println(e.fullName())
+}
+
+
+## Same method name
+One major difference between function and method is many methods can have the same name while no two functions with the same name can be defined in a package.
+
+
+type Rect struct {
+	width  float64
+	height float64
+}
+
+type Circle struct {
+	radius float64
+}
+
+func (r Rect) Area() float64 {
+	return r.width * r.height
+}
+
+func (c Circle) Area() float64 {
+	return math.Pi * c.radius * c.radius
+}
+
+func main() {
+	rect := Rect{5.0, 4.0}
+	cir := Circle{5.0}
+	fmt.Printf("Area of rectangle rect = %0.2f\n", rect.Area())
+	fmt.Printf("Area of circle cir = %0.2f\n", cir.Area())
+}
+
+## Value receiver
+This proves that receiver e in method definition was just a copy of the actual struct e(from main method), hence any changes made to did not affect the original struct.
+type Employee struct {
+	name   string
+	salary int
+}
+
+func (e Employee) changeName(newName string) {
+	e.name = newName
+}
+
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+	}
+
+	// e before name change
+	fmt.Println("e before name change =", e) // {Ross Geller 1200}
+
+	// change name
+	e.changeName("Monica Geller")
+	
+	// e after name change
+	fmt.Println("e after name change =", e) // {Ross Geller 1200}
+}
+
+
+
+## Pointer receivers
+
+Exaample 1:
+func (r *Type) methodName(...Type) Type {
+    ...
+}
+type Employee struct {
+	name   string
+	salary int
+}
+func (e *Employee) changeName(newName string) {
+	(*e).name = newName
+}
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+	}
+	// e before name change
+	fmt.Println("e before name change =", e) // {Ross Geller 1200}
+	// create pointer to `e`
+	ep := &e
+	// change name
+	ep.changeName("Monica Geller")
+	// e after name change
+	fmt.Println("e after name change =", e)  // {Monica Geller 1200}
+}
+we created pointer ep to call method on it, but you can use (&e).changeName("Monica Geller")syntax instead of creating new pointer.
+
+Example 2:
+type Employee struct {
+	name   string
+	salary int
+}
+func (e *Employee) changeName(newName string) {
+	e.name = newName
+}
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+	}
+	fmt.Println("e before name change =", e) // {Ross Geller 1200}
+	e.changeName("Monica Geller")
+	fmt.Println("e after name change =", e) // {Monica Geller 1200}
+}
+
+
+Above program will work just fine like before. So what changed.
+
+1. If a method receives a pointer receiver, you don’t need to using (*e) syntax to deference pointer or get the value of the pointer. You can use simple e which will be the address of the value that pointer points to but Go will understand that you are trying to perform an operation on the value itself and under the hood, it will make e to (*e).
+2. Also, you don’t need to call a method on the pointer if the method receives a pointer receiver. Instead, you can use value as it is, e and call a method on it. Go will pass the pointer of e under the hood if the method expects pointer receiver.
+
+Note: You can decide between method with pointer receiver or value receiver depending on your use case. But generally, even if you do not wish to change data of the receiver, methods with pointer receiver are used as no new memory is created for operations. Which happens when passing copy of the receiver, which happens in case of methods with value receiver.
+
+
+
+## Methods on nested struct
+
+Example 1:
+type Contact struct {
+	phone, address string
+}
+type Employee struct {
+	name    string
+	salary  int
+	contact Contact
+}
+func (e *Employee) changePhone(newPhone string) {
+	e.contact.phone = newPhone
+}
+func main() {
+	e := Employee{
+		name:    "Ross Geller",
+		salary:  1200,
+		contact: Contact{"011 8080 8080", "New Delhi, India"},
+	}
+	// e before phone change
+	fmt.Println("e before phone change =", e) // e before phone change = {Ross Geller 1200 {011 8080 8080 New Delhi, India}}
+	// change phone
+	e.changePhone("011 1010 1222")
+	// e after phone change
+	fmt.Println("e after phone change =", e) // e after phone change = {Ross Geller 1200 {011 1010 1222 New Delhi, India}}
+}
+
+
+Example 2:
+If the inner struct implements a method, then you can call a method on it using . (dot) accessor.
+type Contact struct {
+	phone, address string
+}
+type Employee struct {
+	name    string
+	salary  int
+	contact Contact
+}
+
+func (c *Contact) changePhone(newPhone string) {
+	c.phone = newPhone
+}
+
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+		contact: Contact{
+			phone:   "011 8080 8080",
+			address: "New Delhi, India",
+		},
+	}
+	// e before phone change
+	fmt.Println("e before phone change =", e) // {Ross Geller 1200 {011 8080 8080 New Delhi, India}}
+	// change phone
+	e.contact.changePhone("011 1010 1222")
+	// e after phone change
+	fmt.Println("e after phone change =", e) // {Ross Geller 1200 {011 1010 1222 New Delhi, India}}
+}
+
+
+Example 3:
+But what will happen if the nested field is anonymous? You remember anonymous fields where a field has no name or name of the field is derived from its type. In case if the field is of a struct type, nested struct fields will be promoted.
+
+Let’s see what will happen to the methods in a case when struct field is anonymous.
+
+type Contact struct {
+	phone, address string
+}
+type Employee struct {
+	name   string
+	salary int
+	Contact
+}
+
+func (e *Employee) changePhone(newPhone string) {
+	e.phone = newPhone
+}
+
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+		Contact: Contact{
+			phone:   "011 8080 8080",
+			address: "New Delhi, India",
+		},
+	}
+	// e before phone change
+	fmt.Println("e before phone change =", e) // {Ross Geller 1200 {011 8080 8080 New Delhi, India}}
+	// change phone
+	e.changePhone("011 1010 1222")
+	// e after phone change
+	fmt.Println("e after phone change =", e)  // {Ross Geller 1200 {011 1010 1222 New Delhi, India}}
+}
+
+Note: As we saw from structs lesson that if the nested field is anonymous struct then its fields will be accessible from parent struct. Hence any method that accepts struct receiver will also have access to the promoted fields.
+
+
+## Promoted methods
+
+Like promoted fields on a struct, methods implemented by inner struct is available on parent struct. As we saw in the previous example, Contact field is anonymous. Hence we could access e.phone, the phone number from inner struct as phone field is promoted to Employee struct. In the same scenario, any method implemented by Contact struct will be available on Employee struct. Let’s rewrite the previous example.
+
+
+type Contact struct {
+	phone, address string
+}
+
+type Employee struct {
+	name   string
+	salary int
+	Contact
+}
+
+func (c *Contact) changePhone(newPhone string) {
+	c.phone = newPhone
+}
+
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+		Contact: Contact{
+			phone:   "011 8080 8080",
+			address: "New Delhi, India",
+		},
+	}
+	// e before phone change
+	fmt.Println("e before phone change =", e) // {Ross Geller 1200 {011 8080 8080 New Delhi, India}}
+	// change phone
+	e.changePhone("011 1010 1222")
+	// e after phone change
+	fmt.Println("e after phone change =", e) // {Ross Geller 1200 {011 1010 1222 New Delhi, India}}
+}
+
+
+
+## A method can accept both pointer and value
+When a function has a value argument, it will only accept the value of the parameter. If you passed a pointer to the function which expects a value, it will not work. This is also true when function accepts pointer, you simply can not pass a value to it.
+When it comes to a method, that’s not the case. We can define a method with value or pointer receive and call it on pointer or value.
+
+type Employee struct {
+	name   string
+	salary int
+}
+
+func (e *Employee) changeName(newName string) {
+	e.name = newName
+}
+
+func (e Employee) showSalary() {
+	e.salary = 1500
+	fmt.Println("Salary of e =", e.salary)
+}
+
+func main() {
+	e := Employee{
+		name:   "Ross Geller",
+		salary: 1200,
+	}
+	// e before change
+	fmt.Println("e before change =", e) // e before change = {Ross Geller 1200}
+	// calling `changeName` pointer method on value
+	e.changeName("Monica Geller")
+	// calling `showSalary` value method on pointer
+	(&e).showSalary() // Salary of e = 1500
+	// e after change
+	fmt.Println("e after change =", e) // e after change = {Monica Geller 1200}
+}
+
+
+## Methods on non-struct type
+
+So far we have seen methods on struct type but as from the definition of the method, it can accept any type as a receiver as long as type definition and method definition is in the same package. So far, we defined struct and method in the same main package, hence it worked.
+
+
+Example 1:
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+func (s string) toUpperCase() string {
+	return strings.ToUpper(s)
+}
+func main() {
+	str := "Hello World"
+	fmt.Println(str.toUpperCase())
+}
+./prog.go:8:6: cannot define new methods on non-local type string
+./prog.go:14:17: str.toUpperCase undefined (type string has no field or method toUpperCase)
+
+
+Example 2:
+package main
+import (
+	"fmt"
+	"strings"
+)
+type MyString string
+
+func (s MyString) toUpperCase() string {
+	normalString := string(s)
+	return strings.ToUpper(normalString)
+}
+func main() {
+	str := MyString("Hello World")
+	fmt.Println(str.toUpperCase()) // HELLO WORLD
+}

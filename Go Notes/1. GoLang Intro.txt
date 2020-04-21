@@ -1,0 +1,98 @@
+## Introduction to Go Programming Language (GoLang)
+
+Go or Golang is a programming language created at Google, by Google developers and other programmers. This programming language is free and open source and currently being maintained by Google. One of the founding member of Go is Ken Thompson who is best known for his work in Unix operating system development. Go compiler was initially written in C but now, it is written in Go itself, making it self hosted.
+So what’s so special about Go?
+
+1. Go is statically typed compiled language.
+2. It support built in concurrency model with the help of GoRoutines.
+3. It has built in garbage collector and memory safety.
+4. Strings in Go are UTF-8 encoded by default.
+5. It has simpler syntax compared to other compiled programming languages.
+
+
+Things that make Go a great language is its simple concurrency model, its package based code management and its non-strict (type inference) typing system. Go does not support out of the box Object Oriented Programming experience, but is support structures (structs) which with the help of methods and pointers can help us achieve the same.
+
+
+## Motivation behind it’s creation
+
+There are tons of programming language to choose from nowadays. Each language has it’s own benefits and different programmers find different languages more friendlier than others. But a language should be perfect in all sense and should be easy to work with for any programmer. A programming language can be dedicated for one task like COBOL or can be used general purpose programming like Java or JavaScript on Node.
+
+The four important things a language must thrive to achieve is speed/efficiency, reliability, scale and simplicity. If we consider languages like C or C++, they are great at speed, scale and reliability but in terms of simplicity, they are not so great. Java on other hand is very reliable and highly scalable, but moderately simple to write and not so efficient compared to other low-level languages. Python is an widely adopted language and very simple to write but not so efficient and reliable.
+
+Whenever Google creates a language or a framework, I suppose it’s because they want to eventually use it in their own organization. Angular, Material design, Dart, Flutter etc. are few examples.
+
+Google back in 2008–2010 was looking for a language which could be great at all these 4 things. I guess their idea was to replace traditional low-level programming languages with this language in their own infrastructure. Hence with the help of Ken Thompson, Rob Pike and Robert Griesemer, they created a language Go that was could give developers an experience of writing scripting (interpreted) language like Python or JavaScript but at the same time, provides quirks of low-level compiled language. Their major focus was on simplicity, scale, speed and reliability. Since, go is a commonly used english word which makes it difficult to target internet searches to Go Programming Language, many people use GoLang instead of Go.
+
+
+## What is Go program?
+A Go program file is a simple UTF-8 text file with .go file extension. Hence you can edit a Go program in simple text editors like notepad, sublime text and IDEs like VSCode or WebStorm. You can also use terminal text editors like vim or nano etc.
+
+If you are using VSCode, then install vscode-go extension. This will help you write better code and make formatting/debugging easier.
+
+
+## Go program structure
+Every Go program must be included in a package. A standalone executable Go program must have a main function and must be included in main package. main function is the entry point for execution.
+
+A standalone executable program is a Go program that can be built using go build command or ran using go run command.
+
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello Go Developer");
+	// I am a single line comment
+	// I am another single line comment
+	/*
+	   I am a block comment.
+	   And GoLang is awesome.
+	   Say it with me, GoLang is awesome.
+	*/
+}
+
+
+## Running a Go program
+$ go run hello.go
+
+If you want to run multiple Go files at once, you can give a glob pattern or mention files in one command
+
+$ go run dir/*.go
+$ go run dir/**/*.go
+$ go run file-a.go file-b.go file-c.go
+
+
+To create a binary executable file, you can use build command.
+
+$ go build hello.go
+
+Above command will create a binary executable file hello in current directory which you can execute from terminal / command prompt.
+$ ./hello
+
+To deploy binary files to bin directory, you can use below command.
+
+$ go install hello.go
+go install: no install location for .go files listed on command line (GOBIN not set)
+GOBIN = C:\Users\kapil_jain\go\bin
+
+
+## Comments
+If you are used to JavaScript or c++ comments, Go uses same comment format. For single line comment, you can use //comment and for block comments, you can use /*comment*/.
+
+
+## Semicolons
+Like C, Go’s formal grammar uses semicolons to terminate statements, but unlike in C, those semicolons do not appear in the source code. Instead Go’s Lexer program uses a simple rule to insert semicolons automatically as it scans your Go program, so the source code is mostly free of them.
+
+The rule is this. If the last token before a newline is an identifier (which includes words like int and float64), a basic literal such as a number or string constant, or one of the below tokens
+
+break continue fallthrough return ++ -- ) }
+
+then Lexer always inserts a semicolon after the token. This could be summarized as, “if the newline comes after a token that could end a statement, insert a semicolon”.
+
+You are free to use semicolons whenever you want, but that won’t be idiomatic Go code. For example, you could write following code and program will still execute.
+
+
+## Best practices
+Go is a very clean and systematic language. Hence your code must follow community guidelines and Go specifications. gofmt is a tool that automatically formats Go source code, which can be helpful to write Go idiomatically.
+
+## Effective Go
+Follow Effective Go documentation to understand these standard practices. https://golang.org/doc/effective_go.html

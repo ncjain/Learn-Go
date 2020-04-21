@@ -1,0 +1,137 @@
+## Installation
+As we know, a programming language is nothing but an instruction set that a compiler can understand and follow (do computation / IO operations as per demanded in the program). A language typically consist of language specifications (language spec), standard library, a runtime environment and a compiler. When you install Go, these are all the things you get.
+
+
+## Go Installation Directory
+When you install Go on your system, it creates a directory /usr/local/go in UNIX or c:/go in Windows. Then it copies all necessary code and binaries needed for Go to function in this directory. This is where Go’s command line tools, standard library and compiler lives. Whenever you import a package from Go’s standard library, Go looks for package in this directory.
+
+
+## Custom Installation directory
+If somehow, your Go installation directory is different than what Go assumes where it would be, you can use GOROOT environment variable. Edit your ~/.bash_profile and add below entry. For Windows, follow this answer.
+
+export GOROOT=/usr/local/custom-go
+Generally, you don’t need to setup GOROOT environment variable. I recommend not to modify/use GOROOT variable anywhere unless it is absolutely necessary.
+
+
+## Go Workspace
+You can create a Go program anywhere you want on your system. A typical Go program is a plain text file with .go file extension. You can run this program using go run hello.go command where hello.go is a Go program file in current directory.
+
+A workspace is Go’s way to facilitate project management. A workspace in nutshell, is a directory on your system where Go looks for source code files, manages dependency packages and build distribution binary files. Whenever Go program hits import statement, it looks for package(s) in Go’s standard library ($GOROOT/src). If package is not present there, then Go refers to system's environment variable GOPATH which is path to Go workspace directory and looks for packages in $GOPATH/src directory.
+
+You can have as many workspaces as you want, as long as you keep GOPATH environment variable pointed to current working workspace directory.
+
+Similar to $GOROOT, $GOPATH by default points to $HOME/go directory in UNIX and %USERPROFILE%\go on windows. Hence, it is not absolutely necessary to setup GOPATH environment variable.
+
+
+## Workspace directory structure
+A Go workspace directory must have three sub directories viz. src, pkg and bin. If you want to setup Go workspace, follow this documentation. If you are using MacOS, the you can follow this Medium article to setup environment variables both temporarily or permanently.
+
+1. src directory contains packages. A package in nutshell is a project directory containing Go source code (.go files). Any packages installed using go get command will reside here as well (and its dependency packages).
+In Go, every program is contained in a package. Hence, whenever you will be working with new Go project, you need to create new directory inside $GOPATH/src and work your way up there.
+
+
+2. pkg directory contains Go package objects. They are compiled version of original package source code and they have .a file extension (a stands for archived). These files contain the compiled package binary code, along with debug symbols and source information. A package object is customized for machine architecture and Go version. These files are created by the Go pack tool while building/installing a package.
+Whenever you install a 3rd party package, a package object package-name.a is created for that package in this directory.
+In Go, you typically use import "<package-name>" or import "<main/child-package>" syntax to import a package (like ES6 syntax). Normally, Go looks for these packages in $GOROOT/src or $GOPATH/src directories. But if it finds precompiled package object associated with an imported package, then Go uses that instead.
+Package objects are compiled and archived files for specific platforms. Hence you will see platform architecture directory inside pkg directory.
+Advantage of having package object is to save compilation time. As a package is nothing but collection of Go programs, it has to go through Go compiler every single time main program (a program who imports it) compiles. If a package has compiled object in pkg directory for current system architecture, then it doesn’t get compiled again.
+
+A package object is created when you use go install command on non-main packages. You will learn about main and non-main packages in packages lesson. Package object are also called as cached objects or cached packages.
+
+3. bin : A Go program can either be meant to used as utility inside a package or to perform some operation. We have seen packages and where they reside.
+A Go program which is meant to perform some operation like make a network request or write something to a file needs to be compiled first, so that your machine can understand the instructions. When you run go run hello.go command, Go compiler first compiled hello.go file and then executes the resultant binary code.
+
+You can output a binary file from a Go program or package using go build <package-name> (main package) or go build program/path.go command. This will create a binary file in current directory.
+Therefore when you are referencing foo/bar package. It refers to $GOPATH/pkg/{arch}/foo/bar.a and not $GOPATH/src/foo/bar/*.go (for Go’s standard library package, it will be $GOROOT instead of $GOPATH).
+bin directory contains same binary executable files. These files are creating by go install commands. go install command runs go build command internally and output theses files to bin directory. Generally, this directory is in the executable path of the system. Hence all the programs inside this directory is executable from the terminal.
+
+go install command also creates package objects of any imported packages inside currently compiling Go program. Learn more about go build vs go install commands from here.
+
+GOBIN is another environment variable that Go uses to put binary files created using go install command. By default, GOBIN is $GOPATH/bin but you can change it to whatever directory you like.
+
+
+
+
+
+
+
+**************************************************************************
+Environment variable :
+1. GOPATH : The GOPATH environment variable specifies the location of your workspace. It defaults to a directory named go inside your home directory, so 
+$HOME/go on Unix, 
+$home/go on Plan 9
+%USERPROFILE%\go (usually C:\Users\YourName\go) on Windows. 
+
+If you would like to work in a different location, you will need to set GOPATH to the path to that directory. (Another common setup is to set GOPATH=$HOME.) Note that GOPATH must not be the same path as your Go installation. 
+
+-> go env GOPATH
+C:\Users\kapil_jain\go
+
+export GOPATH=C:\Users\kapil_jain\go
+export PATH=$PATH:$(go env GOPATH)/bin (Ubuntu)
+(Use SET for windows Windows)
+
+System automatically add there variable when we install go:
+1. System Variable:
+Path
+C:\Go\bin
+
+2. User Variable: 
+GOPATH(Path of workplace)
+C:\Users\kapil_jain\go
+Path:
+C:\Users\kapil_jain\go\bin
+GOROOT(we don't need to set it, Go implecitly add the value)
+
+Note: We can have multiple GOPATH (C:\Users\kapil_jain\go;D:\GoProject\
+GOBIN
+
+
+First Program in Go:
+test.go
+package main
+import "fmt"
+func main() {
+	fmt.Println("Hello, world.")
+}
+
+->go install github.com/kapjain/GoTutorial
+
+Note that you can run this command from anywhere on your system. The go tool finds the source code by looking for the github.com/user/hello package inside the workspace specified by GOPATH. 
+cd $GOPATH/src/github.com/user/hello
+
+This command builds the hello command, producing an executable binary. It then installs that binary to the workspace's bin directory as hello (or, under Windows, hello.exe). In our example, that will be $GOPATH/bin/hello, which is $HOME/go/bin/hello.
+
+The go tool will only print output when an error occurs, so if these commands produce no output they have executed successfully.
+You can now run the program by typing its full path at the command line:
+
+$ $GOPATH/bin/hello
+Hello, world.
+
+Or, as you have added $GOPATH/bin to your PATH, just type the binary name:
+
+$ hello
+Hello, world.
+
+
+$ cd $GOPATH/src/github.com/user/hello
+$ git init
+Initialized empty Git repository in /home/user/go/src/github.com/user/hello/.git/
+$ git add hello.go
+$ git commit -m "initial commit"
+[master (root-commit) 0b4507d] initial commit
+ 1 file changed, 7 insertion(+)
+ create mode 100644 hello.go
+ 
+
+go run file.go
+go doc fmt
+
+Go build:
+1. User defined package: It just build the file and then discard the result(Nothing does)
+2. Executable Package: It just build and create .exe file in same directory
+
+Go install:
+1. User defined package: It builds then installs the package(.a file) in your $GOPATH/pkg directory.(If a program is part of package other than main, then a package archive file is created with go install command.)
+2. Executable Package: It build and create .exe file and put it in GOBIN ($GOPATH/bin) directory(If a program is part of the main package,   then go install will create a binary file; which upon execution calls main function of the program)
+

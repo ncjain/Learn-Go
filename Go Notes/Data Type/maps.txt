@@ -1,0 +1,324 @@
+## Go Map: (Dynamic in size)
+A map is composite data type that can hold data represented by key:value pairs.
+Maps is an unordered collection of key and its associated value. They are very good for looking up values fast. 
+
+1. The key type must have the operations == and != defined, like string, int, float.
+2. Hence arrays, slices and structs cannot be used as key type, but pointers and interface types can.
+3. structs can be used as a key when we provide Key() or Hash() method, so that a unique numeric or string key can be calculated from the struct's fields.
+
+It’s not necessary that only string types should be the keys of a map. All comparable types such as boolean, integer, float, complex, string etc.
+{
+  stringKey: intValue,
+  stringKey: intValue
+  ...
+}
+
+## Declaration:
+var map_variable map[key_data_type]value_data_type
+map_variable = make(map[key_data_type]value_data_type)
+
+Example:
+var map1 map[int]string  
+m := make(map[string]int)  
+
+
+var m map[string]int // #nil map 
+fmt.Println(m) // output : map[]
+fmt.Println(m == nil) // true
+
+Note: m["a"]=1 // panic: assignment to entry in nil map
+
+## Creating a nil map
+A nil map has no keys, nor can keys be added. 
+package main  
+import "fmt"  
+func main() {
+   //m := make(map[string]int)
+   var m map[string]int // panic: assignment to entry in nil map
+   m["a"]=3
+   fmt.Print(m)
+}
+
+
+## Creating an empty map
+m := make(map[keyType]valueType)
+func main() {
+	age := make(map[string]int)
+	age["mina"] = 28
+	age["john"] = 32
+	age["mike"] = 55
+	fmt.Println("age of john", age["john"]) // age of john 32
+}
+
+## Initialization:
+var m = map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
+m := map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
+
+func main() {
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+	fmt.Println(age) // map[john:32 mike:55 mina:28]
+}
+
+## Accessing map data
+In case array or slice, when you are trying to access out of index element (when the index does not exist), go will throw an error. 
+
+But not in case of map. When you are trying to access the value by the key which is not present in the map, go will not throw an error, instead, it will return zero value of valueType.
+func main() {
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+	fmt.Println(age["mina"])// 28
+	fmt.Println(age["jessy"]) //0
+	fmt.Println(age) // map[john:32 mike:55 mina:28]
+}
+
+
+## Create Map using struct:
+Map literals are like struct literals, but the keys are required. 
+type Vertex struct { Latitude, Longitude float64 }  
+var m = map[string]Vertex{  
+   "JavaTpoint": Vertex{     40.68433, -74.39967,   },  
+   "SSS-IT": Vertex{     37.42202, -122.08408,  },  
+}  
+
+type Vertex struct {
+	Lat, Long float64
+}
+var m map[string]Vertex
+func main() {
+	m = make(map[string]Vertex)
+	m["Bell Labs"] = Vertex{
+		40.68433, -74.39967,
+	}
+	fmt.Println(m["Bell Labs"])
+}
+
+# Length of map
+func main() {
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+	fmt.Println("len(age) =", len(age)) // 3
+}
+
+Note: There is nothing like capacity in map because go completely takes control of internal data structure of map. Hence don't try to use cap function on map.
+
+1. Retrieve or accessing Element: 
+elem = m[key] 
+
+elm = m["Raj"] //20
+
+
+2. We can also test if a key is present in map or not: 
+elem, ok := m[key] 
+ 
+elem, ok = m["Raj"]  // elem =20, ok=true
+elem, ok = m["Kapil"]  // elem =0, ok=false
+If key is in m, ok is true. If not, ok is false.
+If key is not in the map, then elem is the zero value for the map's element type. 
+
+
+3.  Insert or update an element in map m:
+m[key] = elem
+
+m["Raj"] = 23
+
+
+4. Delete operation: 
+func delete(m map[KeyType]ValeType, key Type) 
+
+delete(m, "Raj")
+
+
+## maps comparison
+Like slice, a map can be only compared with nil. If you are thinking to iterate over a map and match each element, you are in grave trouble. But if you are in dire need to compare two maps, use reflect package’s DeepEqual function (https://golang.org/pkg/reflect/).
+
+
+## map iteration
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+
+	for key, value := range age {
+		fmt.Println(key, "=>", value)
+	}
+You can also use _ (blank identifier) to ignore either key or value in case you don't need it, just like array and slice.
+Order of retrieval of elements in map is random when used in for iteration. Hence there is no guarantee that each time, they will be in order. That explains why we can’t compare two maps.
+
+## duplicate keys
+Go does not allow to add duplicate keys in the map. It throws error if you try to add.
+func main() {
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+		"mina": 26, // duplicate key "mina" in map literal
+	}
+	for key, value := range age {
+		fmt.Println(key, "=>", value)
+	}
+}
+
+## Maps are referenced type
+Like slice, map references an internal data structure. When you copy a map to a new map, the internal data structure is not copied, just referenced.
+1. referencing  old map
+func main() {
+	var ages map[string]int
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+	ages = age
+	delete(ages, "john")
+	fmt.Println("age", age) // age map[mike:55 mina:28]
+	fmt.Println("ages", ages) // ages map[mike:55 mina:28]
+} 
+
+2. Here we are creating a new map
+func main() {
+	ages := make(map[string]int)
+	age := map[string]int{
+		"mina": 28,
+		"john": 32,
+		"mike": 55,
+	}
+	for key, value := range age {
+		ages[key] = value
+	}
+	delete(ages, "john")
+	fmt.Println("age", age) // age map[john:32 mike:55 mina:28]
+	fmt.Println("ages", ages) // ages map[mike:55 mina:28]
+}
+
+## Call by reference
+map is call by reference
+func main() {
+	age := map[string]int{
+		"mina": 28,
+	}
+	fmt.Println("before change", age) // before change map[mina:28]
+	changeMap(age)
+	fmt.Println("After change", age)  // After change map[mina:35]
+} 
+func changeMap(m map[string]int) {
+	m ["mina"] = 35
+}
+
+
+
+
+Exercise 1:
+package main  
+import "fmt"  
+func main() {
+   var o map[string]int //Declaration
+   fmt.Println(o) //map[]
+   m := make(map[string]int) //Declaration
+   fmt.Println(m) //map[]
+   n := map[string]int{"Kate":28,"John":37, "Raj":20} // Assignment
+   fmt.Println(n) //map[John:37 Kate:28 Raj:20]
+   
+   m["a"]=3 // Insert 
+   fmt.Println(m) //map[a:3]
+   m["a"]=5 // update
+   fmt.Println(m) //map[a:5]
+   
+   fmt.Println(m["a"]) // Retrieve 5
+   elem1, ok := m["a"] // Testing if a key present
+   fmt.Println(elem1,ok) //5 true
+   elem2, ok := m["b"]
+   fmt.Println(elem2,ok) //0 false
+   fmt.Println(m) //map[a:5]
+   delete(m,"a")
+   fmt.Println(m) //map[]
+}
+ 
+ 
+Exercise 2:
+package main
+import "fmt"
+type Test struct{
+    name string
+    code map[string]float64
+}
+func main() {
+    z := make(map[string]float64)
+    z["obi"] = 0.003
+    x := &Test{ name:"testing", code:z,}
+
+    y := make(map[*Test] string)
+    y[x] = "go home"
+    for key, val := range y{
+        fmt.Println(key.name, key.code, val)
+    }
+}
+//testing map[obi:0.003] go home
+
+
+Exercise 3:
+package main
+import "fmt"
+type Test struct{
+    name string
+    code int
+}
+func main() {
+    x := &Test{ name:"testing", code:1,}
+	o := make(map[Test] string)
+    o[*x] = "go home"
+    for key, val := range o{
+        fmt.Println(key.name, key.code, val)
+    }
+}
+//testing 1 go home
+
+
+
+Exercise 4:
+package main  
+import "fmt"  
+import "strings"  
+
+func WordCount(str string) map[string]int {
+    map1 := make(map[string]int)
+	var arr []string = strings.Split(str, " ")
+	var count int
+	for _, key := range arr{
+		count = 0
+		for _, val2 := range arr{
+			if key == val2{
+			count++
+			}
+		}
+		map1[key] = count
+	}
+	return map1
+}
+
+func main() {  
+   fmt.Print(WordCount("The quick brown fox jumped over the lazy dogs."))  
+}
+
+PASS
+ f("I am learning Go!") = 
+  map[string]int{"Go!":1, "I":1, "am":1, "learning":1}
+PASS
+ f("The quick brown fox jumped over the lazy dogs.") = 
+  map[string]int{"The":1, "brown":1, "dogs.":1, "fox":1, "jumped":1, "lazy":1, "over":1, "quick":1, "the":1}
+PASS
+ f("I ate a donut. Then I ate another donut.") = 
+  map[string]int{"I":2, "Then":1, "a":1, "another":1, "ate":2, "donut.":2}
+PASS
+ f("A man a plan a canal panama.") = 
+  map[string]int{"A":1, "a":2, "canal":1, "man":1, "panama.":1, "plan":1} 

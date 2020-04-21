@@ -1,0 +1,606 @@
+/*
+https://golang.org/pkg/builtin/#cap
+
+4. Comments:
+single line comment: //
+multiline: same as c
+
+5. Import:
+a. 
+import "fmt"  
+import "os" 
+
+b. import "fmt"; import "os"  
+
+c. 
+import (  
+	 "fmt"  
+	 "os"  
+)  
+d. import("fmt"; "os" )
+
+6. if else
+if (condition){
+}else if{
+}else{
+}
+
+7. In switch statement, more than one values can be tested in a case, the values are presented in a comma separated list
+like: case val1, val2, val3:
+
+
+8. Goto Statement: The Go goto statement is a jump statement which is used to transfer the control to other parts of the program. In goto statement, there must be a label. We use label to transfer the control of the program.
+
+
+package main  
+import (  
+   "fmt"  
+)  
+func main() {  
+   var input int  
+Loop:  
+   fmt.Print("You are not eligible to vote ")  
+   fmt.Print("Enter your age ")  
+   fmt.Scanln(&input)  
+   if (input <= 17) {  
+      goto Loop  
+   } else {  
+      fmt.Print("You can vote ")  
+   }  
+}
+
+Break Statement: A break statement is used to break out of the innermost structure in which it occurs. It can be used in for-loop (counter, condition,etc.), and also in a switch. Execution is continued after the ending } of that structure. If you are using nested loops, the break statement will stop the execution of the innermost loop and start executing the next line of code after the block.
+
+package main  
+import "fmt"  
+func main() {  
+   var  a int = 1  
+   for a < 10{  
+      fmt.Print("Value of a is ",a,"\n")  
+      a++;  
+      if a > 5{  
+         /* terminate the loop using break statement */  
+         break;  
+      }  
+   }  
+}
+
+
+
+Continue Statement: The continue is used to skip the remaining part of the loop, and then continues with the next iteration of the loop after checking the condition. If you are using nested loops, the continue statement will skip the execution of the innermost loop and start executing the next line of code after the block.
+Syntax:-
+    continue;  
+Or we can do like
+    x:  
+    continue:x  
+
+package main  
+import "fmt"  
+func main() {  
+   /* local variable definition */  
+   var a int = 1  
+   /* do loop execution */  
+   for a < 10 {  
+      if a == 5 {  
+         /* skip the iteration */  
+         a = a + 1;  
+         continue;  
+      }  
+      fmt.Printf("value of a: %d\n", a);  
+      a++;  
+   }  
+}
+
+package main
+import "fmt"
+func main() {
+	sum := 1
+	loop:
+	for ; sum < 1000; {
+		sum += sum
+		if (sum >100 && sum <500){
+		continue loop;
+		}
+		fmt.Println(sum)
+	}
+	fmt.Println(sum)
+}
+*/
+
+
+package main  
+
+import "fmt"
+
+func main() { 
+	const PI float64 = 3.14 
+	var pi float64 = 3.145
+	fmt.Print(pi)
+	fmt.Print(PI)
+	// PI = 3.44 can not assign value to PI since PI is a contant
+	fmt.Print("\n")
+	var a int
+	var b = 10
+	a = 20
+	var input int
+	//fmt.Scanln(&input)
+	input=3
+
+	if a>b{fmt.Print("a is greater")}else{
+	fmt.Print("else")}
+	fmt.Print("\n")
+	
+	for i:=0;i<10;i++{
+	fmt.Print(i)
+	fmt.Print("\n")
+	}
+	fmt.Print("\n")
+	i := 0
+	for i<10{ // we can add () when use for as while
+	fmt.Print(i)
+	fmt.Print("\n")
+	i++
+	}
+	
+	fmt.Print("\n")
+	fmt.Print(input)
+
+	// case with conditions in case
+	switch {  
+	case (input>10):  
+      fmt.Print("the value is 10"); fallthrough;  
+    case (input>20):  
+      fmt.Print("the value is 20"); fallthrough;    	  
+    default:  
+      fmt.Print(" It is not 10,20,30,40 ")
+   }  
+   fmt.Print("\n")
+   // case without conditions in case
+	switch (input) {  
+	case 10:  
+	  fmt.Print("the value is 10")  
+	case 20:  
+	  fmt.Print("the value is 20")  
+	case 30:  
+	  fmt.Print("the value is 30")  
+	case 40:  
+	  fmt.Print("the value is 40")  
+	default:  
+	  fmt.Print(" It is not 10,20,30,40 ")  
+	}  
+	fmt.Print("\n")
+	for i, c := range "Hi" {  
+      fmt.Println(i, c)  
+   } 
+   fmt.Print("\n")
+	for ch := range "Hi" {  
+      fmt.Println(ch)  
+   }
+   
+   var arr[3] int
+   for i=0;i<3;i++{
+   fmt.Scanln(&arr[i])
+   }
+   fmt.Print(arr)
+   
+   var arr2 = [2] int {1,2}
+   fmt.Println(arr2)
+   
+   var arrm = [2][3] int {{1,2,3},{4,5,6}}
+   fmt.Println(arrm)
+   
+   foo := 10
+   fmt.Println(foo)
+}  
+
+
+ 
+
+iota, nil, printf, true, false 	
+
+fmt.Println
+fmt.Print
+fmt.Printf
+
+1. Close :
+close(c)
+
+2. Length and capacity :
+Call      Argument type    Result
+
+len(s)    string type      string length in bytes
+          [n]T, *[n]T      array length (== n)
+          []T              slice length
+          map[K]T          map length (number of defined keys)
+          chan T           number of elements queued in channel buffer
+
+cap(s)    [n]T, *[n]T      array length (== n)
+          []T              slice capacity
+          chan T           channel buffer capacity
+
+3. Allocation :
+type S struct { a int; b float64 }
+new(S)
+
+4. Making slices, maps and channels :
+Call             Type T     Result
+
+make(T, n)       slice      slice of type T with length n and capacity n
+make(T, n, m)    slice      slice of type T with length n and capacity m
+
+make(T)          map        map of type T
+make(T, n)       map        map of type T with initial space for approximately n elements
+
+make(T)          channel    unbuffered channel of type T
+make(T, n)       channel    buffered channel of type T, buffer size n
+
+
+5. Appending to and copying slices :
+append(s S, x ...T) S  // T is the element type of S
+copy(dst, src []T) int
+copy(dst []byte, src string) int
+
+6. Deletion of map elements :
+delete(m, k)  // remove element m[k] from map m
+
+7. Manipulating complex numbers :
+complex(realPart, imaginaryPart floatT) complexT
+real(complexT) floatT
+imag(complexT) floatT
+
+8. Handling panics :
+func panic(interface{})
+func recover() interface{}
+
+9. Bootstrapping :
+print      prints all arguments; formatting of arguments is implementation-specific
+println    like print but prints spaces between arguments and a newline at the end
+
+
+
+
+Category 	             Operator 		                  Associativity
+Postfix 	          () [] -> . ++ - - 		          Left to right
+Unary 	              + - ! ~ ++ - - (type)* & sizeof 	  Right to left
+Multiplicative 	       * / % 		          	          Left to right
+Additive 	          + - 	          	                  Left to right
+Shift 	                 << >> 		          	          Left to right
+Relational 	           < <= > >= 	          	          Left to right
+Equality 	          == != 		          	          Left to right
+Bitwise AND 	           & 		          	          Left to right
+Bitwise XOR 	           ^ 		          	          Left to right
+Bitwise OR 	               | 		          	          Left to right
+Logical AND 	           && 		          	          Left to right
+Logical OR 	            || 		          	              Left to right
+Conditional 	          ?: 		          	          Right to left
+Assignment 	         = += -= *= /= %=>>= <<= &= ^= |= 	  Right to left
+Comma 	              , 		          	              Left to right
+
+
+
+Arithmetic Operators: +,-,/,*,%,++,--
+Relational Operators: ==, !=, >, <, >=, <=
+Logical Operators: &&, ||, !
+Bitwise Operators: &, |, ^, ~, <<, >>
+Assignment Operators: +=, -=, /=, *=, %=, >>=, <<=, &=, |=, ^=
+Miscellaneous Operators: &, *, 
+Receive operator: "<-"
+
+
+
+1. Normal functions with an identifier
+2. Anonymous or lambda functions
+3. Method (A function with a receiver value receiver and pointer receiver)
+func (variable_name variable_data_type) function_name() [return_type]{
+   /* function body*/
+}
+4. variadic function
+
+Note: Function cannot be declared inside another function. If we want to achieve this, we can do this by anonymous function.
+Functions are also known as method, sub-routine, or procedure.
+func function_name( [parameter list] ) [return_types]
+{
+   body of the function
+}
+
+
+var ret int
+ret = max(a, b)
+
+
+func swap(x, y string) (string, string) {
+   return y, x
+}
+
+a, b := swap("Mahesh", "Kumar")
+
+1. Call by value:
+By default, Go uses call by value to pass arguments. In general, it means the code within a function cannot alter the arguments used to call the function. 
+swap(a, b)
+func swap(x, y int) int {
+   var temp int
+   temp = x /* save the value of x */
+   x = y    /* put y into x */
+   y = temp /* put temp into y */
+   return temp;
+}
+
+2. Call by reference:
+swap(&a, &b)
+func swap(x *int, y *int) {
+   var temp int
+   temp = *x    /* save the value at address x */
+   *x = *y    /* put y into x */
+   *y = temp    /* put temp into y */
+}
+
+
+
+
+1.
+package main  
+import (  
+   "fmt"  
+)  
+func fun() int {  
+   return 123456789  
+}  
+func main() {  
+   x := fun()  
+   fmt.Println(x)  
+} 
+
+
+2.
+package main
+import ("fmt";"math")
+func main(){
+   /* declare a function variable */
+   getSquareRoot := func(x float64) float64 {
+      return math.Sqrt(x)
+   }
+   /* use the function */
+   fmt.Println(getSquareRoot(9))
+}
+
+
+3. 
+a. Value Receiver
+package main  
+import (
+   "fmt" 
+   "math" 
+) 
+type Employee struct {  
+   fname string  
+   lname string  
+}  
+func (emp Employee) fullname(){  
+   fmt.Println(emp.fname+" "+emp.lname)  
+} 
+type Circle struct {
+   x,y,radius float64
+}
+func(circle Circle) area() float64 { //value receiver
+   return math.Pi * circle.radius * circle.radius
+}
+ 
+func main() {  
+   e1 := Employee{ "John","Ponting"}  
+   e1.fullname()
+   circle := Circle{x:0, y:0, radius:5}
+   fmt.Printf("Circle area: %f", circle.area())
+}
+
+b. Pointer Receiver:
+package main
+import (
+	"fmt"
+	"math"
+)
+type Vertex struct {
+	X, Y float64
+}
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+func (v *Vertex) Scale(f float64) { //pointer receiver
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+func main() {
+	v := Vertex{3, 4}
+	v.Scale(10)
+	fmt.Println(v.Abs())
+}
+
+Normal Function: call by reference
+package main
+import (
+	"fmt"
+	"math"
+)
+type Vertex struct {
+	X, Y float64
+}
+func Abs(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+func Scale(v *Vertex, f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+func main() {
+	v := Vertex{3, 4}
+	Scale(&v, 10)
+	fmt.Println(Abs(v))
+}
+
+
+
+
+4. 
+package main  
+import (  
+   "fmt"  
+)  
+func main() {  
+   fmt.Println(addAll(10,15,20,25,30))  
+}  
+func addAll(args ... int)(int,int)  {  
+   finalAddValue:=0  
+   finalSubValue:=0  
+   for _,value  := range args{  
+	  finalAddValue += value  
+	  finalSubValue -= value  
+   }  
+   return finalAddValue,finalSubValue  
+}  
+	
+package main
+import (
+	"fmt"
+)
+func add(nums ...int) int{
+fmt.Printf("%T",nums) // []int
+	 var sum int
+	 for _, n := range nums{
+	 sum += n
+	 }
+	return sum
+}
+
+func main() {
+	fmt.Println(add(1,2,3,4,5))
+	fmt.Println(add(1,2,3))
+}
+	
+What is a variadic func? # https://blog.learngoprogramming.com/golang-variadic-funcs-how-to-patterns-369408f19085
+https://blog.learngoprogramming.com/
+
+A variadic func accepts variable number of input values — zero or more. Ellipsis (three-dots) prefix in front of an input type makes a func variadic.
+
+func toFullname(names ...string) string {
+  return strings.Join(names, " ")
+}
+toFullname("carl", "sagan")// output: "carl sagan"
+toFullname("carl")// output: "carl"
+toFullname()// output: "" # A variadic param becomes a nil slice inside the func when you don’t pass any values to it.
+
+When to use a variadic func?
+
+    To skip creating a temporary slice just to pass to a func
+    When the number of input params are unknown
+    To express your intent to increase the readability
+	
+Look at Go Stdlib’s fmt.Println func to understand how it makes itself easy to use.
+
+It uses a variadic func to accept an optional number of input params.
+
+func Println(a ...interface{})
+
+If it wasn’t a variadic func, it’d look like this:
+
+func Println(params []interface{})
+
+You would need to pass a slice to use it — verbose, yes!:
+
+fmt.Println([]interface{}{"hello", "world"})
+
+In its original variadic form, it’s pleasant to use:
+
+fmt.Println("hello", "world")
+fmt.Println("hello")
+fmt.Println()
+
+
+
+Array literals
+
+In an array literal, the ... notation specifies a length equal to the number of elements in the literal.
+
+stooges := [...]string{"Moe", "Larry", "Curly"} // len(stooges) == 3
+
+
+Arguments to variadic functions
+
+You can pass a slice s directly to a variadic function if you unpack it with the s... notation. In this case no new slice is created.
+
+In this example, we pass a slice to the Sum function.
+
+primes := []int{2, 3, 5, 7}
+fmt.Println(Sum(primes...)) // 17
+
+
+
+
+Go Recursion :In Go programming, calling same function from within the function is known as recursion. 
+    package main  
+    import (  
+       "fmt"  
+    )  
+    func main() {  
+       fmt.Println(factorial(5))  
+    }  
+    func factorial(num int ) int{  
+       if num == 0{  
+          return 1  
+       }  
+       return num*factorial(num-1)  
+    }
+
+Go Closure: we create an anonymous function which acts as a function closure. A function which has no name is called anonymous function.
+A closure is a function which refers reference variable from outside its body. The function may access and assign to the referenced variables. 
+
+1.
+package main  
+import (  
+   "fmt"  
+)  
+func main() {  
+   number := 10  
+	  squareNum := func() (int){  
+	  number *= number  
+	  return number  
+   }  
+   fmt.Println(squareNum())  
+   fmt.Println(squareNum())  
+}
+100
+10000
+
+2.
+package main
+import "fmt"
+func getSequence() func() int {
+   i:=0
+   return func() int {
+      i+=1
+      return i  
+   }
+}
+func main(){
+   /* nextNumber is now a function with i as 0 */
+   nextNumber := getSequence()  
+
+   /* invoke nextNumber to increase i by 1 and return the same */
+   fmt.Println(nextNumber())
+   fmt.Println(nextNumber())
+   fmt.Println(nextNumber())
+   
+   /* create a new sequence and see the result, i is 0 again*/
+   nextNumber1 := getSequence()  
+   fmt.Println(nextNumber1())
+   fmt.Println(nextNumber1())
+}
+
+
+
+
+
+
+
+
+
+
+

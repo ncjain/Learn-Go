@@ -1,0 +1,20 @@
+1. Install gRPC
+->go get -u google.golang.org/grpc
+
+2. Install Protocol Buffers v3
+Install the protoc compiler that is used to generate gRPC service code. The simplest way to do this is to download pre-compiled binaries for your platform(protoc-<version>-<platform>.zip) from here: https://github.com/google/protobuf/releases
+protoc-3.9.1-win64.zip
+	1. Unzip this file.
+	2. To install, simply place this binary somewhere in your GOPATH=C:\Users\kapil_jain\go.
+	3. Check version
+		->protoc --version
+		libprotoc 3.9.1
+
+3. Protoc plugin for Go
+->go get -u github.com/golang/protobuf/protoc-gen-go
+
+Generate the code:
+protoc -I helloworld/ helloworld/helloworld.proto --go_out=plugins=grpc:helloworld
+protoc --proto_path helloworld --proto_path=third_libraray --go_out=plugins=grpc:helloworld helloworld.proto
+
+protoc --proto_path helloworld --proto_path=third_libraray --go_out=plugins=grpc:helloworld helloworld.proto

@@ -1,0 +1,240 @@
+## Go Strings(Immutable)
+
+Strings are defined between double quotes "..." and not single quote, unlike JavaScript. Strings in Go are UTF-8 encoded by default which makes more sense in 21st century. As UTF-8 supports ASCII character set, you don't need to worry about encoding in most of the cases.
+
+we hope to see each character to occupy only a byte in memory (as ASCII characters in UTF-8 occupies 8 bits or 1 byte). 
+
+package main
+import "fmt"
+func main() {
+	s := "Hello World"
+	for i := 0; i < len(s); i++ {
+		fmt.Print(s[i], " ")
+	}
+	fmt.Println()
+}
+72 101 108 108 111 32 87 111 114 108 100 
+In Go, a string is in effect a read-only slice of bytes. For now, imagine slice is like a simple array, we will learn about slices in upcoming lessons. Hence in the above case, we are seeing the byte (uint8) values of string s which is internally a slice. Hence s[i] prints the decimal value of the byte held by the character. But to see individual characters, you can use %c format string in Printf statement. You can also use %v format string to see byte value and %T to see data type of the value.
+
+The Go string is a sequence of variable-width characters.
+Go strings and text files occupy less memory or disk space. Since, UTF-8 is the standard, Go doesn't need to encode and decode strings.
+Go Strings are value types and immutable. It means if you create a string, you cannot modify the contents of the string. The initial value of a string is empty "" by default.
+
+String literals using backtick
+Instead of double quotes, we can also use backtick (`) character to represent a string in Go. In quotes (“) you need to escape newlines, tabs and other characters that do not need to be escaped in backticks. If you put a line break in a backtick string, it is interpreted as a ‘\n’ character, see 
+
+package main  
+import ("fmt"  
+      "reflect"  
+)  
+func main()  {  
+   var x string = "Hello World"  
+   fmt.Println(x)  
+   fmt.Println(reflect.TypeOf(x))  
+} 
+
+1. String len():
+str := "I love my country"
+len(str) // 17
+
+2. Print ASCII of a char from string
+string_name[index_of_char]
+"ABC"[0] // 65
+"ABC"[2] // 67
+
+s := "INdIA"
+s[0] // 73
+In Go, a string is in effect a read-only slice of bytes. s[i] prints the decimal value of the byte held by the character.
+
+s := "INdIA"
+1. func ToUpper(s string) string:
+	ToUpper returns a copy of the string s with all Unicode letters mapped to their upper case.
+	strings.ToUpper(s)            // INDIA
+
+2. func ToLower(s string) string:
+	ToLower returns a copy of the string s with all Unicode letters mapped to their lower case.
+	strings.ToLower(s)            // india
+
+3. func HasPrefix(s, prefix string) bool:
+	HasPrefix tests whether the string s begins with prefix.
+	strings.HasPrefix(s,"IN")     // true
+	strings.HasPrefix(str,"")	  // true
+
+4. func HasSuffix(s, suffix string) bool:
+    HasSuffix tests whether the string s ends with suffix.
+	strings.HasSuffix(s,"IA")     // true
+	strings.HasSuffix(str,"")	  // true
+
+5. func Join(a []string, sep string) string:
+    Join concatenates the elements of a to create a single string. The separator string sep is placed between elements in the resulting string.
+	arr := []string{"a","b","c","d"}  
+	strings.Join(arr,"*")          // a*b*c*d
+	s := []string{"K","A","P","I","L"}
+	fmt.Println(strings.Join(s,""))
+
+6. func Repeat(s string, count int) string:
+    Repeat returns a new string consisting of count copies of the string s. It panics if count is negative or if the result of (len(s) * count)
+    overflows.
+	strings.Repeat(str,4)          // INDIAINDIAINDIAINDIA
+	strings.Repeat(str,-4)         // panic: strings: negative Repeat count
+
+7. func Contains(s, substr string) bool:
+    Contains reports whether substr is within s.
+	str:= "Hi...there"  
+	strings.Contains(str,"th")     //true
+	strings.Contains(str,"")       //true
+
+8. func Index(s, substr string) int:
+    Index returns the index of the first instance of substr in s, or -1 if substr is not present in s.
+	str:= "Hi...there"  
+	strings.Index(str,"th")  // 5
+	strings.Index(str,"kapil") // -1
+   
+9. func Count(s, substr string) int:
+    Count counts the number of non-overlapping instances of substr in s. If substr is an empty string, Count returns 1 + the number of Unicode code points in s.
+	str:= "Hi...there"
+	strings.Count(str,"e")          // 2
+
+	s := "isisi"
+	strings.Count(s,"isi")         // 1
+
+	s := "isisi"
+	strings.Count(s,"")            // n + 1 = 6
+	
+10. func Replace(s, old, new string, n int) string:
+    Replace returns a copy of the string s with the first n non-overlapping instances of old replaced by new. If old is empty, it matches at the beginning of the string and after each UTF-8 sequence, yielding up to k+1 replacements for a k-rune string. If n < 0, there is no limit on the number of replacements.
+	str:= "Hi...there Hi there"  
+	strings.Replace(str,"H","h",0)  //  Hi...there Hi there(No change)
+	strings.Replace(str,"H","h",1)  //  hi...there Hi there (replace only one occurance)
+	strings.Replace(str,"H","h",5)  //  hi...there hi there (replace all occurance)
+	strings.Replace(str,"H","h",-1) //  hi...there hi there (replace all occurance)
+   
+11. func ReplaceAll(s, old, new string) string
+    ReplaceAll returns a copy of the string s with all non-overlapping instances of old replaced by new. If old is empty, it matches at the beginning of the string and after each UTF-8 sequence, yielding up to k+1 replacements for a k-rune string.
+	str:= "Hi...there Hi there"  
+	strings.ReplaceAll(str,"Hi","hi") //  hi...there hi there
+	strings.ReplaceAll(str,"","*")    //  *K*a*p*i*l* *J*a*i*n*
+	strings.ReplaceAll(str,"K","")    // apil Jain
+   
+11. func Split(s, sep string) []string:
+    Split slices s into all substrings separated by sep and returns a slice of
+    the substrings between those separators.
+
+    If s does not contain sep and sep is not empty, Split returns a slice of
+    length 1 whose only element is s.
+
+    If sep is empty, Split splits after each UTF-8 sequence. If both s and sep
+    are empty, Split returns an empty slice.
+
+    It is equivalent to SplitN with a count of -1.
+	str := "I,love,my,country"
+	strings.Split(str,",")   // [I love my country]
+	strings.Split(str," ")   // [I,love,my,country]
+	strings.Split(str,"")    // [I , l o v e , m y , c o u n t r y]
+	strings.Split("","")     // []
+	strings.Split("",",")    // []
+
+12. func Compare(a, b string) int: 
+	Compare returns an integer comparing two strings lexicographically(dictionary order, alphabetical order). The result will be 0 if a==b, -1 if a < b, and +1 if a > b. Compare is included only for symmetry with package bytes. It is usually clearer and always faster to use the built-in string comparison operators ==, <, >, and so on.
+
+	strings.Compare("a", "c") // -1
+	strings.Compare("a", "a")  // 0
+	strings.Compare("c", "a")  // 1
+
+	strings.Compare("A", "a") // -1
+	strings.Compare("a", "A")  // 1
+
+	strings.Compare("kapi", "kapil") // -1
+	strings.Compare("Kapil", "kapi") // -1
+
+
+	"a" == "c"   // false
+	"a" > "c"    // false
+	"a" < "c"    // true
+	"a" >= "c"   // false
+	"a" <= "c"   // true
+
+13. func Trim(s string, cutset string) string:
+    Trim returns string s with all leading and trailing Unicode code points contained in cutset removed.
+
+	strings.Trim("    this is        kapil here    "," ")              // this is        kapil here
+	strings.Trim("**********this is   *****     kapil here *****","*") // this is   *****     kapil here
+	strings.Trim("kapil jain","")                                      // kapil jain
+	strings.Trim("\n \t  kapil jain"," ")                              // "\n \t  kapil jain" This will not remove tab and newline
+
+
+14. func TrimSpace(s string) string
+    TrimSpace returns a slice of the string s, with all leading and trailing white space removed, as defined by Unicode
+	strings.TrimSpace("\n \t  kapil jain")   //  "kapil jain" This will remove tab and newline along with space
+
+
+15. func Title(s string) string
+    Title returns a copy of the string s with all Unicode letters that begin
+    words mapped to their title case.
+    BUG(rsc): The rule Title uses for word boundaries does not handle Unicode
+    punctuation properly.
+	
+	strings.Title("love my country")  // Love My Country
+
+
+func Compare(a, b string) int
+
+func Contains(s, substr string) bool
+func ContainsAny(s, chars string) bool
+func ContainsRune(s string, r rune) bool
+
+func Count(s, substr string) int
+func EqualFold(s, t string) bool
+func Fields(s string) []string
+func FieldsFunc(s string, f func(rune) bool) []string
+func HasPrefix(s, prefix string) bool
+func HasSuffix(s, suffix string) bool
+func Join(a []string, sep string) string
+
+func Index(s, substr string) int
+func IndexAny(s, chars string) int
+func IndexByte(s string, c byte) int
+func IndexFunc(s string, f func(rune) bool) int
+func IndexRune(s string, r rune) int
+func LastIndex(s, substr string) int
+func LastIndexAny(s, chars string) int
+func LastIndexByte(s string, c byte) int
+func LastIndexFunc(s string, f func(rune) bool) int
+
+func Map(mapping func(rune) rune, s string) string
+func Repeat(s string, count int) string
+
+func Replace(s, old, new string, n int) string
+func ReplaceAll(s, old, new string) string
+
+func Split(s, sep string) []string
+func SplitAfter(s, sep string) []string
+func SplitAfterN(s, sep string, n int) []string
+func SplitN(s, sep string, n int) []string
+
+func Title(s string) string
+
+func ToLower(s string) string
+func ToLowerSpecial(c unicode.SpecialCase, s string) string
+
+func ToTitle(s string) string
+func ToTitleSpecial(c unicode.SpecialCase, s string) string
+
+func ToUpper(s string) string
+func ToUpperSpecial(c unicode.SpecialCase, s string) string
+
+func Trim(s string, cutset string) string
+func TrimFunc(s string, f func(rune) bool) string
+func TrimLeft(s string, cutset string) string
+func TrimLeftFunc(s string, f func(rune) bool) string
+func TrimPrefix(s, prefix string) string
+func TrimRight(s string, cutset string) string
+func TrimRightFunc(s string, f func(rune) bool) string
+func TrimSpace(s string) string
+func TrimSuffix(s, suffix string) string
+
+type Builder struct{ ... }
+type Reader struct{ ... }
+    func NewReader(s string) *Reader
+type Replacer struct{ ... }
+    func NewReplacer(oldnew ...string) *Replacer

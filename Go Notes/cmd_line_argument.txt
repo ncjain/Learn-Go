@@ -1,0 +1,31 @@
+Go Command Line Arguments:
+When we need to execute a program with some arguments, we generally use command line argument. The arguments passed from the console can be received by the Go program and it can be used as an input.
+The os.Args is used to get the arguments. The index 0 of os.Args contains the path of the program.
+The os.Args[1:] holds provided arguments.
+
+package main  
+  
+import (  
+    "fmt"  
+    "os"  
+)  
+func main() {  
+    var s, arg string  
+    for i := 1; i < len(os.Args); i++ {  
+        s += arg + os.Args[i]+" "  
+    }  
+    fmt.Println(s)
+
+    arumentWithPath := os.Args //returns all arguments including path  
+    arumentSlice:= os.Args[1:] //returns all elements after path  
+    arumentAt2 := os.Args[2] //returns specified argument only   
+    fmt.Println(arumentWithPath)  
+    fmt.Println(arumentSlice)  
+    fmt.Println(arumentAt2)  
+}
+
+go run test.go a b c d
+a b c d
+[C:\Users\KAPIL_~1\AppData\Local\Temp\go-build105036462\b001\exe\test.exe a b c d]
+[a b c d]
+b

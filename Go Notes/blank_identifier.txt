@@ -1,0 +1,7 @@
+blank identifier:
+	use in loop
+	use in import
+	alias in import
+	use in function call
+	use in constant to skip value
+	asignment

@@ -1,0 +1,804 @@
+## What are the channels?
+A channel is a communication object using which goroutines can communicate with each other. Technically, a channel is a data transfer pipe where data can be passed into or read from. Hence one goroutine can send data into a channel, while other goroutines can read that data from the same channel.
+
+## Declaring a channel
+Go provides chan keyword to create a channel. A channel can transport data of only one data type. No other data types are allowed to be transported from that channel.
+
+var c chan int // nil channel
+var c chan interface{}
+
+Note 1:  zero-value of a channel is nil. But a nil channel is not useful. You can not pass data to or read data from a channel which is nil
+
+func main() {
+	var ch chan interface{}
+	fmt.Println(ch)
+	
+	c := make(chan int)
+	fmt.Printf("type of `c` is %T\n", c)
+	fmt.Printf("value of `c` is %v\n", c)
+}
+
+<nil>
+type of `c` is chan int
+value of `c` is 0x430080
+
+
+Note 2: Channels by default are pointers. Mostly, when you want to communicate with a goroutine, you pass the channel as an argument to the function or method. Hence when goroutine receives that channel as an argument, you don’t need to dereference it to push or pull data from that channel.
+
+
+
+## Data read and write
+Go provide very easy to remember left arrow syntax <- to read and write data from a channel.
+
+write data
+c <- data
+
+read data
+<- c
+
+var data int
+data = <- c
+
+Now data coming from the channel c which is of type int can be stored into the variable data of type int.
+Above syntax can be re-written using shorthand syntax as below
+data := <- c
+
+
+Note 3: All the channel operations(read and write) are blocking by default. We saw time.Sleep is blocking a goroutine. Channel operations are also blocking in nature.
+
+
+## read and write operation block
+package main
+import "fmt"
+func main(){
+	fmt.Println("Main started")
+	c := make(chan int)
+	go PrintChan(c)
+	fmt.Println("writing data into channel")
+	c <- 10
+	fmt.Println("Main completed")
+}
+
+func PrintChan(c chan int){
+	fmt.Println("Goroutine started")
+	fmt.Printf("Channel read %v \n",<-c)
+	fmt.Println("Goroutine completed")
+}
+
+Main started
+writing data into channel
+Goroutine started
+Channel read 10
+Goroutine completed
+Main completed
+
+
+## Read operation Block (without write)
+If you are trying to read data from a channel but channel does not have a value available with it, it blocks the current goroutine and unblocks other in a hope that some goroutine will push a value to the channel. Hence, this read operation will be blocking.
+
+func main(){
+	fmt.Println("Main started")
+	c := make(chan int)
+	go PrintChan(c)
+	time.Sleep(2)
+	fmt.Println("Main completed")
+}
+
+func PrintChan(c chan int){
+	fmt.Println("Goroutine started")
+	fmt.Printf("Channel read %v \n",<-c)
+	fmt.Println("Goroutine completed")
+}
+
+Main started
+Goroutine started
+Main completed
+
+
+## Deadlock:
+As discussed, when we write or read data from a channel, that goroutine is blocked and control is passed to available goroutines. What if there are no other goroutines available, imagine all of them are sleeping. That’s where deadlock error occurs crashing the whole program.
+
+## write operation Block(without read)
+if you are to send data to a channel, it will block current goroutine and unblock others until some goroutine reads the data from it. Hence, this send operation will be blocking.
+
+package main
+import "fmt"
+func main(){
+	fmt.Println("Main started")
+	c := make(chan int)
+	go PrintChan(c)
+	fmt.Println("writing data into channel")
+	c <- 10
+	fmt.Println("Main completed")
+}
+
+func PrintChan(c chan int){
+	fmt.Println("Goroutine started")
+	fmt.Println("Goroutine completed")
+}
+Main started
+writing data into channel
+Goroutine started
+Goroutine completed
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan send]:
+main.main()
+        C:/Users/kapil_jain/Desktop/test.go:8 +0x132
+exit status 2
+
+
+## Closing a channel
+A channel can be closed so that no more data can be sent through it. Receiver goroutine can find out the state of the channel using val, ok := <- channel syntax where ok is true if the channel is open or read operations can be performed and false if the channel is closed and no more read operations can be performed. A channel can be closed using close built-in function with syntax close(channel)
+
+func greet(c chan string) {
+	<-c // for John
+	<-c // for Mike
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan string, 1)
+	go greet(c)
+	c <- "John"
+	close(c) // closing channel
+	c <- "Mike"
+	fmt.Println("main() stopped")
+}
+main() started
+panic: send on closed channel
+
+goroutine 1 [running]:
+main.main()
+	/tmp/sandbox366691386/prog.go:20 +0x120
+	
+Just to help you understand blocking concept, first send operation c <- "John" is blocking and some goroutine has to read data from the channel, hence greet goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read from, hence Go Scheduler activates main goroutine and program starts execution from close(c) function.
+
+
+## Importent Example
+package main
+import "fmt"
+import "time"
+func main(){
+	fmt.Println("Main started")
+	c := make(chan int)
+	go PrintChan(c)
+	fmt.Println("writing data into channel 1")
+	c <- 10
+	fmt.Println("writing data into channel 2")
+	c <- 12
+	time.Sleep(10)
+	fmt.Println("Main completed")
+}
+
+
+func PrintChan(c chan int){
+	fmt.Println("Goroutine started")
+	fmt.Printf("Channel  1 read %v \n",<-c)
+	fmt.Println("Goroutine moving next")
+	fmt.Printf("Channel  2 read %v \n",<-c)
+	fmt.Println("Goroutine completed")
+}
+Just to help you understand blocking concept, first send operation c <- 10 is blocking and some goroutine has to read data from the channel, hence PrintChan goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read from, hence Go Scheduler activates main goroutine and Then second write operation c <-12 is non-blocking because of second read operation. So we added sleep to bloack it so that second read operation can be completed.
+
+Main started
+writing data into channel 1
+Goroutine started
+writing data into channel 2
+Channel  1 read 10
+Goroutine moving next
+Channel  2 read 12
+Goroutine completed
+Main completed
+
+
+## For loop
+An infinite syntax for loop for{} can be used to read multiple values sent through a channel.
+
+Note 4: When channel is closed, value read by the goroutine is zero value of the data type of the channel. In this case, since channel is transporting int data type, it will be 0 as we can see from the result.
+
+package main
+import "fmt"
+func squares(c chan int) {
+	for i := 0; i <= 5; i++ {
+		fmt.Printf("Writing into channel %d \n",i)
+		c <- i * i
+	}
+	close(c) // close channel and will set zero value to channel
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int)
+	go squares(c) // start goroutine
+	// periodic block/unblock of main goroutine until chanel closes
+	for {
+		fmt.Println("Reading from channel")
+		val, ok := <-c
+		if ok == false {
+			fmt.Println(val, ok, "<-- loop broke!")
+			break // exit break loop
+		} else {
+			fmt.Println(val, ok)
+		}
+	}
+	fmt.Println("main() stopped")
+}
+
+main() started
+Reading from channel
+Writing into channel 0 
+Writing into channel 1 
+0 true
+Reading from channel
+1 true
+Reading from channel
+Writing into channel 2 
+Writing into channel 3 
+4 true
+Reading from channel
+9 true
+Reading from channel
+Writing into channel 4 
+Writing into channel 5 
+16 true
+Reading from channel
+25 true
+Reading from channel
+0 false <-- loop broke!
+main() stopped
+
+
+
+To avoid the pain of manually checking for channel closed condition, Go gives easier for range loop which will automatically close when the channel is closed. 
+
+
+package main
+
+import "fmt"
+
+func squares(c chan int) {
+	fmt.Println("Goroutine started")
+	for i := 0; i <= 5; i++ {
+		fmt.Printf("Writing data into channel %d \n",i)
+		c <- i * i
+	}
+	close(c) // close channel and will set zero value to channel
+	fmt.Println("Goroutine completed")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int)
+
+	go squares(c) // start goroutine
+	fmt.Println("reading started")
+	for val := range c {
+		fmt.Printf("Reading data from channel %v \n",val)
+	}
+	
+	fmt.Println("main() stopped")
+}
+
+main() started
+reading started
+Goroutine started
+Writing data into channel 0 
+Writing data into channel 1 
+Reading data from channel 0 
+Reading data from channel 1 
+Writing data into channel 2 
+Writing data into channel 3 
+Reading data from channel 4 
+Reading data from channel 9 
+Writing data into channel 4 
+Writing data into channel 5 
+Reading data from channel 16 
+Reading data from channel 25 
+Goroutine completed
+main() stopped
+
+Note 5: If you don’t close the channel in for range loop, program will throw deadlock fetal error in runtime.
+
+Note 6: In case of channel ariable, for range return only one variable.too many variables in range
+
+
+## Buffer size or channel capacity:
+By default, a channel buffer size is 0 also called as unbuffered channel. Whatever written to the channel is immediately available to read.
+ch := make(chan Type, buffer_size)
+
+When the buffer size is non-zero n, goroutine is not blocked until after buffer is full.
+read operation on buffered is thirsty. That means, once read operation starts, it will continue until the buffer is empty. Technically, that means goroutine that reads buffer channel will not block until the buffer is empty.
+
+This will create a channel of a data type Type with buffer size n. Until the channel receives n+1 send operations, it won’t block the current goroutine.
+
+package main
+import "fmt"
+func squares(c chan int) {
+	fmt.Println("square() started")
+	for i := 1; i <= 4; i++ {
+		fmt.Printf("Reading channel %v \n",i)
+		num := <-c
+		fmt.Println(num * num)
+	}
+	fmt.Println("square() completed")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int, 3)
+	go squares(c)
+	fmt.Println("Writing channel 1")
+	c <- 1
+	fmt.Println("Writing channel 2")
+	c <- 2
+	fmt.Println("Writing channel 3")
+	c <- 3
+	fmt.Println("main() stopped")
+}
+main() started
+Writing channel 1
+Writing channel 2
+Writing channel 3
+main() stopped
+
+
+
+
+package main
+import "fmt"
+func squares(c chan int) {
+	fmt.Println("square() started")
+	for i := 1; i <= 4; i++ {
+		fmt.Printf("Reading channel %v \n",i)
+		num := <-c
+		fmt.Println(num * num)
+	}
+	fmt.Println("square() completed")
+}
+
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int, 3)
+
+	go squares(c)
+	fmt.Println("Writing channel 1")
+	c <- 1
+	fmt.Println("Writing channel 2")
+	c <- 2
+	fmt.Println("Writing channel 3")
+	c <- 3
+	fmt.Println("Writing channel 4")
+	c <- 4
+
+	fmt.Println("main() stopped")
+}
+main() started
+Writing channel 1
+Writing channel 2
+Writing channel 3
+Writing channel 4
+square() started
+Reading channel 1 
+1
+Reading channel 2 
+4
+Reading channel 3 
+9
+Reading channel 4 
+16
+square() completed
+main() stopped
+
+
+package main
+import "fmt"
+func squares(c chan int) {
+	fmt.Println("square() started")
+	for i := 1; i <= 8; i++ {
+		fmt.Printf("Reading channel %v \n",i)
+		num := <-c
+		fmt.Println(num * num)
+	}
+	fmt.Println("square() completed")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int, 3)
+
+	go squares(c)
+	fmt.Println("Writing channel 1")
+	c <- 1
+	fmt.Println("Writing channel 2")
+	c <- 2
+	fmt.Println("Writing channel 3")
+	c <- 3
+	fmt.Println("Writing channel 4")
+	c <- 4 // Here block main goroutine
+
+	fmt.Println("main() stopped")
+}
+
+main() started
+Writing channel 1
+Writing channel 2
+Writing channel 3
+Writing channel 4
+square() started
+Reading channel 1 
+1
+Reading channel 2 
+4
+Reading channel 3 
+9
+Reading channel 4 
+16
+Reading channel 5 
+main() stopped
+
+
+package main
+import "fmt"
+import "time"
+func squares(c chan int) {
+	fmt.Println("square() started")
+	for i := 1; i <= 4; i++ {
+		fmt.Printf("Reading channel %v \n",i)
+		num := <-c
+		fmt.Println(num * num)
+	}
+	fmt.Println("square() completed")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int, 3)
+
+	go squares(c)
+	fmt.Println("Writing channel 1")
+	c <- 1
+	time.Sleep(10)
+	fmt.Println("main() stopped")
+}
+main() started
+Writing channel 1
+square() started
+Reading channel 1 
+1
+Reading channel 2 
+main() stopped
+
+
+
+
+## length and capacity of a channel
+Length of a channel is the number of values queued (unread) in channel buffer while the capacity of a channel is the buffer size.
+
+package main
+
+import "fmt"
+
+func main() {
+	c := make(chan int, 3)
+	c <- 1
+	c <- 2
+
+	fmt.Printf("Length of channel c is %v and capacity of channel c is %v", len(c), cap(c))
+	//Length of channel c is 2 and capacity of channel c is 3
+}
+
+
+
+package main
+
+import "fmt"
+
+func squares(c chan int) {
+	fmt.Println("square() started")
+	fmt.Printf("Length of channel c is %v and capacity of channel c is %v \n", len(c), cap(c))
+	for i := 1; i <= 4; i++ {
+		fmt.Printf("Reading channel %v \n",i)
+		num := <-c
+		fmt.Printf("Length of channel c is %v and capacity of channel c is %v \n", len(c), cap(c))
+		fmt.Println(num * num)
+	}
+	fmt.Println("square() completed")
+}
+
+func main() {
+	fmt.Println("main() started")
+	c := make(chan int, 3)
+
+	go squares(c)
+	fmt.Println("Writing channel 1")
+	c <- 1
+	c <- 2
+	c <- 3
+	c <- 4
+	fmt.Println("main() stopped")
+}
+main() started
+Writing channel 1
+square() started
+Length of channel c is 3 and capacity of channel c is 3 
+Reading channel 1 
+Length of channel c is 3 and capacity of channel c is 3 
+1
+Reading channel 2 
+Length of channel c is 2 and capacity of channel c is 3 
+4
+Reading channel 3 
+Length of channel c is 1 and capacity of channel c is 3 
+9
+Reading channel 4 
+Length of channel c is 0 and capacity of channel c is 3 
+16
+square() completed
+main() stopped
+
+
+Using buffered channel and for range, we can read from closed channels. Since for closed channels, data lives in the buffer, we can still extract that data.
+
+package main
+
+import "fmt"
+
+func main() {
+	c := make(chan int, 3)
+	c <- 1
+	c <- 2
+	c <- 3
+	close(c)
+	
+	// iteration terminates after receving 3 values
+	for elem := range c {
+		fmt.Println(elem)
+	}
+}
+1
+2
+3
+
+
+
+
+
+
+
+## Working with multiple goroutines
+package main
+
+import "fmt"
+
+func square(c chan int) {
+	fmt.Println("[square] reading")
+	num := <-c
+	fmt.Printf("reading in square %v \n",num)
+	c <- num * num
+	fmt.Println("[square] ending")
+}
+
+func cube(c chan int) {
+	fmt.Println("[cube] reading")
+	num := <-c
+	fmt.Printf("reading in square %v \n",num)
+	c <- num * num * num
+	fmt.Println("[cube] ending")
+}
+
+func main() {
+	fmt.Println("[main] main() started")
+
+	squareChan := make(chan int)
+	cubeChan := make(chan int)
+
+	go square(squareChan)
+	go cube(cubeChan)
+
+	testNum := 3
+	fmt.Println("[main] sent testNum to squareChan")
+
+	squareChan <- testNum
+
+	fmt.Println("[main] resuming")
+	fmt.Println("[main] sent testNum to cubeChan")
+
+	cubeChan <- testNum
+
+	fmt.Println("[main] resuming")
+	fmt.Println("[main] reading from channels")
+
+	squareVal, cubeVal := <-squareChan, <-cubeChan
+	sum := squareVal + cubeVal
+	
+	fmt.Println("[main] sum of square and cube of", testNum, " is", sum)
+	fmt.Println("[main] main() stopped")
+}
+
+[main] main() started
+[main] sent testNum to squareChan
+[cube] reading
+[square] reading
+reading in square 3 
+[main] resuming
+[main] sent testNum to cubeChan
+[main] resuming
+[main] reading from channels
+[square] ending
+reading in square 3 
+[cube] ending
+[main] sum of square and cube of 3  is 36
+[main] main() stopped
+
+Note 6: When one read operation is blocked then it write operation will not be blocked. And When one write operation is blocked then its read operation will not be blocked.
+
+
+## Unidirectional channels
+
+So far, we have seen channels which can transmit data from both sides or in simple words, channels on which we can do read and write operations. But we can also create channels which are unidirectional in nature. For example, receive-only channels which allow only read operation on them and send-only channels which allow only to write operation on them.
+
+roc := make(<-chan int) # receive-only
+soc := make(chan<- int) # write-only
+
+In the above program, roc is receive-only channel as arrow direction in make function points away from chan keyword. While soc is send-only channel where arrow direction in make function points towards chan keyword. They also have a different type.
+
+package main
+
+import "fmt"
+
+func main() {
+	roc := make(<-chan int)
+	soc := make(chan<- int)
+
+	fmt.Printf("Data type of roc is `%T`\n", roc) // `<-chan int`
+	fmt.Printf("Data type of soc is `%T\n", soc) // `chan<- int
+}
+
+## what is the use of unidirectional channel?
+Using unidirectional channels increases the type-safety of a program. Hence the program is less prone to error.
+
+But let’s say that you have a goroutine where you need to only read data from a channel but main goroutine needs to read and write data from/to the same channel.
+Example 1:
+func greet(roc <-chan string) {
+	fmt.Println("Hello " + <-roc + "!")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan string)
+
+	go greet(c)
+
+	c <- "John"
+	fmt.Println("main() stopped")
+}
+Any write operation on it will result in a fetal error "invalid operation: roc <- "some text" (send to receive-only type <-chan string)".
+
+Example 2: Note: we can not convert write only channel variable to read only channel variable
+func greet(roc <-chan string) {
+	fmt.Println("Hello " + <-roc + "!")
+}
+func main() {
+	fmt.Println("main() started")
+	c := make(chan <- string)
+
+	go greet(c)
+
+	c <- "John"
+	fmt.Println("main() stopped")
+}
+Error: cannot use c (type chan<- string) as type <-chan string in argument to greet
+
+
+
+## Anonymous goroutine with channels:
+package main
+
+import "fmt"
+
+func main(){
+fmt.Println("main started")
+c := make(chan string)
+
+go func(c chan string){
+	fmt.Printf("Hello %v \n", <-c)
+}(c)
+
+c <- "Kapil"
+fmt.Println("main ended")
+}
+
+main started
+Hello Kapil 
+main ended 
+
+
+## channel as the data type of channel
+Yes, channels are first-class values and can be used anywhere like other values: as struct elements, function arguments, returning values and even like a type for another channel. Here, we are interested in using a channel as the data type of another channel.
+
+package main
+import "fmt"
+func greet(c chan string) {
+	fmt.Println("Great Started")
+	fmt.Println("Hello " + <-c + "!")
+	fmt.Println("Greet Ended")
+}
+
+func greeter(cc chan chan string) {
+	fmt.Println("Greeter started")
+	c := make(chan string)
+	fmt.Println("Writing into CC")
+	cc <- c
+	fmt.Println("Greeter Ended")
+}
+
+func main() {
+	fmt.Println("main() started")
+	cc := make(chan chan string)
+	go greeter(cc)
+	fmt.Println("Reading from CC")
+	c := <-cc
+	go greet(c)
+	fmt.Println("Writing into C")
+	c <- "John"
+	fmt.Println("main() stopped")
+}
+main() started
+Reading into CC
+Greeter started
+Writing into CC
+Greeter Ended
+Writing into C
+Great Started
+Hello John!
+Greet Ended
+main() stopped
+
+
+## Select statement
+select is just like switch without any input argument but it only used for channel operations. The select statement is used to perform an operation on only one channel out of many, conditionally selected by case block.
+we can see that select statement is just like switch but instead of boolean operations, we add channel operations like read or write or mixed of read and write
+
+
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+var start time.Time
+func init() {
+	start = time.Now()
+}
+
+func service1(c chan string) {
+	time.Sleep(3 * time.Second)
+	c <- "Hello from service 1"
+}
+
+func service2(c chan string) {
+	time.Sleep(5 * time.Second)
+	c <- "Hello from service 2"
+}
+
+func main() {
+	fmt.Println("main() started", time.Since(start))
+
+	chan1 := make(chan string)
+	chan2 := make(chan string)
+
+	go service1(chan1)
+	go service2(chan2)
+
+	select {
+	case res := <-chan1:
+		fmt.Println("Response from service 1", res, time.Since(start))
+	case res := <-chan2:
+		fmt.Println("Response from service 2", res, time.Since(start))
+	}
+	
+	fmt.Println("main() stopped", time.Since(start))
+}
+Output:
+main() started 0s
+Response from service 1 Hello from service 1 3s
+main() stopped 3s
+
+
+Note 7: The select statement is blocking except when it has a default case (we will see that later). Once, one of the case conditions fulfill, it will unblock. So when a case condition fulfills?
+If all case statements (channel operations) are blocking then select statement will wait until one of the case statement (its channel operation) unblocks and that case will be executed. If some or all of the channel operations are non-blocking, then one of the non-blocking cases will be chosen randomly and executed immediately.

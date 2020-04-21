@@ -1,0 +1,354 @@
+## Slice
+A slice is like an array which is a container to hold elements of the same data type but slice can vary in size.
+The slice abstraction in Go is very nice since it will resize the underlying array for you, plus in Go arrays cannot be resized so slices are almost always used instead.
+append function only works with slice. Incase of array, it will throw error.
+Example:
+Syntax to define a slice is pretty similar to that of an array but without specifying the elements count.
+var slice_name []Type
+ 
+var arr_name []int  //[]
+var arr_name [][]int 
+
+## nil slice
+zero value of an array is an array with all its element being zero-value of data type it contains. Like an array of int with size n will have n zeroes as its elements because of zero value of int is 0. But in the case of slice, zero value of slice defined like above is nil.
+	var s []int // []
+	fmt.Println(s == nil) // True
+	fmt.Println(s)
+
+Asignment to nil slice is not possible but we can add element using append mmethod
+	s = append(s,1)
+	fmt.Println(s)  // [1]
+
+
+## slice is a reference to an array
+slice does not contain any data. It rather stores data in an array. slice when needed to store more data, creates a new array of appropriate length behind the scene to accommodate more data.When a slice is created by simple syntax var s []int, it is not referencing any array, hence its value is nil.
+
+var s []int // nil slice
+fmt.Println("s == nil", s == nil)
+a := [9]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+s = a[2:4] // slice pointing to an array
+fmt.Println("s == nil", s == nil, "and s = ", s)
+
+a slice always references an array, we can modify an array and check if that reflects in the slice. we are convinced that slice indeed is just a reference to an array and any change in that array will reflect in the slice.
+func main() {
+	var s []int
+	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s = a[2:4]
+	fmt.Println(s) // [3 4]
+	a[2] = 33
+	a[3] = 44
+	fmt.Println(s) // [33 44]
+}
+
+
+Note: Slice is like reference to an array. Slice does not store any data. If we change the elements of an array, it will also modify the underlying array. If other slice is referencing the same underlying array, their value will also be changed.
+
+names := [4]string{ "John", "Jim", "Jack", "jen", }   // [John Jim Jack jen]
+slice1 := names[0:2]  // [John Jim] 
+slice2 := names[1:3]  // [Jim Jack]
+slice2[0] = "ZZZ"  
+fmt.Println(slice1, slice2)  // [John ZZZ] [ZZZ Jack]
+fmt.Println(names)  // [John ZZZ Jack jen]
+
+## What will happen to the array if I change the value of an element in the slice? 
+As we know, slice doesn’t hold any data, rather the data is held by an array. If we change some element values in the slice, that should reflect in the array.
+
+func main() {
+	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s := a[2:4]
+	fmt.Println("before -> a[2] =", a[2]) // before -> a[2] = 3
+	s[0] = 33
+	fmt.Println("after -> a[2] =", a[2])  // after -> a[2] = 33
+}
+
+
+## Length and Capacity of a slice
+var s []int
+a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+s = a[2:4]
+fmt.Println("Length of s =", len(s))
+fmt.Println("Capacity of s =", cap(s))
+
+Length of s = 2. it references only 2 elements from the array a
+
+The capacity of a slice is the number of elements it can hold
+
+Capacity of s = 7. program returns 7 which is the capacity of the slice. Since slice references an array, it could have referenced array till the end. Since starting from the index 2 in the above example, there are 7 elements in the array, hence the capacity of the array is 7.
+
+
+## slice is a struct
+A slice struct is composed of zerothElement pointer which points to the first element of an array that slice references. len and cap is the length and capacity of a slice respectively. type is the type of elements that underneath (referenced) array is composed of.
+
+type slice struct {
+    zerothElement *type
+    len int
+    cap int
+}
+Hence when a new slice is defined, zerothElement pointer is set to its zero-value which is nil. But when a slice references an array, that pointer will not be nil.
+
+func main() {
+	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s := a[2:4]
+	fmt.Println("address of a[2]", &a[2]) // 0x454038
+	fmt.Println("address of s[0]", &s[0]) // 0x454038
+	fmt.Println("&a[2] == &s[0] is", &a[2] == &s[0]) // true
+}
+
+
+## append function
+func append(slice []Type, elems ...Type) []Type
+
+func main() {
+	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s := a[2:4]
+	newS := append(s, 55, 66)
+	fmt.Printf("s=%v, newS=%v\n", s, newS) // s=[3 4], newS=[3 4 55 66]
+	fmt.Printf("len=%d, cap=%d\n", len(newS), cap(newS)) // len=4, cap=7
+	fmt.Printf("a=%v", a) // a=[1 2 3 4 55 66 7 8 9]
+}
+append function mutated array referenced by slice s.
+
+## Type... unpack operator
+
+If you see append function syntax, it accepts more than one arguments to append elements to a slice. What if you have a slice and you need to append values from it to another slice. In that case ... operator is useful because append does not accept slice as an argument, only the type which slice element is made of.
+
+func main() {
+	s1 := make([]int, 0, 10)
+	fmt.Println(s1) // []
+	s2 := []int{1, 2, 3}
+	s1 = append(s1, s2...)
+	fmt.Println(s1) // [1 2 3]
+}
+
+append multiple slice into one
+func main() {
+	s1 := make([]int, 0, 10)
+	fmt.Println(s1) // []
+	s2 := []int{1, 2, 3}
+	s3 := []int{4, 5, 6}
+	s2 = append(s2, s3...)
+	s1 = append(s1, s2...)
+	fmt.Println(s1) // [1 2 3 4 5 6]
+}
+
+
+## What will happen if I append more elements than the capacity of a slice?
+
+func main() {
+	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s := a[2:4]
+	fmt.Println(s) // s=[3 4]
+	fmt.Println(a) // a=[1 2 3 4 5 6 7 8 9]
+	fmt.Println(len(s), cap(s)) // len=2, cap=7
+	fmt.Println(&a[2] == &s[0]) // true
+	
+	s = append(s, 50, 60, 70, 80, 90, 100, 110)
+	fmt.Println(s) // s=[3 4 50 60 70 80 90 100 110]
+	fmt.Println(a) // a=[1 2 3 4 5 6 7 8 9]
+	fmt.Println(len(s), cap(s)) // len=9, cap=16
+	fmt.Println(&a[2] == &s[0]) // false
+}
+
+ Go figures out the math on its own that we are trying to push more values to the slice that its underneath array can’t hold, so it creates a new array with greater length and copies old slice values to it. Then new values from append is added to that array and origin array remain unchanged as no operation was done on it.
+
+package main  
+import "fmt"  
+func main() {  
+	s := []int{1,2,3}
+	for i := 0; i < 7; i++ {
+		s = append(s, i)
+		fmt.Print(cap(s), len(s), s,"\n")
+	}
+}
+/*
+6 4 [1 2 3 0]
+6 5 [1 2 3 0 1]
+6 6 [1 2 3 0 1 2]
+12 7 [1 2 3 0 1 2 3]
+12 8 [1 2 3 0 1 2 3 4]
+12 9 [1 2 3 0 1 2 3 4 5]
+12 10 [1 2 3 0 1 2 3 4 5 6]
+*/
+
+As you can see once the capacity is met, append will return a new slice with a larger capacity.
+
+
+## anonymous array slice
+
+Until now, we saw a slice which references array that we defined deliberately. But almost all the time, you would go with an array that is hidden and not accessible to the public.
+Similar to an array, slice can be defined in a similar fashion with an initial value. In this case, go will create a hidden array to contain the values.
+
+s := []int{1,2,3}
+s := []int{}
+
+var s = []int{1,2,3}
+var s = []int{}
+
+
+func main() {
+	s := []int{1, 2, 3, 4, 5, 6}
+	s = append(s, 7, 8)
+	fmt.Println(s) // s= [1 2 3 4 5 6 7 8]
+	fmt.Printf(len(s), cap(s)) // len=8, cap=12
+}
+Go created an array of 12 length because when we are pushing 2 new elements to the slice, the original array of length 6 was not enough to hold 8elements. No new array will be created if we appended new elements to the slice unless slice exceeds the length of 12.
+
+## Multi dimention slice
+s1 := [][]int{ []int{1, 2}, []int{3, 4}, []int{5, 6},}
+s2 := [][]int{ 
+    {1, 2},
+    {3, 4},
+    {5, 6},
+}
+a := [][]int{ {}, {}, {}}  
+
+
+## copy function
+func copy(dst, src []Type) int
+
+func main() {
+	var s1 []int
+	s2 := []int{1, 2, 3}
+	s3 := []int{4, 5, 6, 7}
+	s4 := []int{1, 2, 3}
+
+	n1 := copy(s1, s2)
+	fmt.Println(n1, s1, s2) // 0 [] [1 2 3]
+	fmt.Println(s1 == nil)  // true
+
+	n2 := copy(s2, s3)
+	fmt.Println(n2, s2, s3)  // 3 [4 5 6] [4 5 6 7]
+
+	n3 := copy(s3, s4)
+	fmt.Println(n3, s3, s4)  // 3 [1 2 3 7] [1 2 3]
+}
+copy statement tries to copy s2 to s1 but since s1 is nil slice, nothing will happen and s1 will be nil.
+
+
+## make function(create an empty slice)
+
+There is a difference between nil slice and an empty slice. nil slice is a slice with missing array reference and empty slice is a slice with empty array reference or when the array is empty.
+
+func make(t Type, size ...IntegerType) Type
+In the case of slice, make function looks like below.
+
+s := make([]type, len, cap)
+func main() {
+	s1 := make([]int, 2, 4) // empty slice
+	s2 := []int{1, 2, 3}
+	fmt.Println(s1, s2) // [0 0] [1 2 3]
+	fmt.Println(s1 == nil) // false
+	n1 := copy(s1, s2)
+	fmt.Println(n1, s1, s2) // 2 [1 2] [1 2 3]
+	fmt.Println(s1 == nil) // false
+}
+
+
+
+
+
+
+
+
+
+
+## [start:end] extract operator
+
+Go provides an amazing operator [start:end] (I like to call it extract operator) which you can use easily to extract any part of a slice. Both start and end are optional indexes. start is an initial index of slice while end is the last index up to which elements should be extracted hence end index is not included. This syntax returns a new slice.
+
+
+slice1 := []int{2,4,6,8,10,12,14}  // length =7 capacity=7 [2 4 6 8 10 12 14]
+slice2 := slice1[:0]  // length =0 capacity=7 []
+slice3 := slice1[:4]  // length =4 capacity=7 [2 4 6 8]
+slice4 := slice1[2:]  // length =5 capacity=5 [6 8 10 12 14]
+slice5 := slice1[5:]  // length =2 capacity=2 [12 14]
+slice6 := slice1[:]   // length =7 capacity=7 [2 4 6 8 10 12 14]
+
+slice := make([]int, 10)  // slice length=10 capacity=10 [0 0 0 0 0 0 0 0 0 0]
+slice1 := make([]int, 0, 10)  // slice1 length=0 capacity=10 []
+slice2 := slice1[:5]  // slice2 length=5 capacity=10 [0 0 0 0 0]
+slice3 := slice2[2:5]  // slice3 length=3 capacity=8 [0 0 0]
+
+
+## Slice iteration
+There is no difference as such between array and slice when it comes to iteration. Virtually, a slice is like an array with the same structure, you can use all the functionality of array while iterating over slices.
+
+## Pass by reference
+Well, slices are still passed by value to the function but since they reference the same underneath the array, it looks like that they are passed by reference.
+
+package main
+import "fmt"
+func makeSquares(slice []int) {
+	for index, elem := range slice {
+		slice[index] = elem * elem
+	}
+}
+func main() {
+	s := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	fmt.Println(s) // [0 1 2 3 4 5 6 7 8 9]
+	makeSquares(s)
+	fmt.Println(s) // [0 1 4 9 16 25 36 49 64 81]
+}
+
+Note: Why we are so sure that slice is passed by value, change makeSquares function to func makeSquares(slice []int) {slice = slice[1:5]} which does not change s in the main function.
+func makeSquares(slice []int) {
+	slice = slice[1:5]
+}
+func main() {
+	s := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	fmt.Println(s) // [0 1 2 3 4 5 6 7 8 9]
+	makeSquares(s)
+	fmt.Println(s) // [0 1 2 3 4 5 6 7 8 9]
+}
+
+## Delete slice element(s)
+go does not provide any keyword or function to delete slice elements directly. We need to use some hacks to get there
+s := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+s = append(s[:2], s[3:]...) // delete element at index 2 (== 2)
+fmt.Println(s)  // [0 1 3 4 5 6 7 8 9]
+
+
+## slice comparison
+You will get error invalid operation: s1 == s2 (slice can only be compared to nil) which means that slices can be only checked for the condition of nil or not. If you really need to compare two slices, use for range loop to match each element of the two slices or use DeepEqual function of reflect package.
+
+func main() {
+	s1 := []int{0, 1, 2, 3}
+	s2 := []int{0, 1, 2, 3}
+	fmt.Println(s1 == s2)
+}
+
+https://github.com/golang/go/wiki/SliceTricks
+
+
+
+
+package main  
+import "fmt"  
+func main() {  
+   s := []struct {i int; b bool}{ {1, true}, {2, false}, {3,true}, {4, true}, {5, false}, {6, true},}  
+   fmt.Println(s)  
+   fmt.Printf("%T",s)  
+}
+not a nil slice
+	s1 := make([]int,0)
+	s1 := []int{}
+
+That won’t be the case with append. As go is ready to create new array if needed, append on nil slice will work just fine.
+
+
+
+package main
+import "fmt"
+import "reflect"
+func main() {
+    v := []int{1,2,3}
+	rt := reflect.TypeOf(v)
+	switch rt.Kind() {
+	case reflect.Slice:
+		fmt.Println("Slice")
+	case reflect.Array:
+		fmt.Println("Array")
+	default:
+		fmt.Println("something else entirely")
+	}
+}

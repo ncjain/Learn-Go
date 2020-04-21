@@ -1,0 +1,354 @@
+1. func make(t Type, size ...IntegerType) Type
+
+	The make built-in function allocates and initializes an object of type slice, map, or chan (only). Like new, the first argument is a type, not a value. Unlike new, make's return type is the same as the type of its argument, not a pointer to it. The specification of the result depends on the type:
+
+	- Slice: The size specifies the length. The capacity of the slice is equal to its length. A second integer argument may be provided to specify a different capacity; it must be no smaller than the length. For example, make([]int, 0, 10) allocates an underlying array of size 10 and returns a slice of length 0 and capacity 10 that is backed by this underlying array.
+	make([]int,0)  // Valid []
+	make([]int,2)  // Valid [0 0]
+	make([]int,3,5) // Valid [0,0,0]
+	make([]int,4,3) // Not valid : len larger than cap in make([]int)
+
+	- Map: An empty map is allocated with enough space to hold the specified number of elements. The size may be omitted, in which case a small starting size is allocated. 
+	m := make(map[int]int)
+	m := make(map[int]int,3) // doesn't make any sense of having size
+
+	- Channel: The channel's buffer is initialized with the specified buffer capacity. If zero, or the size is omitted, the channel is unbuffered.
+	ch := make(chan int,2) // buffered channel
+	ch := make(chan int)   // unbuffered channel
+
+
+2. func append(slice []Type, elems ...Type) []Type:
+
+	The append built-in function appends elements to the end of a slice. If it has sufficient capacity, the destination is resliced to accommodate the new elements. If it does not, a new underlying array will be allocated. Append returns the updated slice. It is therefore necessary to store the result of append, often in the variable holding the slice itself:
+
+	slice = append(slice, elem1, elem2)
+	slice = append(slice, anotherSlice...)
+
+	As a special case, it is legal to append a string to a byte slice, like this:
+
+	slice = append([]byte("hello "), "world"...)
+
+3. func new(Type) *Type
+	The new built-in function allocates memory. The first argument is a type, not a value, and the value returned is a pointer to a newly allocated zero value of that type. 
+	pi := new(int)
+	i := 10
+	pi = &i
+	fmt.Print(*pi)
+
+	type S struct{
+		a int
+		b int
+	}
+	pi := new(S)
+
+
+
+4. func close(c chan<- Type)
+	The close built-in function closes a channel, which must be either bidirectional or send-only. It should be executed only by the sender, never the receiver, and has the effect of shutting down the channel after the last sent value is received. After the last value has been received from a closed channel c, any receive from c will succeed without blocking, returning the zero value for the channel element. The form
+
+	x, ok := <-c
+	will also set ok to false for a closed channel. 
+
+	func main(){
+		fmt.Println("main started")
+		ch := make(chan int,2)
+		go ser(ch)
+		ch <- 1
+		ch <- 2
+		//ch <- 3
+		close(ch)
+		time.Sleep(10)
+		fmt.Println("ending main")
+	}
+		
+	func ser(ch chan int){
+		fmt.Println("reading from channel")
+		for i:=0; i<5; i++{
+			fmt.Println(<-ch)
+		}
+		fmt.Println("ending from channel")
+	}
+
+	main started
+	reading from channel
+	1
+	2
+	0
+	0
+	0
+	ending from channel
+	ending main
+
+
+
+5. func copy(dst, src []Type) int
+	The copy built-in function copies elements from a source slice into a destination slice. (As a special case, it also will copy bytes from a string to a slice of bytes.) The source and destination may overlap. Copy returns the number of elements copied, which will be the minimum of len(src) and len(dst). 
+	
+	s := []int{1,2,3}
+	fmt.Println(s)  //[1 2 3]
+	s1 := []int{}
+	s2 := make([]int,10)
+	s3 := make([]int,2)
+	s4 := []int{10,11,12,13,14,15}
+	c1 := copy(s1,s)
+	c2 := copy(s2,s)
+	c3 := copy(s3,s)
+	c4 := copy(s4,s)
+	fmt.Println(c1)  // 0
+	fmt.Println(s1)  // []
+
+	fmt.Println(c2)  // 3
+	fmt.Println(s2)  // [1 2 3 0 0 0 0 0 0 0]
+
+	fmt.Println(c3)  // 2
+	fmt.Println(s3)  // [1 2]
+	
+	fmt.Println(c4)  // 3
+	fmt.Println(s4)  // [1 2 3 13 14 15]	
+
+func main() {
+	var s1 []int
+	s2 := []int{1, 2, 3}
+	s3 := []int{4, 5, 6, 7}
+	s4 := []int{1, 2, 3}
+
+	n1 := copy(s1, s2)
+	fmt.Println(n1, s1, s2) // 0 [] [1 2 3]
+	fmt.Println(s1 == nil)  // true
+
+	n2 := copy(s2, s3)
+	fmt.Println(n2, s2, s3)  // 3 [4 5 6] [4 5 6 7]
+
+	n3 := copy(s3, s4)
+	fmt.Println(n3, s3, s4)  // 3 [1 2 3 7] [1 2 3]
+}
+
+6. func delete(m map[Type]Type1, key Type)
+
+	The delete built-in function deletes the element with the specified key (m[key]) from the map. If m is nil or there is no such element, delete is a no-op. 
+
+	m := map[int]int{1:1,2:2,3:3}
+	fmt.Println(m)  // map[1:1 2:2 3:3]
+	
+	delete(m,1)
+	fmt.Println(m)  // map[2:2 3:3]
+	
+	delete(m,5)     //  No effect if the key does not exist
+	fmt.Println(m)  // map[2:2 3:3]
+
+
+7. func cap(v Type) int
+
+	The cap built-in function returns the capacity of v, according to its type:
+
+	Array:- the number of elements in v.(size of the array)
+	Pointer to array:- the number of elements in *v. (size of the array)
+	Slice:- the maximum length the slice can reach when resliced; if v is nil, cap(v) is zero.
+	Channel:- the channel buffer capacity, in units of elements; if v is nil, cap(v) is zero.
+
+	For some arguments, such as a simple array expression, the result can be a constant. See the Go language specification's "Length and capacity" section for details. 
+
+8. func len(v Type) int
+
+	The len built-in function returns the length of v, according to its type:
+
+	Array: the number of elements in v.(size of the array)
+	Pointer to array: the number of elements in *v. (size of the array)
+	Slice, or map: the number of elements in v; if v is nil, len(v) is zero. String: the number of bytes in v.
+	Channel: the number of elements queued (unread) in the channel buffer; if v is nil, len(v) is zero.
+
+	For some arguments, such as a string literal or a simple array expression, the result can be a constant. See the Go language specification's "Length and capacity" section for details. 
+
+	arr1 := [3]int{}                 // [0 0 0]
+	arr2 := [3]int{1,2}              // [1 2 0]
+	fmt.Println(len(arr1),cap(arr1)) // 3,3
+	fmt.Println(len(arr2),cap(arr2)) // 3,3
+
+	pi1 := &arr1
+	pi2 := &arr2
+	fmt.Println(len(pi1),cap(pi1))   // 3,3
+	fmt.Println(len(pi2),cap(pi2))   // 3,3
+
+	fmt.Println("********************Slice**************")
+	slic1 := []int{1,2,3}
+	fmt.Println(len(slic1),cap(slic1)) // 3,3
+
+	slic2 := make([]int,2,10)
+	fmt.Println(len(slic2),cap(slic2)) //2,10
+	slic2[0]=0
+	slic2[1]=1
+	//slic2[2]=2                      // panic: runtime error: index out of range
+	fmt.Println(slic2)                // [0 1]
+
+	slic3 := make([]int,10)
+	fmt.Println(len(slic3),cap(slic3))  // 10,10
+
+	arr3 := [10]int{1,2,3,4,5,6,7,8,9,10} 
+	slic4 := arr3[0:]
+	fmt.Println(len(slic4),cap(slic4))  // 10,10
+
+	slic5 := arr3[:3]
+	fmt.Println(len(slic5),cap(slic5))  // 3,10
+
+	slic6 := arr3[:]
+	fmt.Println(len(slic6),cap(slic6))  // 10,10
+
+	slic7 := arr3[0:3]
+	fmt.Println(len(slic7),cap(slic7))  // 3,10
+
+	slic8 := arr3[3:8]
+	fmt.Println(len(slic8),cap(slic8))  // 5,7
+
+
+	fmt.Println("********************Channel**************")
+	ch1 := make(chan int,3)
+	fmt.Println(len(ch1),cap(ch1)) // 0, 3
+
+	ch2 := make(chan int)
+	fmt.Println(len(ch2),cap(ch2)) // 0,0
+
+	ch3 := make(chan int,3)
+	ch3 <- 1
+	ch3 <- 2
+	fmt.Println(len(ch3),cap(ch3)) // 2,3
+
+
+func print(args ...Type)
+func println(args ...Type)
+
+func complex(r, i FloatType) ComplexType
+func real(c ComplexType) FloatType
+func imag(c ComplexType) FloatType
+
+func panic(v interface{})
+func recover() interface{}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package main
+
+import (
+	"fmt"
+)
+
+func main(){
+	var a, b int
+	a , b = 2, 4
+	c := a + b
+	fmt.Printf("Sum of 2 and 4 is : %d",c)
+}
+
+
+/*
+var sl []int
+sl[0]=1 // panic: runtime error: index out of range
+
+
+sl := make([]int,0)
+sl[0]=1 // panic: runtime error: index out of range
+
+var sl []int
+sl =  append(sl,2)  // [2]
+fmt.Println(sl)
+
+
+sl := make([]int,0)
+sl =  append(sl,2) // [2]
+
+sl := make([]int,1)
+sl[0]=1 
+sl[1]=1 // panic: runtime error: index out of range
+
+sl := make([]int,0) // []
+sl := make([]int,1) // [0]
+sl := make([]int,5) // [0 0 0 0 0]
+sl[0] = 1           // [1 0 0 0 0]
+
+sl := make([]int,1) // [0]
+sl =  append(sl,1)  // [0 1]
+sl =  append(sl,2)  // [0 1 2]
+
+sl := make([]int,3,2) // [0,0,0]
+sl[0] = 1
+fmt.Println(sl) 
+
+
+
+m := make(map[int]int,2)  // map[]
+
+m := make(map[int]int,2)
+m[1]=1
+m[2]=2
+m[3]=3
+fmt.Print(m)   // map[1:1 2:2 3:3]
+
+m := make(map[int]int)
+m[1]=1
+m[2]=2
+m[3]=3
+fmt.Print(m)           // map[1:1 2:2 3:3]
+
+var m map[int]int      // map[] nil map
+m[1]=1                 // map[]panic: assignment to entry in nil map
+
+m := make(map[int]int) // map[]
+m[1]=1                 // map[1:1]
+
+
+func sum(n int, s ...interface{}){
+fmt.Println(n)
+fmt.Println(s)
+}
+
+
+*/
+
+
+/*
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+func Reverse(s string) string {
+var str string
+for _,ch :=range s{
+str = string(ch) + str
+}
+return str
+}
+
+func SplitStr(s string) []string{
+Strslc := strings.Split(s," ")
+
+return Strslc
+}
+*/

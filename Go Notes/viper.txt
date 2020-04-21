@@ -1,0 +1,28 @@
+func getMainDB() (mainDB *gorm.DB) {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		viper.GetString("db.host"),
+		viper.GetString("db.port"),
+		viper.GetString("db.username"),
+		viper.GetString("db.password"),
+		viper.GetString("db.dbname"),
+		viper.GetString("db.sslmode"),
+	)
+	mainDB, err := gorm.Open("postgres", dsn)
+	if err != nil {
+		panic("postgres main_db is unavailable " + err.Error())
+	}
+	mainDB.LogMode(true)
+	return
+}
+
+
+func initConfig() {
+	viper.SetConfigName("P24-integration.test")
+	viper.AddConfigPath(os.Getenv("GOPATH") + "/src/github.com/carousell/p24-integration/config/")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {
+		// Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+}

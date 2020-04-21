@@ -1,0 +1,91 @@
+## Range
+The range form of the for loop iterates over an array, slice or map. (channel Need to check for channel)
+When ranging over a slice, two values are returned for each iteration. The first is the index, and the second is a copy of the element at that index. 
+var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+func main() {
+	for i, v := range pow {
+		fmt.Printf("2**%d = %d\n", i, v)
+	}
+
+## Range continued
+
+You can skip the index or value by assigning to _.
+for i, _ := range pow
+for _, value := range pow
+
+If you only want the index, you can omit the second variable.
+for i := range pow
+
+pow := make([]int, 10)
+for i := range pow {
+	pow[i] = 1 << uint(i) // == 2**i
+}
+for _, value := range pow {
+	fmt.Printf("%d\n", value)
+}
+
+
+package main  
+import "fmt"  
+func main() {
+	m := map[string]int{"Kate":28,"John":37, "Raj":20}
+	for key := range m{ // First arg is key and second val
+		fmt.Println(key)
+	}
+	
+	n := map[string]int{"Kate":28,"John":37, "Raj":20}
+	for key, value := range n{ // First arg is key and second val
+		fmt.Println(key,value)
+	}
+	
+	a := []string{"a","b","c"}
+	for idx := range a{ // First arg is index and second val
+		fmt.Println(idx)
+	}
+	b := []string{"a","b","c"}
+	for idx, val := range b{ // First arg is index and second val
+		fmt.Println(idx,val)
+	}
+	c := []string{"a","b","c"}
+	for _, val := range c{ // First arg is index and second val
+		fmt.Println(val)
+	}
+	str := "ABCDE"
+	for idx,val := range str{ // First arg is index and second is ASCII value of character
+		fmt.Println(idx,val)
+	}
+	//Note: Both variable can not be underscre. I will give error "no new variables on left side of :="
+}
+
+
+package main  
+import "fmt"  
+func main() {
+	m := map[string]int{"Kate":28,"John":37, "Raj":20}
+	for key := range m{ // First arg is key and second val
+		fmt.Println(key)
+	}
+	
+	n := map[string]int{"Kate":28,"John":37, "Raj":20}
+	for key, value := range n{ // First arg is key and second val
+		fmt.Println(key,value)
+	}
+	
+	a := []string{"a","b","c"}
+	for idx := range a{ // First arg is index and second val
+		fmt.Println(idx)
+	}
+	b := []string{"a","b","c"}
+	for idx, val := range b{ // First arg is index and second val
+		fmt.Println(idx,val)
+	}
+	c := []string{"a","b","c"}
+	for _, val := range c{ // First arg is index and second val
+		fmt.Println(val)
+	}
+	str := "ABCDE"
+	for idx,val := range str{ // First arg is index and second is ASCII value of character
+		fmt.Println(idx,val)
+	}
+	//Note: Both variable can not be underscre. I will give error "no new variables on left side of :="
+}

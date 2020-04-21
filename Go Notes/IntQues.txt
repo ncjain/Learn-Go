@@ -1,0 +1,197 @@
+Easy –
+What is the default value of a local variable in Go?
+The default value of a local variable is as its corresponding 0 value.
+
+ Why should one use Go programming language?
+
+Because Go is an open source programming language so, it is very easy to build simple, reliable and efficient software.
+
+ Is Go a case sensitive language?
+
+Yes! Go is a case sensitive programming language.
+
+
+ What are the advantages/ benefits of Go programming language?
+
+Advantages/ Benefits of Go programming language:
+
+    Go is fast and compiles very quickly.
+    It supports concurrency at the language level.
+    It has Garbage collection.
+    It supports various safety features and CSP-style concurrent programming features.
+    Strings and Maps are built into the language.
+    Functions are first class objects in this language.
+
+
+ What is a pointer in Go? how to use it?
+
+A pointer is used to hold the address of a variable. pointer is represented by using the *(asterisk) character followed by the type of the stored value.
+
+For example:
+
+       
+    var x = 5  
+    var p *int  
+    p = &x  
+    fmt.Printf("x = %d", *p)  
+
+
+
+
+
+Explain modular programming.
+
+Dividing the program in to sub programs (modules/function) to achieve the given task is modular approach. More generic functions definition gives the ability to re-use the functions, such as built-in library functions.
+
+What is structure in Go? How to define a structure in Go?
+
+Structure is another user defined data type available in Go programming, which allows you to combine data items of different kinds.
+
+To define a structure, you must use type and struct statements. The struct statement defines a new data type, with more than one member for your program. type statement binds a name with the type which is struct in our case.
+
+The format of the struct statement is this -
+
+type struct_variable_type struct {
+   member definition;
+   member definition;
+   ...
+   member definition;
+}
+
+What is slice in Go? How to define a slice in Go?
+
+Go Slice is an abstraction over Go Array. As Go Array allows you to define type of variables that can hold several data items of the same kind but it do not provide any inbuilt method to increase size of it dynamically or get a sub-array of its own. Slices covers this limitation. It provides many utility functions required on Array and is widely used in Go programming.
+
+To define a slice, you can declare it as an array without specifying size or use make function to create the one.
+numbers = make([]int,5,5) /* a slice of length 5 and capacity 5*/
+
+What are Goroutines?
+
+Goroutines are functions or methods that run concurrently with other functions or methods. Goroutines can be thought of as light weight threads. The cost of creating a Goroutine is tiny when compared to a thread. Hence its common for Go applications to have thousands of Goroutines running concurrently.
+
+
+
+
+Medium –
+What is the default value of a pointer variable in Go?
+In Go programming language, the pointer is initialized to nil.
+
+What is goroutine in Go programming language?
+A goroutine is a function which usually runs concurrently with other functions. If you want to stop goroutine, you pass a signal channel to the goroutine, that signal channel pushes a value into when you want the goroutine to stop.
+The goroutine polls that channel regularly as soon as it detects a signal, it quits.
+1.	1.	Quit : = make (chan bool)  
+2.	2.	go func ( ) {  
+3.	3.	for  {  
+4.	4.	select {  
+5.	5.	case <- quit:  
+6.	6.	return  
+7.	7.	default  
+8.	8.	// do other stuff  
+9.	9.	}  
+10.	10.	}  
+11.	11.	}()  
+12.	12.	// Do stuff  
+13.	13.	// Quit goroutine  
+14.	14.	Quit <- true  
+How would you print type of variable in Go?
+You have to use the following code to print the type of a variable:
+1.	1.	var a, b, c = 3, 4, "foo"    
+2.	2.	fmt.Printf("a is of type %T\n", a)  
+How can you format a string without printing?
+You should the following command to format a string without printing:
+return fmt.Sprintf ("at %v, %s" , e.When , e.What )
+
+Does Go programming language support type inheritance?
+Go programming language doesn't provide support for type inheritance.
+Does Go support method overloading?
+Go programming language doesn't provide support for method overloading.
+
+ What are methods in Go?
+
+Go programming language supports special types of functions called methods. In method declaration syntax, a "receiver" is present to represent the container of the function. This receiver can be used to call function using "." operator.
+
+
+ Can you return multiple values from a function?
+
+A Go function can return multiple values
+
+
+ In how many ways you can pass parameters to a method? What is the default behavior?
+
+
+While calling a function, there are two ways that arguments can be passed to a function -
+
+    Call by value - This method copies the actual value of an argument into the formal parameter of the function. In this case, changes made to the parameter inside the function have no effect on the argument.
+
+    Call by reference - This method copies the address of an argument into the formal parameter. Inside the function, the address is used to access the actual argument used in the call. This means that changes made to the parameter affect the argument
+
+ Advantages of Goroutines over threads
+
+   $ Goroutines are extremely cheap when compared to threads. They are only a few kb in stack size and the stack can grow and shrink according to needs of the application whereas in the case of threads the stack size has to be specified and is fixed.
+   $ The Goroutines are multiplexed to fewer number of OS threads. There might be only one thread in a program with thousands of Goroutines. If any Goroutine in that thread blocks say waiting for user input, then another OS thread is created and the remaining Goroutines are moved to the new OS thread. All these are taken care by the runtime and we as programmers are abstracted from these intricate details and are given a clean API to work with concurrency.
+   $ Goroutines communicate using channels. Channels by design prevent race conditions from happening when accessing shared memory using Goroutines. Channels can be thought of as a pipe using which Goroutines communicate. We will discuss channels in detail in the next tutorial.
+
+
+
+
+
+ What are channels
+
+Channels can be thought as pipes using which Goroutines communicate. Similar to how water flows from one end to another in a pipe, data can be sent from one end and received from the another end using channels.
+
+Define a channel,
+a := make(chan int) 
+
+The syntax to send and receive data from a channel are given below,
+data := <- a // read from channel a  
+a <- data // write to channel a  
+
+
+  How the control is blocked until all Goroutines finish executing? Or Explain WaitGroup?
+A WaitGroup is used to wait for a collection of Goroutines to finish executing.
+The way WaitGroup works is by using a counter. When we call Add on the WaitGroup and pass it an int, the WaitGroup's counter is incremented by the value passed to Add. The way to decrement the counter is by calling Done() method on the WaitGroup. The Wait() method blocks the Goroutine in which it's called until the counter becomes zero.
+
+  What is Mutex?
+
+A Mutex is used to provide a locking mechanism to ensure that only one Goroutine is running the critical section of code at any point of time to prevent race condition from happening.
+
+Mutex is available in the sync package. There are two methods defined on Mutex namely Lock and Unlock. Any code that is present between a call to Lock and Unlock will be executed by only one Goroutine, thus avoiding race condition.
+
+
+  Is Go Object Oriented?
+No.Although Go has types and methods and allows an object-oriented style of programming, there is no type hierarchy. The concept of “interface” in Go provides a different approach that we believe is easy to use and in some ways more general. There are also ways to embed types in other types to provide something analogous—but not identical—to subclassing. Moreover, methods in Go are more general than in C++ or Java: they can be defined for any sort of data, even built-in types such as plain, “unboxed” integers. They are not restricted to structs (classes).
+
+  Does Go support inheritance?
+Go does not support inheritance, however it does support composition. Composition can be achieved in Go is by embedding one struct type into another. The generic definition of composition is "put together". One example of composition is a car. A car is composed of wheels, engine and various other parts. 
+
+
+
+Hard - 
+What will be the output of the following code?
+1.	1.	package main  
+2.	2.	import "fmt"  
+3.	3.	 const (   
+4.	4.	       i = 7  
+5.	5.	       j   
+6.	6.	       k   
+7.	7.	 )  
+8.	8.	func main() {  
+9.	9.	 fmt.Println(i, j, k)  
+10.	10.	}  
+Ans:
+777
+What is Go Interfaces?
+In GO, interfaces is a way to identify the behavior of an object. An interface is created by using the "type" word, followed by a name and the keyword interface. An interface is specified as two things.
+•		A set of methods.
+•		Also it is referred as type.
+
+How can you check a variable type at runtime in Go programming language?
+In Go programming language, there is a special type of switch dedicated to check variable type at runtime. This switch is referred as type switch.
+Is it recommended to use Global Variables in a program that implements go routines?
+Global variables are not recommended because they may get accessed by multiple go routines (threads) concurrently and this can easily lead to an unexpected behavior causing arbitrary results.
+
+Which concurrency model does Go programming language use?
+Go relies on a concurrency model called CSP ( Communicating Sequential Processes).
+
+Garbage collection algo ?
+

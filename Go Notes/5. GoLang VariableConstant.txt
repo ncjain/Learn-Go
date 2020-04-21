@@ -1,0 +1,147 @@
+Zero value:
+Unlike other programming languages where variables hold null or undefined values when not initialized with any value, Go gives them zero-value of their respective types. As from the above table, boolean gets false value and integer gets 0 value and string have empty string "" and error have nil.
+
+
+## Declaring a variable
+To declare a single variable, you must follow the following syntax.
+Note: initialValue is optional. If you do not give initial value to variable assignment, it will hold zero-value of its data type.
+
+var variableName dataType = initialValue
+
+var integer1 int = 15
+var integer2 int8 = -25
+var integer3, integer4 int32 = 3, 4
+var integer5 int32
+var float1 float32 = 63.2
+var string1 string = "Hello World!"
+var boolean1 bool
+var boolean2 bool = true/false
+
+You can also drop data type and let Go use type inference to guess data type. This way you can declare multiple data types variable on a single line
+var var1, var2, var3 = 1, 2.2, fal
+
+## Type inference
+Even when Go is statically typed language, Go provide us ease to eliminate declaration of data type while declaring a variable. You can drop data type from variable declaration like below
+
+var variableName = initialValue
+
+Go will pick up data type from the initialValue. Hence this syntax will only work when you are assigning some initial value to a new variable.
+
+var integer1 = 52 //int
+var string1 = "Hello World" //string
+var boolean1 = false //bool
+
+
+## Short-hand notation
+Go also provide one shorthand syntax to declare a variable. In this syntax, you can drop var and dataType.
+
+variableName := initialValue
+
+Go when finds := assignment syntax, it understands that new variable needs to be declared with an initial value.
+
+integer1 := 52 //int
+string1 := "Hello World" //string
+boolean1 := false //bool
+
+The shorthand notation syntax := can only be used inside the function body. Also, it can only be used when at least one of the variables on the left side of := is newly declared.
+Shorthand syntax will come in handy when new variable declares will get value at run-time, for example, a value receives from the function call (example below).
+
+package mainimport (  
+    "fmt"
+    "math"
+)func main() {  
+    a, b := 145.8, 543.8
+    c := math.Min(a, b)
+    fmt.Println("minimum value is ", c)
+}
+
+
+## You can also use multiple lines to declare a variable of different types with a single use of var keyword
+
+var(
+    var1 = 50
+    var2 = 25.22
+    var3 string = "Telefonía"
+    var4 bool
+)
+
+
+## Type conversion
+
+In Go, you can not add, subtract (or do any kind of mathematical) operation on variables to two different data types. Hence variables first must be converted to the same data type. In Go, this is very simple. Just wrap any variable inside parenthesis with data type prefix that you want to convert that variable into. The syntax to convert data to a type is type(var).
+
+var1 := 10 // int
+var2 := 10.5 // float// illegal 
+// var3 := var1 + var2// legal
+var3 := var1 + int(var2) // var3 == 20
+
+Note: Type conversion is very important when variable of different types are used in mathematical expression. Go does not allow variables of different types to be used as operand in mathematical expression.
+
+
+
+
+
+
+## Type aliasing
+You can pretty much declare alias to any built-in or user-defined type using a simple syntax
+
+type aliasName aliasTo
+type float float64
+
+package main
+import "fmt"
+type float float64
+func main() {
+	var f float = 52.2	
+	fmt.Printf("f has value %v and type %T", f, f)
+}
+Above program prints main.float because float is a custom type and it must belong to a package. Type can be defined anywhere in the program, like in a function or a condition block.
+If you define a type alias with the initial letter in small caps, then it won’t be exported from the package and other packages won’t be able to use it.
+Also, in the above program, float won't be comparable to float64 as even they share the same properties, they still are different types. Hence if you define two variables with these types, they won't be comparable.
+invalid operation: f == g (mismatched types float and float64)
+
+
+
+## Constant
+1. Constant is a variable in Go with a fixed value. Any attempt to change the value of a constant will cause a run-time panic. Constant must be declared with const keyword and an initial value.data_type is optional as go will infer data type from fixed_value.
+
+const const_name [data_type] = fixed_value
+const PI float32 = 3.14
+
+2. Note: In Go, constant value must be known during compile time. If you are trying to assign value returned by a function call, that won’t work. const a = math.Sqrt(4) is an illegal statement as value of a is computed during run time.
+
+const const_1, const_2 = value_1, value_2
+
+or 
+const(
+    const_1 = value_1
+    const_2 = value_2
+)
+
+3. In a parenthesized const declaration expressions can be implicitly repeated -this indicates a repetition of the preceding expression.
+
+const(
+	a = 1 // a == 1
+	b = 2 // b == 2
+	c     // c == 2
+	d     // d == 2
+)
+
+4. iota: Go provides a keyword iota that can be used when declaring enumerated constants. This keyword yields an incremented value by 1 starting from 0, each time it is used.
+
+const(
+    a = iota // a == 0
+    b = iota // b == 1
+    c = iota // c == 2
+    d        // d == 3 (implicitely d = iota)
+)
+
+
+5. Use _ (blank identifier) to skip a value. _ will receive the value of iota + 1 but will save the value to garbage.
+
+const (
+	a = iota + 1 // a == 1
+	_            // (implicitly _ = iota + 1 )
+	b            // b == 3 (implicitly b = iota + 1 )
+	c            // c == 4 (implicitly c = iota + 1 )
+)

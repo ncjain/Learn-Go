@@ -1,0 +1,332 @@
+https://golangbot.com/panic-and-recover/
+https://blog.golang.org/defer-panic-and-recover
+
+## Error handling in Go
+Go does not provide conventional try/catch method to handle the errors, instead, errors are returned as a normal return value. In this article, we are going to explore error handling in Go.
+
+An error is just a value that a function can return if something unexpected happened.
+Nte: So what could happen in a function that is unexpected? For example, the function was invoked with wrong arguments or execution inside the function did not go as expected. In that case, this function can return an error as a value.
+
+Error is a built-in type in Go and its zero value is nil. An idiomatic way to handle an error is to return it as the last return value of a function call and check for the nil condition.
+
+val, err := myFunction( args... );
+if err != nil {
+  // handle error
+} else {
+  // success
+}
+
+Go provides the built-in errors package which exports the New function. This function expects an error message and returns an error.
+You can also use Errorf function from fmt package to create interpolated error messages. Here is an example from official Go documentation.
+we can see that New function expects a string which is an error message and returns an error.
+
+Go handles simple errors defer
+for function, methods by returning an error object. The error object may be the only or the last return value. The error object is nil if there is no error in the function and not nil in case of an error-condition.
+
+type error interface {  
+		Error() string  
+}     
+
+We can define error type by using error.New from the error package and provide an appropriate error message like:
+err := errors.New("math - square root of negative number")  
+refer example 0
+
+Example:
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+func divide(a, b int) (int, error) {
+	if b == 0 {
+		return 0, errors.New("Zero division error")
+	} else {
+		return a / b, nil
+	}
+}
+func main() {
+	if res, err := divide(10, 0); err != nil {
+		fmt.Print(err)
+	} else {
+		fmt.Print(res)
+	}
+}
+
+
+## Go Recover:
+Recover is used to regain control of a program from panic or error-condition. It stops the terminating sequence and resumes the normal execution. It is called from the deferred function. It retrieves the error value passed through the call of panic. Normally, it returns nil which has no other effect. 
+1. Recover is only useful inside deferred functions. During normal execution, a call to recover will return nil and have no other effect.
+refer example 4 and 5
+
+2. Recover works only when it is called from the same goroutine. It's not possible to recover from a panic that has happened in a different goroutine.
+go routine()
+
+3. Runtime panics: Panics can also be caused by runtime errors such as array out of bounds access. This is equivalent to a call of the built-in function panic with an argument defined by interface type runtime.Error. 
+
+4. Getting stack trace after recover:
+import "runtime/debug"
+func recvr() {  
+    if r := recover(); r != nil {
+        fmt.Println("Recovered", r)
+        debug.PrintStack()
+    }
+}
+defer recvr()
+
+
+
+
+## Go Panic
+Go panic is a mechanism by which we handle error situations. Panic can be used to abort a function execution. This termination sequences is called panicking and can be controlled by the built-in function recover.
+
+Panic is a built-in function that stops the ordinary flow of control and begins panicking. When the function F calls panic, execution of F stops, any deferred functions in F are executed normally, and then F returns to its caller. To the caller, F then behaves like a call to panic. The process continues up the stack until all functions in the current goroutine have returned, at which point the program prints the panic message, followed by the stack trace and then terminates . Panics can be initiated by invoking panic directly. They can also be caused by runtime errors, such as out-of-bounds array accesses. 
+
+func panic(interface{})
+
+The idiomatic way to handle abnormal conditions in a program in Go is using errors. Errors are sufficient for most of the abnormal conditions arising in the program. We should avoid panic and recover and use errors where ever possible. But there are some situations where the program cannot simply continue executing after an abnormal situation. In this case we should use panic to terminate the program. 
+
+
+func fullName(firstName *string, lastName *string) {  
+    if firstName == nil {
+        panic("runtime error: first name cannot be nil")
+    }
+    if lastName == nil {
+        panic("runtime error: last name cannot be nil")
+    }
+    fmt.Printf("%s %s\n", *firstName, *lastName)
+    fmt.Println("returned normally from fullName")
+}
+
+func main() {  
+    firstName := "Elon"
+    fullName(&firstName, nil)
+    fmt.Println("returned normally from main")
+}
+/*
+panic: runtime error: last name cannot be nil
+goroutine 1 [running]:  
+main.fullName(0x1040c128, 0x0)  
+    /tmp/sandbox135038844/main.go:12 +0x120
+main.main()  
+    /tmp/sandbox135038844/main.go:20 +0x80
+*/
+
+
+
+## Go defer keyword
+The defer keyword is generally used for cleaning purpose. The defer keyword postpones the execution of a function or statement until the end of the calling function. 
+1. It executes code (a function or expression) when the enclosing function returns before the closing curly brace }.
+2. It is also executed if an error occurs during the execution of the enclosing function. 
+
+Use:
+file = os.Open(FileName)
+defer file.Close()
+mu.Lock()
+defer mu.Unlock()
+
+refer example 3, 4 and 5
+
+For example, let's look at a function that opens two files and copies the contents of one file to the other:
+func CopyFile(dstName, srcName string) (written int64, err error) {
+    src, err := os.Open(srcName)
+    if err != nil {
+        return
+    }
+    dst, err := os.Create(dstName)
+    if err != nil {
+        return
+    }
+    written, err = io.Copy(dst, src)
+    dst.Close()
+    src.Close()
+    return
+}
+
+This works, but there is a bug. If the call to os.Create fails, the function will return without closing the source file. This can be easily remedied by putting a call to src.Close before the second return statement, but if the function were more complex the problem might not be so easily noticed and resolved. By introducing defer statements we can ensure that the files are always closed:
+
+func CopyFile(dstName, srcName string) (written int64, err error) {
+    src, err := os.Open(srcName)
+    if err != nil {
+        return
+    }
+    defer src.Close()
+    dst, err := os.Create(dstName)
+    if err != nil {
+        return
+    }
+    defer dst.Close()
+    return io.Copy(dst, src)
+}
+
+Defer statements allow us to think about closing each file right after opening it, guaranteeing that, regardless of the number of return statements in the function, the files will be closed. 
+
+Example: Practical use of defer can be seen when a function has too many conditions whether if-else or case statements, and at the end of each condition, you need to do something like close a file or send http response. Instead of writing multiple calls, we can use defer to save the day.
+
+The behavior of defer statements is straightforward and predictable. There are three simple rules:
+
+1. A deferred function's arguments are evaluated when the defer statement is evaluated.
+In this example, the expression "i" is evaluated when the Println call is deferred. The deferred call will print "0" after the function returns.(it was pushed into the stack with all available argument values earlier when i variable was still 0.)
+
+package main
+import "fmt"
+func main() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+}
+note: You may ask, what is this stack I am referring to. A stack is like a notebook where Go compiler writes down deferred functions to execute at the end of current function execution. This stack follows Last In First Out (LIFO) order of execution. Which means, any task pushed first, will execute in the end.
+
+2. Deferred function calls are executed in Last In First Out order after the surrounding function returns.
+This function prints "3210":
+
+func b() {
+    for i := 0; i < 4; i++ {
+        defer fmt.Print(i)
+    }
+}
+
+3. Deferred functions may read and assign to the returning function's named return values.
+In this example, a deferred function increments the return value i after the surrounding function returns. Thus, this function returns 2:
+
+func c() (i int) {
+    defer func() { i++ }()
+    return 1
+}
+
+
+/* 
+## Example 0
+package main  
+import "fmt"
+import "errors"
+import "math"
+func Sqrt(value float64) (float64, error) {
+   if (value < 0) {
+	  return 0, errors.New("Math: negative number passed to Sqrt")
+   }
+   return math.Sqrt(value), nil
+}
+func main() {
+   result, err := Sqrt(-64)
+   if err != nil {
+	  fmt.Println(err)
+   } else {
+	  fmt.Println(result)
+   }
+   result, err = Sqrt(64)
+   if err != nil {
+	  fmt.Println(err)
+   } else {
+	  fmt.Println(result)
+   }
+}
+
+
+## Example 1
+package main
+import "fmt"
+func main() {  
+	defer fmt.Println("Defer in main")  
+	fmt.Println("main")  
+	fmt.Println(10/0)
+}
+# command-line-arguments
+.\test.go:7:17: division by zero
+
+Note: Looks like ,system throws error at compile time itself.
+
+## Example 2
+func main() {  
+	x,y := 10,0
+	defer fmt.Println("Defer in main")  
+	fmt.Println("main")  
+	fmt.Println(x/y)
+}
+main
+Defer in main
+panic: runtime error: integer divide by zero
+goroutine 1 [running]:
+main.main()
+        C:/Users/kapil_jain/Golang/test.go:10 +0xde
+exit status 2
+
+
+## Example 3
+func main() {  
+	x,y := 10,0
+	defer func() { 
+		if r := recover(); r != nil{
+		fmt.Println("Recoved:",r)  //Recoved: runtime error: integer divide by zero
+		}
+	}()  
+	fmt.Println("main")  
+	fmt.Println(x/y)
+}
+main
+Recoved: runtime error: integer divide by zero
+
+
+## Example 4
+func main() {  
+	fmt.Println(SaveDivide(10, 0))  // 0
+	fmt.Println(SaveDivide(10, 10))  // 1
+}  
+func SaveDivide(num1, num2 int) int {  
+	defer func() { 
+		if r:=recover();r!=nil{
+		fmt.Println("Recoverd:",r)  //Recoverd: runtime error: integer divide by zero
+		}
+	}()  
+	quotient := num1 / num2  
+	return quotient  
+}
+
+## Example 5
+func main() {  
+	fmt.Println(SafeDivide(10, 0))  // 0
+	fmt.Println(SafeDivide(10, 10))  // 1
+}  
+func SafeDivide(num1, num2 int) int {  
+	defer func() { 
+		if r:=recover();r!=nil{
+		fmt.Println("Recoverd:",r)  //Recoverd: runtime error: integer divide by zero
+		}
+	}()
+	if num2 == 0{
+		panic("divide by zero")
+	}
+	quotient := num1 / num2  
+	return quotient  
+}
+
+## Example of Mix
+package main  
+import "fmt"  
+func main() {  
+	fmt.Println("Calling x from main.")  
+	x()  
+	fmt.Println("Returned from x.")  
+}  
+func x() {  
+	defer func() {  
+		if r := recover(); r != nil {  
+			fmt.Println("Recovered in x", r)  
+		}  
+	}()  
+	fmt.Println("Executing x...")  
+	fmt.Println("Calling y.")  
+	y(0)  
+	fmt.Println("Returned normally from y.")  
+}  
+func y(i int) {  
+	fmt.Println("Executing y....")  
+	if i > 2 {  
+		fmt.Println("Panicking!")  
+		panic(fmt.Sprintf("%v" , i))  
+	}  
+	defer fmt.Println("Defer in y", i)  
+	fmt.Println("Printing in y", i)  
+	y(i + 1)  
+}
+*/
