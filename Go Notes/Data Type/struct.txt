@@ -178,11 +178,57 @@ func main() {
 }
 Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted. Only non-conflicting fields will get promoted.
 
+type Salary struct {
+	basic     int
+	insurance int
+	allowance int
+}
+type Employee struct {
+	firstName, lastName string
+	salary              Salary
+	bool
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		bool:      true,
+		salary:    Salary{1100, 50, 50},
+	}
+	fmt.Println("Ross's basic salary", ross.salary.basic)
+}
+
+## Promoted Fields:
+when we use an anonymous nested struct, all the nested struct fields are automatically available on parent struct. This is called field promotion.
+
+type Salary struct {
+	basic     int
+	insurance int
+	allowance int
+}
+type Employee struct {
+	firstName, lastName string
+	Salary
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		Salary:    Salary{1100, 50, 50},
+	}
+	ross.basic = 1200
+	ross.insurance = 0
+	ross.allowance = 0
+	fmt.Println("Ross's basic salary", ross.basic)
+	fmt.Println("Ross is", ross)
+}
+
 ## Exported fields
-As we have seen in packages lesson, any variable or type which starts from the capital letter is exported from that package.
+any variable or type that starts with an uppercase letter is exported from that package. we can also control which fields of an exported struct are visible outside the package (or exported). To export the field names of a struct, we’ve to follow the same uppercase letter approach.
 
 // employee.go
-package orgtype Employee struct {
+package org
+type Employee struct {
 	FirstName, LastName string
 	salary              int
 	fullTime            bool
@@ -216,7 +262,12 @@ package mainimport (
 Above program yields below result
 {Ross Geller 0 false}
 
-This is useful when you want to protect some fields but still make them useful for an outsider.
+When we import any struct from another package, we get struct type as it is, just that we don’t have any control over unexported fields. This is useful when you want to protect some fields but still make them useful as the default or constant values or perhaps something complex
+
+What will happen in the case of a nested struct?
+A nested struct must also be declared with an uppercase letter so that other packages can import it.
+Nested struct fields starting with an uppercase letter are exported.
+If a nested struct is anonymous, then its fields starting with an uppercase letter will be available as promoted fields.
 
 
 ## Function fields
@@ -245,14 +296,6 @@ func main() {
 
 Two structs are comparable if they belong to the same type and have the same field values.
 
-However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
-
-type Employee struct {
-	firstName, lastName string
-	salary              int
-	leaves              map[string]int
-}
-
 type Employee struct {
 	firstName, lastName string
 	salary              int
@@ -271,21 +314,12 @@ func main() {
 	fmt.Println(ross == rossCopy) // True
 }
 
+However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
 
-
-## Structures as method Arguments: 
- 
-func (p Person) details() {  
-   fmt.Println(p, " "+" I am a person")  
-}  
-func (e Employee) details() {  
-   fmt.Println(e, " "+"I am a employee")  
-}  
-func main() {  
-   p1 := Person{"Raj", "Kumar"}  
-   p1.details()  
-   e1 := employee{Person:Person{"John", "Ponting"}, empId: 11}  
-   e1.details()  
+type Employee struct {
+	firstName, lastName string
+	salary              int
+	leaves              map[string]int
 }
 
 
@@ -315,6 +349,7 @@ fmt.Println("firstName", (*ross).firstName)
 fmt.Println("firstName", ross.firstName)
 both are valid,  We can access the fields of a struct pointer without dereferencing it first. Go will take care of dereferencing a pointer under the hood.
 
+
 ## Struct as function parameter:
 1. Call by value
 func printPerson( person Person ) {
@@ -327,6 +362,21 @@ func printPerson( person *Person ) {
 fmt.Printf(person.Fname);
 }
 printPerson(&p1)
+
+
+## Structures as method Arguments: 
+func (p Person) details() {  
+   fmt.Println(p, " "+" I am a person")  
+}  
+func (e Employee) details() {  
+   fmt.Println(e, " "+"I am a employee")  
+}  
+func main() {  
+   p1 := Person{"Raj", "Kumar"}  
+   p1.details()  
+   e1 := employee{Person:Person{"John", "Ponting"}, empId: 11}  
+   e1.details()  
+}
 
 
 ## struct field meta-data
