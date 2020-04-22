@@ -1,9 +1,14 @@
-Since there is no class-object architecture and the closest thing to class we have is structure. Function with struct receiver is a way to achieve methods in Go.
+Since there is no class-object architecture and the closest thing to class we have is structure. Function with struct receiver is 
+a way to achieve methods in Go.
 
-We have seen in structures lesson, especially in the function field section that, struct field can also be a function. We can add a bark field of type function which takes no arguments and returns a string woof woof!. But this does not adhere to the OOP concept as struct fields do not have any idea of struct they belong to. Hence methods come to the rescue.
+We have seen in structures lesson, especially in the function field section that, struct field can also be a function. We can add a 
+bark field of type function which takes no arguments and returns a string woof woof!. But this does not adhere to the OOP concept 
+as struct fields do not have any idea of struct they belong to. Hence methods come to the rescue.
 
 
-A method is nothing but a function, but it belongs to a certain type. A method is defined with different syntax than normal function. It required an additional parameter known as a receiver which is a type to which the method belongs. A method can access properties of the receiver it belongs to.
+A method is nothing but a function, but it belongs to a certain type. A method is defined with different syntax than normal function.
+It required an additional parameter known as a receiver which is a type to which the method belongs. A method can access properties 
+of the receiver it belongs to.
 
 The syntax for defining a method is
 
@@ -17,8 +22,6 @@ Type is any legal type in Go and function arguments and return value are optiona
 type Employee struct {
 	FirstName, LastName string
 }
-
-
 func fullName(firstName string, lastName string) (fullName string) {
 	fullName = firstName + " " + lastName
 	return
@@ -49,10 +52,14 @@ func main() {
 	fmt.Println(e.fullName())
 }
 
+Note: This is no different than what we learned in structs lesson where fullName function was a field of struct. But in case of methods,
+we don’t have to provide properties of struct because method already knows about them.
+
 
 ## Same method name
-One major difference between function and method is many methods can have the same name while no two functions with the same name can be defined in a package.
-
+One major difference between functions and methods is we can have multiple methods with same name while no two functions with the
+same name can be defined in a package.
+We are allowed to create methods with same name as long as their receivers are different.
 
 type Rect struct {
 	width  float64
@@ -78,29 +85,28 @@ func main() {
 	fmt.Printf("Area of circle cir = %0.2f\n", cir.Area())
 }
 
-## Value receiver
-This proves that receiver e in method definition was just a copy of the actual struct e(from main method), hence any changes made to did not affect the original struct.
+## Value receiver(Can not modify the value of object)
+When a method belongs to a type, its receiver receives a copy of the object on which it was called.
+
+This proves that receiver e in method definition was just a copy of the actual struct e(from main method), hence any changes made to
+did not affect the original struct.
+
 type Employee struct {
 	name   string
 	salary int
 }
-
 func (e Employee) changeName(newName string) {
 	e.name = newName
 }
-
 func main() {
 	e := Employee{
 		name:   "Ross Geller",
 		salary: 1200,
 	}
-
 	// e before name change
 	fmt.Println("e before name change =", e) // {Ross Geller 1200}
-
 	// change name
 	e.changeName("Monica Geller")
-	
 	// e after name change
 	fmt.Println("e after name change =", e) // {Ross Geller 1200}
 }
@@ -108,8 +114,9 @@ func main() {
 
 
 ## Pointer receivers
+When a method belongs to the pointer of a type, its receiver will receive the pointer to the object instead of a copy of the object
 
-Exaample 1:
+Example 1:
 func (r *Type) methodName(...Type) Type {
     ...
 }
@@ -118,7 +125,7 @@ type Employee struct {
 	salary int
 }
 func (e *Employee) changeName(newName string) {
-	(*e).name = newName
+	e.name = newName // (*e).name = newName
 }
 func main() {
 	e := Employee{
@@ -128,9 +135,7 @@ func main() {
 	// e before name change
 	fmt.Println("e before name change =", e) // {Ross Geller 1200}
 	// create pointer to `e`
-	ep := &e
-	// change name
-	ep.changeName("Monica Geller")
+	(&e).changeName("Monica Geller") // e.changeName("Monica Geller")
 	// e after name change
 	fmt.Println("e after name change =", e)  // {Monica Geller 1200}
 }
