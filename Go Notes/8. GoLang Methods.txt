@@ -230,7 +230,7 @@ func main() {
 	fmt.Println("e after phone change =", e) // {Ross Geller 1200 {011 1010 1222 New Delhi, India}}
 }
 
-
+## Anonymously nested struct
 Example 3:
 But what will happen if the nested field is anonymous? You remember anonymous fields where a field has no name or name of the field is derived from its type. In case if the field is of a struct type, nested struct fields will be promoted.
 
@@ -244,11 +244,9 @@ type Employee struct {
 	salary int
 	Contact
 }
-
 func (e *Employee) changePhone(newPhone string) {
 	e.phone = newPhone
 }
-
 func main() {
 	e := Employee{
 		name:   "Ross Geller",
@@ -315,16 +313,13 @@ type Employee struct {
 	name   string
 	salary int
 }
-
 func (e *Employee) changeName(newName string) {
 	e.name = newName
 }
-
 func (e Employee) showSalary() {
 	e.salary = 1500
 	fmt.Println("Salary of e =", e.salary)
 }
-
 func main() {
 	e := Employee{
 		name:   "Ross Geller",
