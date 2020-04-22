@@ -27,6 +27,7 @@ type Vertex struct
 {Lat float64
 Long float64}
 
+
 4. type Vertex struct{Lat float64;Long float64}
 
 5. type Vertex struct{Lat , Long float64}
@@ -85,7 +86,7 @@ func main() {
 	}
 	fmt.Println(monica)
 }
-This is useful when you don’t want to re-use a struct type.
+This is useful when you donâ€™t want to re-use a struct type.
 Using fmt.Printf and %T format syntax, we got the following result
 struct { firstName string; lastName string; salary int; fullTime bool }
 
@@ -130,7 +131,7 @@ func main() {
 	fmt.Println(e1.Person) // {Tik Toi}
 	fmt.Println(e1.Person.Fname) // Tik
 }
-Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted. Only non-conflicting fields will get promoted.
+Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field wonâ€™t get promoted. Only non-conflicting fields will get promoted.
 
 ## Exported fields
 As we have seen in packages lesson, any variable or type which starts from the capital letter is exported from that package.
@@ -154,7 +155,7 @@ func main() {
 		salary:    1200,
 	}	fmt.Println(ross)
 }
-Above program won’t compile and the compiler will throw below error.
+Above program wonâ€™t compile and the compiler will throw below error.
 unknown field 'salary' in struct literal of type org.Employee
 
 / main.go
@@ -199,7 +200,7 @@ func main() {
 
 Two structs are comparable if they belong to the same type and have the same field values.
 
-However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
+However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct wonâ€™t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
 
 type Employee struct {
 	firstName, lastName string
