@@ -3,13 +3,20 @@ Struct is a composite type means it can have different properties and each prope
 Struct can represent real-world entity with these properties. We can access a property data as a single entity. 
 
 ## Definacation:
-type struct_variable_type struct {
-   member definition;
-   member definition;
-   ...
-   member definition;
+type StructName struct {
+    field1 fieldType1
+    field2 fieldType2
+    ...
+    fieldN fieldTypeN
 }
+
 Examples:
+type Employee struct {
+	firstName, lastName string
+	salary int
+	fullTime bool
+}
+
 1. with semi colon
 type Vertex struct{
 Lat float64;
@@ -37,7 +44,7 @@ Long float64}
 var variable_name = structure_variable_type {value1, value2...valuen}
 
 Examples:
-1. var v = Vertex{100, 100} // when creating a struct without field names, you need to provide all field values in sequential order unlike.
+1. var v = Vertex{100, 100} // when creating a struct without declaring the field names, you need to provide all field values in the order of their appearance in the struct type
 
 2. var v = Vertex{Lat : 100, Long : 100} // Order of appearance of the fields does not matter
 
@@ -47,11 +54,27 @@ Examples:
 4. var v Vertex  // default value {0 0}
    v.Lat = 100
    v.Long = 100
-5. var v = Vertex{Lat: 100}  // Long:0 is implicit
+5. You can also initialize only some fields of a struct and leave others to their zero values.
+var v = Vertex{Lat: 100}  // Long:0 is implicit
 	v.Long = 100
-6. var v = &Vertex{1, 2} // v type *Vertex
-
+6. Pointer to a struct
+var v = &Vertex{1, 2} // v type *Vertex
+(*v).Lat
 7. var v  = new(Vertex) // v type *Vertex &{0 0}
+8. v := Vertex{
+Lat : 100, 
+Long : 100,
+}
+The comma (,) is absolutely necessary after the value assignment of the last field while creating a struct using the above syntax. This way, Go won’t add a semicolon just after the last field while compiling the code.
+
+otherwise it will throw error
+syntax error: unexpected newline, expecting comma or }
+
+9. The order of the appearance of struct’s fields does not matter,
+v := Vertex{
+Long : 100,
+Lat : 100, 
+}
 
 
 Note: 
@@ -65,12 +88,15 @@ type Vertex struct{lat , Long float64}
 To access any member of a structure, we use the member access operator dot (.)
 struct_variable.attribute = value
 
+func main() {
 type Vertex struct{
 Lat, Long float64
 }
 var v Vertex
+fmt.Println(v) // {0 0}
 v.Lat=10
-fmt.Println(v.Long) 
+fmt.Println(v) // {10 0}
+}
 
 ## Anonymous struct
 An anonymous struct is a struct with no explicitly defined struct type alias. In case of an anonymous struct, we do not define any struct type alias and create struct from inline struct type and initial values defined in the same syntax.
@@ -90,6 +116,7 @@ This is useful when you don’t want to re-use a struct type.
 Using fmt.Printf and %T format syntax, we got the following result
 struct { firstName string; lastName string; salary int; fullTime bool }
 
+
 ## Anonymous fields
 You can define a struct type without any field names. You can just mention the field types and Go will use type as a field name.
 type Data struct {
@@ -102,11 +129,29 @@ func main() {
 	sample1.bool = false
 	fmt.Println(sample1.string, sample1.int, sample1.bool)//Monday 1200 false
 }
+
+# You are allowed to mix some anonymous fields with named fields like below
 type Employee struct {
 	firstName, lastName string
 	salary              int
 	bool
 }
+Note: Can not have two field with same data type if they both are anonymous.
+
+type Data struct {
+	string
+	string
+	int
+	bool
+}
+func main() {
+	sample1 := Data{"Monday","Hi", 1200, true}
+	sample1.bool = false
+	fmt.Println(sample1.string, sample1.int, sample1.bool)
+}
+./prog.go:7:2: duplicate field string
+./prog.go:16:21: ambiguous selector sample1.string
+
 
 ## Embedded(Nested) Struct :
 Struct is a data type and can be used as an anonymous field (having only the type). One struct can be inserted or "embedded" into other struct.
@@ -259,6 +304,16 @@ To access the members of a structure using a pointer to that structure
 struct_pointer.title;
 (*struct_pointer).title;
 
+ross := &Employee{
+	firstName: "ross",
+	lastName:  "Bing",
+	salary:    1200,
+	fullTime:  true,
+}
+
+fmt.Println("firstName", (*ross).firstName)
+fmt.Println("firstName", ross.firstName)
+both are valid,  We can access the fields of a struct pointer without dereferencing it first. Go will take care of dereferencing a pointer under the hood.
 
 ## Struct as function parameter:
 1. Call by value
