@@ -18,6 +18,7 @@ type Employee struct {
 	FirstName, LastName string
 }
 
+
 func fullName(firstName string, lastName string) (fullName string) {
 	fullName = firstName + " " + lastName
 	return
@@ -156,8 +157,8 @@ func main() {
 
 Above program will work just fine like before. So what changed.
 
-1. If a method receives a pointer receiver, you don’t need to using (*e) syntax to deference pointer or get the value of the pointer. You can use simple e which will be the address of the value that pointer points to but Go will understand that you are trying to perform an operation on the value itself and under the hood, it will make e to (*e).
-2. Also, you don’t need to call a method on the pointer if the method receives a pointer receiver. Instead, you can use value as it is, e and call a method on it. Go will pass the pointer of e under the hood if the method expects pointer receiver.
+1. If a method receives a pointer receiver, you donâ€™t need to using (*e) syntax to deference pointer or get the value of the pointer. You can use simple e which will be the address of the value that pointer points to but Go will understand that you are trying to perform an operation on the value itself and under the hood, it will make e to (*e).
+2. Also, you donâ€™t need to call a method on the pointer if the method receives a pointer receiver. Instead, you can use value as it is, e and call a method on it. Go will pass the pointer of e under the hood if the method expects pointer receiver.
 
 Note: You can decide between method with pointer receiver or value receiver depending on your use case. But generally, even if you do not wish to change data of the receiver, methods with pointer receiver are used as no new memory is created for operations. Which happens when passing copy of the receiver, which happens in case of methods with value receiver.
 
@@ -228,7 +229,7 @@ func main() {
 Example 3:
 But what will happen if the nested field is anonymous? You remember anonymous fields where a field has no name or name of the field is derived from its type. In case if the field is of a struct type, nested struct fields will be promoted.
 
-Let’s see what will happen to the methods in a case when struct field is anonymous.
+Letâ€™s see what will happen to the methods in a case when struct field is anonymous.
 
 type Contact struct {
 	phone, address string
@@ -265,7 +266,7 @@ Note: As we saw from structs lesson that if the nested field is anonymous struct
 
 ## Promoted methods
 
-Like promoted fields on a struct, methods implemented by inner struct is available on parent struct. As we saw in the previous example, Contact field is anonymous. Hence we could access e.phone, the phone number from inner struct as phone field is promoted to Employee struct. In the same scenario, any method implemented by Contact struct will be available on Employee struct. Let’s rewrite the previous example.
+Like promoted fields on a struct, methods implemented by inner struct is available on parent struct. As we saw in the previous example, Contact field is anonymous. Hence we could access e.phone, the phone number from inner struct as phone field is promoted to Employee struct. In the same scenario, any method implemented by Contact struct will be available on Employee struct. Letâ€™s rewrite the previous example.
 
 
 type Contact struct {
@@ -303,7 +304,7 @@ func main() {
 
 ## A method can accept both pointer and value
 When a function has a value argument, it will only accept the value of the parameter. If you passed a pointer to the function which expects a value, it will not work. This is also true when function accepts pointer, you simply can not pass a value to it.
-When it comes to a method, that’s not the case. We can define a method with value or pointer receive and call it on pointer or value.
+When it comes to a method, thatâ€™s not the case. We can define a method with value or pointer receive and call it on pointer or value.
 
 type Employee struct {
 	name   string
