@@ -129,9 +129,14 @@ for _, value := range a {
 
 
 ## Passed by value
+func function_name(variable_name [size]type){
+// Code
+}
 
 When you pass an array to a function, they are passed by value like int or string data type. The function receives only a copy of it. Hence, when you make changes to an array inside a function, it won’t be reflected in the original array.
 Why I needed to mention that, because it’s not the case with slice which you will see in upcoming tutorials.
+we made some change in the slice which is passed to the function by value will reflect in the slice present outside the function
+
 Array:
 func main() {
 	var arr = [3]int{1, 2, 3}
@@ -156,7 +161,14 @@ func change(arr []int) {
 
 Note: We can not pass array into slic or vice versa..
 
-# array comparision
-!=, ==
+# copying an array:
+If we create a copy of an array by value and made some changes in the values of the original array, then it will not reflect in the
+copy of that array. And if we create a copy of an array by reference and made some changes in the values of the original array, then 
+it will reflect in the copy of that array.
+// creating a copy of an array by value
+arr := arr1
+
+// Creating a copy of an array by reference
+arr := &arr1
 
 
