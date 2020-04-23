@@ -16,7 +16,7 @@ package-name
 # Package
 Every Go program must be a part of some package. A standalone executable Go program must have package main declaration.
 
-Let’s create an executable package. As we know, to create a binary executable file, we need our program to be a part of main package and it must have main function which is the entry point of execution.
+Letâ€™s create an executable package. As we know, to create a binary executable file, we need our program to be a part of main package and it must have main function which is the entry point of execution.
 
 A package name is the name of the directory contained in src directory. In the above case, app is the package since app is the child directory of src directory. Hence, go install app command looked for app sub-directory inside src directory of GOPATH. Then it compiled the package and created app binary executable file inside bin directory which should be executable from the terminal since bin directory in the PATH.
 
@@ -77,11 +77,11 @@ An identifier may be exported to permit access to it from another package.
 package greet
 morning = "Good Morning"
 Morning = morning + "Kapil"
-In the above program, Morning variable will be exported from the package but morning variable won’t be since it starts with a lowercase letter.
+In the above program, Morning variable will be exported from the package but morning variable wonâ€™t be since it starts with a lowercase letter.
 
 
 1. Creating a package
-a package nothing but a directory, let’s create greet directory inside src and create few files in it. This time, we will write package greet a declaration on the top of each file to state that this is a utility package.
+a package nothing but a directory, letâ€™s create greet directory inside src and create few files in it. This time, we will write package greet a declaration on the top of each file to state that this is a utility package.
 
 2. Searching Package:
 src/greet/greet.go
@@ -99,11 +99,11 @@ fmt.Println(greet.morning) // Error inn this line
 
 Note: When you import a package, Go creates a global variable using the package declaration of the package. In the above case, greet is the global variable created by Go because we used package greet declaration in programs contained in greet package.
 
-Go first searches for package directory inside GOROOT/src directory and if it doesn’t find the package, then it looks for GOPATH/src. Since, fmt package is part of Go’s standard library which is located in GOROOT/src, it is imported from there. Since Go cannot find greet package inside GOROOT, it will lookup inside GOPATH/src and we have it there.
+Go first searches for package directory inside GOROOT/src directory and if it doesnâ€™t find the package, then it looks for GOPATH/src. Since, fmt package is part of Goâ€™s standard library which is located in GOROOT/src, it is imported from there. Since Go cannot find greet package inside GOROOT, it will lookup inside GOPATH/src and we have it there.
 
 
 ## Nested package:
-We can nest a package inside a package. Since for Go, a package is just a directory, it’s like creating a subdirectory inside an already existing package. All we have to do is provide a relative path of the nested package.
+We can nest a package inside a package. Since for Go, a package is just a directory, itâ€™s like creating a subdirectory inside an already existing package. All we have to do is provide a relative path of the nested package.
 
 src/greet/de/greet.go
 package greet
@@ -143,15 +143,15 @@ fmt.Println(version)
 }
 
 go run entry.go version.go
-Note: go install or go build command requires a package name, which includes all the files inside a package, so we don’t have to specify them like above.
+Note: go install or go build command requires a package name, which includes all the files inside a package, so we donâ€™t have to specify them like above.
 
-Coming back to our main issue, we can use variable version declared in version.go file from anywhere in the package even though it is not exported (like Version), because it is declared in package scope. If version variable would have been declared in a function, it wouldn’t have been in package scope and above program would have failed to compile.
+Coming back to our main issue, we can use variable version declared in version.go file from anywhere in the package even though it is not exported (like Version), because it is declared in package scope. If version variable would have been declared in a function, it wouldnâ€™t have been in package scope and above program would have failed to compile.
 Note: You are not allowed to re-declare global variable with the same name in the same package.
 
 
 
 ## Variable initialization:
-When a variable a depends on another variable b, b should be defined beforehand, else program won’t compile. Go follows this rule inside functions
+When a variable a depends on another variable b, b should be defined beforehand, else program wonâ€™t compile. Go follows this rule inside functions
 
 But when these variables are defined in package scope, they are declared in initialization cycles.
 
@@ -190,9 +190,11 @@ func f() int{
 ## Init function
 
 Like main function, init function is called by Go when a package is initialized. 
-1. It does not take any arguments and doesn’t return any value. 
+1. It does not take any arguments and doesnâ€™t return any value. 
 2. init function is implicitly declared by Go, hence you can not reference it from anywhere (or call it like init()). 
 3. You can have multiple init functions in a file or a package. Order of the execution of init function in a file will be according to the order of their appearances.
+4. The main purpose of the init() function is to initialize the global variables that cannot be initialized in the global context.
+5. always remember to init() function is executed before the main() function call, so it does not depend to main() function. 
 
 You can have init function anywhere in the package. These init functions are called in lexical file name order (alphabetical order). and if multiple init are there in same file then whichever init appear first that will get called first and so on.
 
