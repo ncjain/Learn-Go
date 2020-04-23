@@ -522,3 +522,98 @@ fmt.Println( a == b ) // true
 If these interfaces are not nil, then their dynamic types (the type of their concrete values) should be the same and the concrete values should be equal.
 If the dynamic types of the interface are not comparable, like for example, slice, map and function, or the concrete value of an interface is a complex data structure like slice or array that contains these uncomparable values, then == or != operations will result in a runtime panic.
 If one interface is nil, then == operation will always return false.
+
+
+## Nested interface
+Like a struct, an interface can also be nested in a struct. In Layman’s terms, it means that a field can have a data type of an interface.
+
+Since we know that, an interface type is a declaration of method signatures. Any data type that implements an interface can also be represented as a type of that interface (polymorphism).
+
+Using this polymorphism principle, we can have a struct field of an interface type and its value can be anything that implements that interface.
+
+# Example 1:
+package main
+import "fmt"
+type Salaried interface {
+	getSalary() int
+}
+type Salary struct {
+	basic     int
+	insurance int
+	allowance int
+}
+func ( s Salary ) getSalary() int {
+	return s.basic + s.insurance + s.allowance
+}
+type Employee struct {
+	firstName, lastName string
+	salary Salaried
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		salary:    Salary{1100, 50, 50},
+	}
+
+	fmt.Println("Ross's  salary is", ross.salary.getSalary())
+}
+
+# Similar to the field promotions we saw earlier, methods are also promoted when a struct field is an anonymous interface.
+##anonymously nested interface.
+
+# Example 2
+type Salaried interface {
+	getSalary() int
+}
+type Salary struct {
+	basic     int
+	insurance int
+	allowance int
+}
+func ( s Salary ) getSalary() int {
+	return s.basic + s.insurance + s.allowance
+}
+type Employee struct {
+	firstName, lastName string
+	Salaried
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		Salaried:    Salary{1100, 50, 50},
+	}
+
+	fmt.Println("Ross's salary is", ross.getSalary())
+}
+
+#Similar to the field promotions of an anonymously nested struct, only the non-conflicting methods will get promoted. Hence, if the Employee struct type also implements the getSalary method, then that will be used instead.
+
+The most important thing to remember here is, in contrast with field promotion as we’ve seen earlier, only the methods are promoted when the anonymous field is an interface. 
+
+type Salaried interface {
+	getSalary() int
+}
+type Salary struct {
+	basic     int
+	insurance int
+	allowance int
+}
+func ( s Salary ) getSalary() int {
+	return s.basic + s.insurance + s.allowance
+}
+type Employee struct {
+	firstName, lastName string
+	Salaried
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		Salaried:    Salary{1100, 50, 50},
+	}
+	fmt.Println("Ross's basic salary is", ross.basic)
+}
+
+# ross.basic undefined (type Employee has no field or method basic)
