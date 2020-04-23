@@ -1,6 +1,9 @@
 ## Slice
 A slice is like an array which is a container to hold elements of the same data type but slice can vary in size.
 The slice abstraction in Go is very nice since it will resize the underlying array for you, plus in Go arrays cannot be resized so slices are almost always used instead.
+slice and an array are connected with each other, a slice is a reference to an underlying array.
+Note: Always remember when you create a slice using a string literal, then it first creates an array and after that return a slice reference to it.
+
 append function only works with slice. Incase of array, it will throw error.
 Example:
 Syntax to define a slice is pretty similar to that of an array but without specifying the elements count.
@@ -8,6 +11,12 @@ var slice_name []Type
  
 var arr_name []int  //[]
 var arr_name [][]int 
+
+
+array_name[low:high]
+This syntax will return a new slice.
+
+Note: The default value of the lower bound is 0 and the default value of the upper bound is the total number of the elements present in the given array.
 
 ## nil slice
 zero value of an array is an array with all its element being zero-value of data type it contains. Like an array of int with size n will have n zeroes as its elements because of zero value of int is 0. But in the case of slice, zero value of slice defined like above is nil.
@@ -51,7 +60,7 @@ fmt.Println(slice1, slice2)  // [John ZZZ] [ZZZ Jack]
 fmt.Println(names)  // [John ZZZ Jack jen]
 
 ## What will happen to the array if I change the value of an element in the slice? 
-As we know, slice doesn’t hold any data, rather the data is held by an array. If we change some element values in the slice, that should reflect in the array.
+As we know, slice doesnâ€™t hold any data, rather the data is held by an array. If we change some element values in the slice, that should reflect in the array.
 
 func main() {
 	a := [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -149,7 +158,7 @@ func main() {
 	fmt.Println(&a[2] == &s[0]) // false
 }
 
- Go figures out the math on its own that we are trying to push more values to the slice that its underneath array can’t hold, so it creates a new array with greater length and copies old slice values to it. Then new values from append is added to that array and origin array remain unchanged as no operation was done on it.
+ Go figures out the math on its own that we are trying to push more values to the slice that its underneath array canâ€™t hold, so it creates a new array with greater length and copies old slice values to it. Then new values from append is added to that array and origin array remain unchanged as no operation was done on it.
 
 package main  
 import "fmt"  
@@ -204,6 +213,7 @@ a := [][]int{ {}, {}, {}}
 
 
 ## copy function
+Here, dst represents the destination slice and src represents the source slice. It will return the number of elements copied that will be the minimum of len(dst) or len(src). 
 func copy(dst, src []Type) int
 
 func main() {
@@ -226,6 +236,8 @@ copy statement tries to copy s2 to s1 but since s1 is nil slice, nothing will ha
 
 
 ## make function(create an empty slice)
+This function takes three parameters, i.e, type, length, and capacity. Here, capacity value is optional.
+func make([]T, len, cap) []T
 
 There is a difference between nil slice and an empty slice. nil slice is a slice with missing array reference and empty slice is a slice with empty array reference or when the array is empty.
 
@@ -243,9 +255,9 @@ func main() {
 	fmt.Println(s1 == nil) // false
 }
 
+Zero value slice: In Go language, you are allowed to create a nil slice that does not contain any element in it. So the capacity and the length of this slice is 0. Nil slice does not contain an array reference
 
-
-
+if we change some elements in the slice, then the changes should also take place in the referenced array. Or in other words, if you made any changes in the slice, then it will also reflect in the array
 
 
 
@@ -273,8 +285,10 @@ slice3 := slice2[2:5]  // slice3 length=3 capacity=8 [0 0 0]
 ## Slice iteration
 There is no difference as such between array and slice when it comes to iteration. Virtually, a slice is like an array with the same structure, you can use all the functionality of array while iterating over slices.
 
+
 ## Pass by reference
 Well, slices are still passed by value to the function but since they reference the same underneath the array, it looks like that they are passed by reference.
+we made some change in the slice which is passed to the function by value will reflect in the slice present outside the function
 
 package main
 import "fmt"
@@ -300,6 +314,27 @@ func main() {
 	makeSquares(s)
 	fmt.Println(s) // [0 1 2 3 4 5 6 7 8 9]
 }
+Example 1:
+func myfun(element []string) { 
+    element[2] = "Java"
+} 
+func main() { 
+    slc := []string{"C#", "Python", "C", "Perl"}
+    fmt.Println("Initial slice: ", slc)  // ["C#", "Python", "C", "Perl"]
+    myfun(slc)
+    fmt.Println("Final slice:", slc)  // ["C#", "Python", "Java", "Perl"]
+} 
+
+Example 2:
+func myfun(element []string) { 
+    element = append(element, "Java") 
+} 
+func main() { 
+    slc := []string{"C#", "Python", "C", "Perl"}
+    fmt.Println("Initial slice: ", slc)  // ["C#", "Python", "C", "Perl"]
+    myfun(slc)
+    fmt.Println("Final slice:", slc)  // ["C#", "Python", "C", "Perl"]
+} 
 
 ## Delete slice element(s)
 go does not provide any keyword or function to delete slice elements directly. We need to use some hacks to get there
@@ -317,9 +352,41 @@ func main() {
 	fmt.Println(s1 == s2)
 }
 
+
+s1 := []int{12, 34, 56} 
+var s2 []int
+//s3:= []int{12, 34, 56} 
+// fmt.Println(s1==s3) invalid operation: s1 == s3 (slice can only be compared to nil)
+// Checking if the given slice is nil or not 
+fmt.Println(s1 == nil) // false
+fmt.Println(s2 == nil) // true
 https://github.com/golang/go/wiki/SliceTricks
 
+Note: If you want to compare two slices, then use range for loop to match each element or you can use DeepEqual function.
 
+In the Go slice, you are allowed to compare two slices of the byte type with each other using Compare() function. This function returns an integer value which represents that these slices are equal or not and the values are:
+
+If the result is 0, then slice_1 == slice_2.
+If the result is -1, then slice_1 < slice_2.
+If the result is +1, then slice_1 > slice_2.
+
+import "bytes"
+// Main function 
+func main() { 
+    slice_1 := []byte{'G', 'E', 'E', 'K', 'S'} 
+    slice_2 := []byte{'G', 'E', 'e', 'K', 'S'} 
+    res := bytes.Compare(slice_1, slice_2) 
+    if res == 0 { 
+        fmt.Println("!..Slices are equal..!") 
+    } else { 
+        fmt.Println("!..Slice are not equal..!") 
+    } 
+} 
+
+In the Go slice of byes, you are allowed to check the equality of the slices with the help of Equal() function. This function returns true if both the slices are equal, or return false if both the slices are not equal.
+
+func Equal(slice_1, slice_1 []byte) bool
+res := bytes.Equal(slice_1, slice_2) 
 
 
 package main  
@@ -333,7 +400,7 @@ not a nil slice
 	s1 := make([]int,0)
 	s1 := []int{}
 
-That won’t be the case with append. As go is ready to create new array if needed, append on nil slice will work just fine.
+That wonâ€™t be the case with append. As go is ready to create new array if needed, append on nil slice will work just fine.
 
 
 
@@ -352,3 +419,30 @@ func main() {
 		fmt.Println("something else entirely")
 	}
 }
+
+# sorting
+ints, float64s, and strings
+These functions always sort the elements available is slice in ascending order.
+import ( 
+	"fmt"
+	"sort"
+) 
+func main() { 
+	slc1 := []string{"Python", "Java", "C#", "Go", "Ruby"} 
+	slc2 := []int{45, 67, 23, 90, 33, 21, 56, 78, 89} 
+
+	fmt.Println("Before sorting:") 
+	fmt.Println("Slice 1: ", slc1) 
+	fmt.Println("Slice 2: ", slc2) 
+
+	sort.Strings(slc1) 
+	sort.Ints(slc2) 
+
+	fmt.Println("\nAfter sorting:") 
+	fmt.Println("Slice 1: ", slc1) 
+	fmt.Println("Slice 2: ", slc2) 
+} 
+
+Composite literals are used to construct the values for arrays, structs, slices, and maps. Each time they are evaluated, it will create new value. They consist of the type of the literal followed by a brace-bound list of elements.
+
+ So basically assigning the values or initialization of arrays, slice, etc. are done using composite literals. These are generally used to compose a bunch of values of similar types.
