@@ -1,8 +1,12 @@
 ## Go Array
-An array is a container that holds data of same type. Arrays in Go have fixed length and they can’t be expanded to fit more data.
+An array is a container that holds data of same type. Arrays in Go have fixed length and they canâ€™t be expanded to fit more data.
 An array is a homogeneous data structure (Fix type) and has a fixed-length. The type can be anything like integers, string or self-defined type. 
 The items in the array can be accessed through their index, It starts with zero.
 It is fixed and must be declared in the declaration of an array variable. 
+You are allowed to store duplicate elements in an array.
+
+1. if an array does not initialized explicitly, then the default value of this array is [0,0].
+2. an array is of value type not of reference type. So when the array is assigned to a new variable, then the changes made in the new variable do not affect the original array
 
 ## Declaration an array
 
@@ -13,6 +17,8 @@ var arr_name [5]int  // [0 0 0 0 0]
 var arr_name [0]int  
 
 ## Value assignment
+In Go language, arrays are mutable.
+array_name[index] = element
 a[index] = value
 a[4] = 50.0 
 a[1]
@@ -26,9 +32,9 @@ func main() {
 }
 
 ## Muti Dimentional Array:
-When array elements of an array are arrays, then it’s called a multi-dimensional array. As from the definition of the array, an array is a collection of same data types and array is a type in itself, a multi-dimensional array must have arrays that belong to the same data type.
+When array elements of an array are arrays, then itâ€™s called a multi-dimensional array. As from the definition of the array, an array is a collection of same data types and array is a type in itself, a multi-dimensional array must have arrays that belong to the same data type.
 
-var arrayName [ x ][ y ] variable_type  
+var arrayName [ x ][ y ]...[z]variable_type  
 var arr_name [3][4]int  
 var arr_name [3][0]int  
 var arr_name [0][0]int  
@@ -68,11 +74,11 @@ greetings := [4]string{
 	"Good evening!",
 	"Good night!", // must have comma
 }
-we have used comma (,) at the end of last element of the array. This comma is necessary as if it wouldn’t be there, Go would have added a semicolon (;) by the rule which would have crashed the program.
+we have used comma (,) at the end of last element of the array. This comma is necessary as if it wouldnâ€™t be there, Go would have added a semicolon (;) by the rule which would have crashed the program.
 
 
 ## Automatic array length declaration
-Sometimes, we don’t know the length of an array while typing its elements. Hence Go provide ... operator to put in place of n in [n]T array type syntax. Go compiler will find the length on its own. You can only use this operator when you are defining an array with an initial value.
+Sometimes, we donâ€™t know the length of an array while typing its elements. Hence Go provide ... operator to put in place of n in [n]T array type syntax. Go compiler will find the length on its own. You can only use this operator when you are defining an array with an initial value.
 greetings := [...]string{
 	"Good morning!",
 	"Good afternoon!",
@@ -87,7 +93,7 @@ len(array_name)
 [3]int is different from 
 [4]int which is very different from 
 [4]string. 
-It’s like comparing int == string or apple == orange which is invalid
+Itâ€™s like comparing int == string or apple == orange which is invalid
 
 While 
 [3]int can be compared with 
@@ -124,8 +130,8 @@ for _, value := range a {
 
 ## Passed by value
 
-When you pass an array to a function, they are passed by value like int or string data type. The function receives only a copy of it. Hence, when you make changes to an array inside a function, it won’t be reflected in the original array.
-Why I needed to mention that, because it’s not the case with slice which you will see in upcoming tutorials.
+When you pass an array to a function, they are passed by value like int or string data type. The function receives only a copy of it. Hence, when you make changes to an array inside a function, it wonâ€™t be reflected in the original array.
+Why I needed to mention that, because itâ€™s not the case with slice which you will see in upcoming tutorials.
 Array:
 func main() {
 	var arr = [3]int{1, 2, 3}
@@ -150,6 +156,7 @@ func change(arr []int) {
 
 Note: We can not pass array into slic or vice versa..
 
-
+# array comparision
+!=, ==
 
 
