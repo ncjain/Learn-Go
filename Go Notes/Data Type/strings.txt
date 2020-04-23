@@ -1,6 +1,11 @@
 ## Go Strings(Immutable)
+strings are the immutable chain of arbitrary bytes(including bytes with zero value) or string is a read-only slice of bytes and the bytes of the strings can be represented in the Unicode text using UTF-8 encoding.
+
+Due to UTF-8 encoding Golang string can contain a text which is the mixture of any language present in the world, without any confusion and limitation of the page. 
 
 Strings are defined between double quotes "..." and not single quote, unlike JavaScript. Strings in Go are UTF-8 encoded by default which makes more sense in 21st century. As UTF-8 supports ASCII character set, you don't need to worry about encoding in most of the cases.
+
+1. Strings are immutable: In Go language, strings are immutable once a string is created the value of the string cannot be changed. 
 
 we hope to see each character to occupy only a byte in memory (as ASCII characters in UTF-8 occupies 8 bits or 1 byte). 
 
@@ -21,7 +26,7 @@ Go strings and text files occupy less memory or disk space. Since, UTF-8 is the 
 Go Strings are value types and immutable. It means if you create a string, you cannot modify the contents of the string. The initial value of a string is empty "" by default.
 
 String literals using backtick
-Instead of double quotes, we can also use backtick (`) character to represent a string in Go. In quotes (“) you need to escape newlines, tabs and other characters that do not need to be escaped in backticks. If you put a line break in a backtick string, it is interpreted as a ‘\n’ character, see 
+Instead of double quotes, we can also use backtick (`) character to represent a string in Go. In quotes (â€œ) you need to escape newlines, tabs and other characters that do not need to be escaped in backticks. If you put a line break in a backtick string, it is interpreted as a â€˜\nâ€™ character, see 
 
 package main  
 import ("fmt"  
@@ -37,6 +42,14 @@ func main()  {
 str := "I love my country"
 len(str) // 17
 
+In Golang string, you can find the length of the string using two functions one is len() and another one is RuneCountInString(). The RuneCountInString() function is provided by UTF-8 package, this function returns the total number of rune presents in the string. And the len() function returns the number of bytes of the string.
+
+import "unicode/utf8"
+mystr := "Welcome to GeeksforGeeks ??????"
+length1 := len(mystr)
+length2 := utf8.RuneCountInString(mystr)
+
+    
 2. Print ASCII of a char from string
 string_name[index_of_char]
 "ABC"[0] // 65
@@ -71,6 +84,22 @@ s := "INdIA"
 	strings.Join(arr,"*")          // a*b*c*d
 	s := []string{"K","A","P","I","L"}
 	fmt.Println(strings.Join(s,""))
+
+    str1 := "Tutorial"
+    str2 := "of"
+    str3 := "Go"
+    str4 := "Language"
+    result := fmt.Sprintf("%s%s%s%s", str1, str2, str3, str4)
+    
+    var b bytes.Buffer
+    b.WriteString("G") 
+    b.WriteString("e") 
+    b.WriteString("e") 
+    b.WriteString("k") 
+    b.WriteString("s") 
+    fmt.Println("String: ", b.String())
+    
+    s := str1 + str2
 
 6. func Repeat(s string, count int) string:
     Repeat returns a new string consisting of count copies of the string s. It panics if count is negative or if the result of (len(s) * count)
