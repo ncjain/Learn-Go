@@ -1,51 +1,101 @@
 ## Go Concurrency
 goroutine is lightweight execution thread running in the background. goroutines are key ingredients to achieve concurrency in Go.
-Large programs are divided into smaller sub-programs. Programs which run their smaller components at the same time is known as concurrency.
+
+As goroutines are lightweight compared to OS threads, it is very common for a Go application to have thousands of goroutines
+running concurrently. Concurrency can speed up application significantly as well as help us write code with separation of 
+concerns (SoC).
 
 ## Goroutines
-A goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function or method definition that determines if it is a goroutine, it is determined by how we call it.
+A goroutine is simply a function or method that is running in background concurrently with other goroutines. Itâ€™s not a function 
+or method definition that determines if it is a goroutine, it is determined by how we call it.
 
-Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or method executes in a goroutine. 
+Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or 
+method executes in a goroutine.
 
-package main
-import (
-"fmt"
-)
+Example 1:
 func main(){
-fmt.Println("Main goroutine started")
-
-go PrintHello()
-fmt.Println("Main goroutine is completed")
+	fmt.Println("Main goroutine started")
+	go PrintHello()
+	fmt.Println("Main goroutine is completed")
 }
-
 func PrintHello(){
-fmt.Println("Hello world started")
-fmt.Println("Hello world completed")
+	fmt.Println("Hello world started")
+	fmt.Println("Hello world completed")
 }
+Output:
+main execution started
+main execution stopped
 
-when we execute the above program, there are two goroutines running concurrently. As we saw in the earlier program, goroutines are scheduled cooperatively. Hence when the main goroutine starts executing, go scheduler dot not pass control to the printHello goroutine until the main goroutine does not execute completely. Unfortunately, when the main goroutine is done with execution, the program terminates immediately and scheduler did not get time to schedule printHello goroutine. But as we know from other lessons, using blocking condition, we can pass control to other goroutines manually AKA telling the scheduler to schedule other available goroutines.
+when we execute the above program, there are two goroutines running concurrently. As we saw in the earlier program, goroutines 
+are scheduled cooperatively. Hence when the main goroutine starts executing, go scheduler dot not pass control to the printHello
+goroutine until the main goroutine does not execute completely. Unfortunately, when the main goroutine is done with execution, 
+the program terminates immediately and scheduler did not get time to schedule printHello goroutine. 
+
+But as we know from other lessons, using blocking condition, we can pass control to other goroutines manually AKA telling the 
+scheduler to schedule other available goroutines.
 
 Note: 1. when the main goroutine is done with execution, the program terminates immediately and stop all the goroutines
+
+Example 2:
 package main
 import (
-"fmt"
-"time"
+	"fmt"
+	"time"
 )
 func main(){
-fmt.Println("Main goroutine started")
-
-go PrintHello()
-time.Sleep(10 * time.Millisecond)
-fmt.Println("Main goroutine is completed")
+	fmt.Println("Main goroutine started")
+	go PrintHello()
+	time.Sleep(10 * time.Millisecond)
+	fmt.Println("Main goroutine is completed")
 }
-
 func PrintHello(){
-fmt.Println("Hello world started")
-fmt.Println("Hello world completed")
+	fmt.Println("Hello world started")
+	fmt.Println("Hello world completed")
+}
+Output:
+Main goroutine started
+Hello world started
+Hello world completed
+Main goroutine is completed
+
+Example 3:
+func printHello() {
+	time.Sleep(time.Millisecond)
+	fmt.Println("Hello World!")
+}
+func main() {
+	fmt.Println("main execution started")
+	go printHello()
+	time.Sleep(10 * time.Millisecond)
+	fmt.Println("main execution stopped")
 }
 
-Note 2: we learned that only non-sleeping goroutines are considered for scheduling, main won’t be scheduled again for 10 milli-seconds while it’s sleeping
+Output:
+main execution started
+Hello World!
+main execution stopped
 
+Example 4:
+func printHello() {
+	time.Sleep(15 * time.Millisecond)
+	fmt.Println("Hello World!")
+}
+func main() {
+	fmt.Println("main execution started")
+	go printHello()
+	time.Sleep(10 * time.Millisecond)
+	fmt.Println("main execution stopped")
+}
+Output:
+main execution started
+main execution stopped
+
+Note 2: we learned that only non-sleeping goroutines are considered for scheduling, main wonâ€™t be scheduled again for 10 milli-seconds while itâ€™s sleeping
+
+
+## Working with multiple goroutines
+
+Example 5:
 package main
 import (
 	"fmt"
@@ -75,6 +125,7 @@ main execution stopped
 Note 3: It will schedule the goroutine whichever comes first then second and so on. which goroutines to schedule is determined by the scheduler. Above result again proves that goroutines are cooperatively scheduled.
 
 
+Example 6:
 
 package main
 import (
@@ -118,19 +169,21 @@ o at time 40ms
 5 at time 120ms
 main execution stopped at time 200ms
 
+Now we understood how to create goroutine and how to work with them. But using time.Sleep is just a hack to see the result. 
+In production, we donâ€™t know how much time a goroutine is going to take for the execution. Hence we can't just add random sleep 
+call in the main function. We want our goroutines to tell when they finished the execution. Also at this point, we donâ€™t know 
+how we can get data back from other goroutines or pass data to them, simply, communicate with them. This is where channels comes in.
+
 
 ## Anonymous Go routines
-package main
-import "fmt"
-import "time"
 
 func main(){
-fmt.Println("Main started")
-go func(){
-fmt.Println("Print Hello")
-}()
-time.Sleep(10*time.Millisecond)
-fmt.Println("Main completed")
+	fmt.Println("Main started")
+	go func(){
+		fmt.Println("Print Hello")
+	}()
+	time.Sleep(10*time.Millisecond)
+	fmt.Println("Main completed")
 }
 
 Note 4: All goroutines are anonymous as we learned from concurrency lesson as goroutine does not have an identity. But we are calling that in the sense that function from which it was created was anonymous.
@@ -138,66 +191,8 @@ Note 4: All goroutines are anonymous as we learned from concurrency lesson as go
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 The parts of an application that run concurrently are called goroutines. Goroutines and channels are used for structuring concurrent programs.
 A process is an independently executing entity running in a machine which runs in its own address space in memory. A process has threads which are simultaneously executing entities. Threads share the same address space of the process.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -229,7 +224,7 @@ Immediately invoked function
 
 ## What is a goroutine?
 
-a goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function or method definition that determines if it is a goroutine, it is determined by how we call it.
+a goroutine is simply a function or method that is running in background concurrently with other goroutines. Itâ€™s not a function or method definition that determines if it is a goroutine, it is determined by how we call it.
 Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or method executes in a goroutine.
 
 
@@ -589,7 +584,7 @@ We have used short-hand syntax := to make a channel using make function. The abo
 type of `c` is chan int
 value of `c` is 0xc0420160c0
 
-Notice value of the channel c. Looks like it is a memory address. Channels by default are pointers. Mostly, when you want to communicate with a goroutine, you pass the channel as an argument to the function or method. Hence when goroutine receives that channel as an argument, you don’t need to dereference it to push or pull data from that channel.
+Notice value of the channel c. Looks like it is a memory address. Channels by default are pointers. Mostly, when you want to communicate with a goroutine, you pass the channel as an argument to the function or method. Hence when goroutine receives that channel as an argument, you donâ€™t need to dereference it to push or pull data from that channel.
 
 
 
@@ -605,7 +600,7 @@ Above syntax means, we want to push or write data to the channel c. Look at the 
 
 <- c
 
-Above syntax means, we want to read some data from channel c. Look at the direction of the arrow, it starts from the channel c. This statement does not push data into anything, but still, it’s a valid statement. If you have a variable that can hold the data coming from the channel, you can use below syntax
+Above syntax means, we want to read some data from channel c. Look at the direction of the arrow, it starts from the channel c. This statement does not push data into anything, but still, itâ€™s a valid statement. If you have a variable that can hold the data coming from the channel, you can use below syntax
 
 var data int
 data = <- c
@@ -618,7 +613,7 @@ data := <- c
 
 o will figure out the data type of data being transported in channel c and gives data a valid data type.
 
-All the above channel operations are blocking by default. In the previous lesson, we saw time.Sleep blocking a goroutine. Channel operations are also blocking in nature. When some data is written to the channel, goroutine is blocked until some other goroutine reads it from that channel. At the same time, as we seen in concurrency chapter, channel operations tell the scheduler to schedule another goroutine, that’s why a program doesn’t block forever on the same goroutine. These features of a channel are very useful in goroutines communication as it prevents us from writing manual locks and hacks to make them work with each other.
+All the above channel operations are blocking by default. In the previous lesson, we saw time.Sleep blocking a goroutine. Channel operations are also blocking in nature. When some data is written to the channel, goroutine is blocked until some other goroutine reads it from that channel. At the same time, as we seen in concurrency chapter, channel operations tell the scheduler to schedule another goroutine, thatâ€™s why a program doesnâ€™t block forever on the same goroutine. These features of a channel are very useful in goroutines communication as it prevents us from writing manual locks and hacks to make them work with each other.
 
 
 Example 1:
@@ -647,14 +642,14 @@ main stopped
 3. Then we made the channel c of type string using make function.
 4. We passed channel c to the greet function but executed it as a goroutine using go keyword.
 5. At this point, the process has 2 goroutines while active goroutine is main goroutine (check the previous lesson to know what it is). Then control goes to the next line.
-6. We pushed a string value John to channel c. At this point, goroutine is blocked until some goroutine reads it. Go scheduler schedule greet goroutine and it’s execution starts as per mentioned in the first point.
+6. We pushed a string value John to channel c. At this point, goroutine is blocked until some goroutine reads it. Go scheduler schedule greet goroutine and itâ€™s execution starts as per mentioned in the first point.
 7. Then main goroutine becomes active and execute the final statement, printing main stopped.
 
 
 
 ## Deadlock
 
-As discussed, when we write or read data from a channel, that goroutine is blocked and control is passed to available goroutines. What if there are no other goroutines available, imagine all of them are sleeping. That’s where deadlock error occurs crashing the whole program.
+As discussed, when we write or read data from a channel, that goroutine is blocked and control is passed to available goroutines. What if there are no other goroutines available, imagine all of them are sleeping. Thatâ€™s where deadlock error occurs crashing the whole program.
 
 If you are trying to read data from a channel but channel does not have a value available with it, it blocks the current goroutine and unblocks other in a hope that some goroutine will push a value to the channel. Hence, this read operation will be blocking. Similarly, if you are to send data to a channel, it will block current goroutine and unblock others until some goroutine reads the data from it. Hence, this send operation will be blocking.
 
@@ -722,9 +717,9 @@ Just to help you understand blocking concept, first send operation c <- "John" i
 
 When channel is closed, value read by the goroutine is zero value of the data type of the channel. In this case, since channel is transporting int data type, it will be 0 as we can see from the result.
 
-To avoid the pain of manually checking for channel closed condition, Go gives easier for range loop which will automatically close when the channel is closed. Let’s modify our previous above program.
+To avoid the pain of manually checking for channel closed condition, Go gives easier for range loop which will automatically close when the channel is closed. Letâ€™s modify our previous above program.
 
-## Note: If you don’t close the channel in for range loop, program will throw deadlock fetal error in runtime.
+## Note: If you donâ€™t close the channel in for range loop, program will throw deadlock fetal error in runtime.
 
 
 
@@ -733,7 +728,7 @@ Buffer size or channel capacity
 
 default case
 
-Like switch statement, select statement also has default case. A default case is non-blocking. But that’s not all, default case makes select statement always non-blocking. That means, send and receive operation on any channel (buffered or unbuffered) is always non-blocking.
+Like switch statement, select statement also has default case. A default case is non-blocking. But thatâ€™s not all, default case makes select statement always non-blocking. That means, send and receive operation on any channel (buffered or unbuffered) is always non-blocking.
 
 If a value is available on any channel then select will execute that case. If not then it will immediately execute the default case.
 
