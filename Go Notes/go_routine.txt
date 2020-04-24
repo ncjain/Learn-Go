@@ -177,6 +177,7 @@ how we can get data back from other goroutines or pass data to them, simply, com
 
 ## Anonymous Go routines
 
+Example 7:
 func main(){
 	fmt.Println("Main started")
 	go func(){
@@ -195,22 +196,10 @@ The parts of an application that run concurrently are called goroutines. Gorouti
 A process is an independently executing entity running in a machine which runs in its own address space in memory. A process has threads which are simultaneously executing entities. Threads share the same address space of the process.
 
 
-
-
-
-
-
-
 Goroutines are lightweight, much lighter than a thread. Goroutines run in the same address space, so access to shared memory must be synchronized; This can be done by sync package, but it is recommended to use channels to synchronize goroutines.
 
 A goroutine is implemented as a function or method. It is called (invoked) with the 'go' keyword. When the goroutine finishes, nothing is returned to the caller function.
 
-"sync"
-var wg = sync.WaitGroup{} 
-wg.Add(2)   
-wg.Wait()
-wg.Done()
-wg.Done()
 
 
 
@@ -271,8 +260,22 @@ fun2,  -> 0
 all done
 Main goroutine will not to complete other go routine. It will exit once it is done.
 
+## Go WaitGroup
+Let’s imagine a condition where you need to know if all goroutines finished their job. This is somewhat opposite to select where you
+needed only one condition to be true, but here you need all conditions to be true in order to unblock the main goroutine. Here the 
+condition is successful channel operation.
 
-## Example 2:
+WaitGroup is a struct with a counter value which tracks how many goroutines were spawned and how many have completed their job. This counter when reaches zero, means all goroutines have done their job.
+
+"sync"
+var wg = sync.WaitGroup{} 
+wg.Add(2)   
+wg.Wait()
+wg.Done()
+wg.Done()
+
+
+Example 2:
 
 package main  
 import (  
@@ -326,6 +329,36 @@ fun2,  -> 8
 fun2,  -> 9
 all done
 */
+
+Example 2.1:
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func service(wg *sync.WaitGroup, instance int) {
+	time.Sleep(2 * time.Second)
+	fmt.Println("Service called on instance", instance)
+	wg.Done() // decrement counter
+}
+func main() {
+	fmt.Println("main() started")
+	var wg sync.WaitGroup // create waitgroup (empty struct)
+	for i := 1; i <= 3; i++ {
+		wg.Add(1) // increment counter
+		go service(&wg, i)
+	}
+	wg.Wait() // blocks here
+	fmt.Println("main() stopped")
+}
+
+main() started
+Service called on instance 2
+Service called on instance 3
+Service called on instance 1
+main() stopped
+
 
 
 ## Example 3:
@@ -385,12 +418,66 @@ As you can see in the above example, the count resource is accessed by 2 go rout
 
 
 ## Go Mutex
+goroutines have their independent stack and hence they don’t share any data between them. But there might be conditions where some 
+data in heap is shared between multiple goroutines. In that case, multiple goroutines are trying to manipulate data at the same memory 
+location resulting in unexpected results.
+
 Mutual Exclusion locks, or mutexes can be used to synchronize access to state and safely access data across many goroutines. It acts as a guard to the entrance of the critical section of code so that only one thread can enter the critical section at a time.
 
 We set a lock around particular lines of code with it. While one Goroutine holds the lock, all other Goroutines are prevented from executing any lines of code protected by the same mutex, and are forced to wait until the lock is yielded before they can proceed.
 var mutex sync.Mutex
 mutex.Lock()
 mutex.Unlock() 
+
+Example : without mutax
+
+import (
+	"fmt"
+	"sync"
+)
+var i int // i == 0
+// goroutine increment global variable i
+func worker(wg *sync.WaitGroup) {
+	i = i + 1
+	wg.Done()
+}
+func main() {
+	var wg sync.WaitGroup
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go worker(&wg)
+	}
+	// wait until all 1000 gorutines are done
+	wg.Wait()
+	// value of i should be 1000
+	fmt.Println("value of i after 1000 operations is", i)
+}
+value of i after 1000 operations is 940
+
+Example: with Mutax
+
+import (
+	"fmt"
+	"sync"
+)
+var i int // i == 0
+func worker(wg *sync.WaitGroup, m *sync.Mutex) {
+	m.Lock() // acquire lock
+	i = i + 1
+	m.Unlock() // release lock
+	wg.Done()
+}
+func main() {
+	var wg sync.WaitGroup
+	var m sync.Mutex
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go worker(&wg, &m)
+	}
+	wg.Wait()
+	fmt.Println("value of i after 1000 operations is", i)
+}
+output: value of i after 1000 operations is 1000
 
 
 package main  
@@ -447,16 +534,6 @@ bar:  9 Count:  19
 foo:  9 Count:  20
 last count value  20
 */
-
-
-
-
-
-
-
-
-
-
 
 
 
