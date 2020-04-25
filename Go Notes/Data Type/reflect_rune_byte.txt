@@ -1,4 +1,4 @@
-Go Reflect
+## Go Reflect
 Go Reflection is the ability of a program to examine its own structure, particularly through the types; it's a form of meta-programming.
 Reflect can be used to investigate types and variables at runtime, e.g. its size, its methods, and it can also call these methods 'dynamically'.
 Go Reflect example
@@ -19,7 +19,12 @@ func main()  {
 }
  
 
-Go Rune Type
+## Go Rune Type
+Important Points:
+Always remember a string is a sequence of bytes not of a rune. But it is possible that a string may contain Unicode text encoded in UTF-8 and as we knew that the go source code in always encodes as UTF-8 so, there is no need to encode the string in UTF-8.
+UTF-8 encodes all the Unicode in between 1 to 4 bytes, where 1 byte is used for ASCII and rest used for the rune.
+ASCII contains total 256 elements. In which 128 are characters and 0-127 are identified as code points. Here code point refers to the element which represents a single value.
+
 The type rune is an alias for type int32. The rune literals are an integer value. It store the 
 If you store string value in rune literal, it will provide the ASCII value of the character. For example, the rune literal of 'A' will be 65
 package main  
@@ -37,7 +42,7 @@ func main()  {
    fmt.Println(reflect.TypeOf(age).Kind()) // int32
 }
 
-Go Byte Type
+## Go Byte Type
 The type byte is an alias for type uint8.
 package main  
 import(  
