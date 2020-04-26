@@ -285,3 +285,151 @@ func DecodeGetSavedSearch31Request(_ context.Context, r *http.Request) (interfac
 
 	return protoReq, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+*mux.Router
+s.Router := mux.NewRouter()
+
+s.Router.HandleFunc("/users", s.CreateUser).Methods("POST")
+s.Router.HandleFunc("/users", s.GetUsers).Methods("GET")
+s.Router.HandleFunc("/users/{id}", s.GetUser).Methods("GET")
+s.Router.HandleFunc("/users/{id}", s.UpdateUser).Methods("PUT")
+s.Router.HandleFunc("/users/{id}", s.DeleteUser).Methods("DELETE")
+
+
+func main() {
+    r := mux.NewRouter()
+    r.HandleFunc("/", HomeHandler)
+    r.HandleFunc("/products", ProductsHandler)
+    r.HandleFunc("/articles", ArticlesHandler)
+	r.HandleFunc("/products/{key}", ProductHandler)
+	r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
+	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
+	
+	Groups can be used inside patterns, as long as they are non-capturing (?:re). For example:
+
+	r.HandleFunc("/articles/{category}/{sort:(?:asc|desc|new)}", ArticlesCategoryHandler)
+    http.Handle("/", r)
+}
+
+
+
+r.HandleFunc("/products", ProductsHandler).
+  Host("www.example.com").
+  Methods("GET").
+  Schemes("http").
+  PathPrefix("/products/")
+ 
+r := mux.NewRouter()
+r.Host("{subdomain}.domain.com").
+  Path("/articles/{category}/{id:[0-9]+}").
+  Queries("filter", "{filter}").
+  HandlerFunc(ArticleHandler).
+  Name("article")
+
+// url.String() will be "http://news.domain.com/articles/technology/42?filter=gorilla"
+url, err := r.Get("article").URL("subdomain", "news",
+                                 "category", "technology",
+                                 "id", "42",
+                                 "filter", "gorilla")
+
+server.Router := mux.NewRouter()
+srv := &http.Server{
+	Handler: server.Router,
+	Addr:    "127.0.0.1:8000",
+	// Good practice: enforce timeouts for servers you create!
+	WriteTimeout: 15 * time.Second,
+	ReadTimeout:  15 * time.Second,
+}
+
+log.Fatal(srv.ListenAndServe())
+http.ListenAndServe(":8000", router)
+
+Middlewares can be added to a router using Router.Use():
+
+r := mux.NewRouter()
+r.HandleFunc("/", handler)
+r.Use(loggingMiddleware)
+
+
+
+
+
+
+2. Handler:
+(w http.ResponseWriter, r *http.Request)
+
+
+3. The names are used to create a map of route variables which can be retrieved calling mux.Vars():
+
+vars := mux.Vars(request)
+category := vars["category"]
+key := r.FormValue("key")
+
+func getPosts(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+  var post = Post{}
+  _ = json.NewDecoder(r.Body).Decode(&post) // httprequest
+  post.ID
+  json.NewEncoder(w).Encode(posts)          // httpresponse
+  //json.NewEncoder(w).Encode(&Post{})
+  w.WriteHeader(http.StatusBadRequest)
+  w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
+params := mux.Vars(r)
+params["id"]
+uid, err := strconv.ParseUint(vars["id"], 10, 32)
+w.Header().Set("Entity", fmt.Sprintf("%d", uid))
+
+
+
+body, err := ioutil.ReadAll(r.Body)
+if err != nil {
+  panic(err.Error())
+}
+keyVal := make(map[string]string)
+json.Unmarshal(body, &keyVal)
+title := keyVal["title"]
+
+
+if err != nil {
+	fmt.Fprintf(w, "%s", errr.Error())
+}
+
+http.StatusUnauthorized
+StatusInternalServerError
+StatusCreated
+StatusOK
+StatusBadRequest
+
+
+"encoding/json"
+"errors"
+"fmt"
+"io/ioutil"
+"net/http"
+"strconv"
+	
+db.Debug().Create(&user).Error
+db.Debug().Model(&User{}).Limit(100).Find(&users).Error
+db.Debug().Model(&User{}).Where("id = ?", uid).Take(&user).Error
+db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).UpdateColumns(
+	map[string]interface{}{
+		"password":  u.Password,
+		"nickname":  u.Nickname,
+		"email":     u.Email,
+		"update_at": time.Now(),
+	},
+).Error
+db.Debug().Model(&User{}).Where("id = ?", uid).Take(&u).Error
+db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
