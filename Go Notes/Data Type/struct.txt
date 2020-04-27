@@ -95,13 +95,12 @@ var variable_name = structure_variable_type {value1, value2...valuen}
 or
 variable_name := structure_variable_type {value1, value2...valuen}
 
-
 # Valid Examples:
-
 1. Values seperated by comma (Without declaring the field names)
 var e1 = Employee{"Kapil", "Jain", 12000, true}
 
-Note: when creating a struct without declaring the field names, you need to provide all field values in the order of their appearance in the struct type
+Note: when creating a struct without declaring the field names, you need to provide all field values in the order of their appearance
+in the struct type
 
 2. Values seperated by comma (With declaring the field names)
 var e1 = Employee{LastName : "Jain", FirstName : "Kapil", Salary: 12000, Fulltime: true} // {Kapil Jain 12000 true}
@@ -115,7 +114,8 @@ var e1 = Employee{
 	Salary: 12000, 
 	Fulltime: true, // comma is mandatory at after last fields
 }
-The comma (,) is absolutely necessary after the value assignment of the last field while creating a struct using the above syntax. This way, Go won’t add a semicolon just after the last field while compiling the code.
+The comma (,) is absolutely necessary after the value assignment of the last field while creating a struct using the above syntax. 
+This way, Go won’t add a semicolon just after the last field while compiling the code.
 
 otherwise it will throw error
 syntax error: unexpected newline, expecting comma or }
@@ -180,6 +180,7 @@ type Vertex struct{lat , Long float64}
 2. We can define struct inside the function
 
 
+
 ## Accessing and Assignmennt: 
 To access any member of a structure, we use the member access operator dot (.)
 struct_variable.attribute = value
@@ -195,8 +196,10 @@ func main() {
 }
 
 
+
 ## Anonymous struct
-An anonymous struct is a struct with no explicitly defined struct type alias. In case of an anonymous struct, we do not define any struct type alias and create struct from inline struct type and initial values defined in the same syntax.
+An anonymous struct is a struct with no explicitly defined struct type alias. In case of an anonymous struct, we do not define 
+any struct type alias and create struct from inline struct type and initial values defined in the same syntax.
 
 This is useful when you don’t want to re-use a struct type.
 
@@ -216,6 +219,7 @@ func main() {
 
 Using fmt.Printf and %T format syntax, we got the following result
 struct { firstName string; lastName string; salary int; fullTime bool }
+
 
 
 ## Anonymous fields
@@ -242,7 +246,6 @@ type Employee struct {
 
 Note: Can not have two field with same data type if they both are anonymous.
 
-
 # Invalid struct
 type Data struct {
 	string
@@ -261,7 +264,8 @@ func main() {
 
 
 ## Embedded(Nested) Struct :
-Struct is a data type and can be used as an anonymous field (having only the type). One struct can be inserted or "embedded" into other struct.
+Struct is a data type and can be used as an anonymous field (having only the type). One struct can be inserted or "embedded" into 
+other struct.
 It is a simple 'inheritance' which can be used to implement implementations from other type or types.
 
 Example 1:
@@ -286,7 +290,8 @@ func main() {
 	fmt.Println(e1.Person.Fname) // Tik
 }
 
-Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted. Only non-conflicting fields will get promoted.
+Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted.
+Only non-conflicting fields will get promoted.
 
 Example 2:
 type Salary struct {
@@ -312,7 +317,8 @@ func main() {
 
 
 ## Promoted Fields:
-when we use an anonymous nested struct, all the nested struct fields are automatically available on parent struct. This is called field promotion.
+when we use an anonymous nested struct, all the nested struct fields are automatically available on parent struct. This is called field
+promotion.
 
 type Salary struct {
 	basic     int
@@ -399,11 +405,10 @@ If a nested struct is anonymous, then its fields starting with an uppercase lett
 
 
 ## Function fields
-
-If you remember function as type and function as value topics from functions lesson, you can pretty much guess that struct fields can also be functions.
+If you remember function as type and function as value topics from functions lesson, you can pretty much guess that struct fields can
+also be functions.
 
 type FullNameType func(string, string) string
-
 type Employee struct {
 	FirstName, LastName string
 	FullName            FullNameType
@@ -421,39 +426,9 @@ func main() {
 
 
 
-## struct comparison
-
-Two structs are comparable if they belong to the same type and have the same field values.
-
-type Employee struct {
-	firstName, lastName string
-	salary              int
-}
-func main() {
-	ross := Employee{
-		firstName: "Ross",
-		lastName:  "Geller",
-		salary:    1200,
-	}
-	rossCopy := Employee{
-		firstName: "Ross",
-		lastName:  "Geller",
-		salary:    1200,
-	}
-	fmt.Println(ross == rossCopy) // True
-}
-
-However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
-
-type Employee struct {
-	firstName, lastName string
-	salary              int
-	leaves              map[string]int
-}
-
-
 ## Pointers to Struct:
-Instead of creating a struct, we can create a pointer which points to the struct in one statement. This saves one step to create a struct (variable) and then create a pointer to that variable.
+Instead of creating a struct, we can create a pointer which points to the struct in one statement. This saves one step to create
+a struct (variable) and then create a pointer to that variable.
 The syntax to create a pointer struct is
 s := &StructType{...}
 
@@ -475,7 +450,8 @@ ross := &Employee{
 
 fmt.Println("firstName", (*ross).firstName)
 fmt.Println("firstName", ross.firstName)
-both are valid,  We can access the fields of a struct pointer without dereferencing it first. Go will take care of dereferencing a pointer under the hood.
+both are valid,  We can access the fields of a struct pointer without dereferencing it first. Go will take care of dereferencing
+a pointer under the hood.
 
 
 
@@ -491,7 +467,6 @@ ross := Employee{
 	lastName:  "Geller",
 	salary:    500,
 }
-
 
 1. Call by value
 func ChangeName( e Employee ) {
@@ -511,6 +486,7 @@ func ChangeName( e *Employee ) {
 fmt.Println(ross)                                                            // {Ross Geller 500}
 ChangeName(&ross)
 fmt.Println(ross)                                                            // {Kapil Geller 500}
+
 
 
 ## Structures as method Arguments: 
@@ -536,7 +512,9 @@ fmt.Println(ross)                                                               
 
 ## struct field meta-data
 
-Struct gives one more ability to add meta-data to the fields. Usually, it is used to provide transformation info on how a struct field is encoded to or decoded from another format (or stored/retrieved from a database), but you can use it to store whatever meta-info you want to, either intended for another package or for your own use.
+Struct gives one more ability to add meta-data to the fields. Usually, it is used to provide transformation info on how a struct field 
+is encoded to or decoded from another format (or stored/retrieved from a database), but you can use it to store whatever meta-info you
+want to, either intended for another package or for your own use.
 
 This meta information is defined by string literal (read strings lesson) like below
 
@@ -547,4 +525,38 @@ type Employee struct {
 	fullTime  int    `json: "fullTime"`
 }
 
-In the above struct, we are using struct type Employee for JSON encoding/decoding purpose. You will learn more struct meta-data in upcoming lessons like json, validation and others.
+In the above struct, we are using struct type Employee for JSON encoding/decoding purpose. You will learn more struct meta-data
+in upcoming lessons like json, validation and others.
+
+
+
+## struct comparison
+
+Two structs are comparable if they belong to the same type and have the same field values.
+
+type Employee struct {
+	firstName, lastName string
+	salary              int
+}
+func main() {
+	ross := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		salary:    1200,
+	}
+	rossCopy := Employee{
+		firstName: "Ross",
+		lastName:  "Geller",
+		salary:    1200,
+	}
+	fmt.Println(ross == rossCopy) // True
+}
+
+However, if a struct has field type which is not comparable, for example, map which is not comparable, then the struct won’t be 
+comparable. For example, if Employee struct type had leaves field of type map, we could not do the above comparison.
+
+type Employee struct {
+	firstName, lastName string
+	salary              int
+	leaves              map[string]int
+}
