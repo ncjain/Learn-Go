@@ -1,33 +1,41 @@
-A nil interface has a nil type.
-
 ## Interfaces in Go
 An interface is a great and only way to achieve Polymorphism in Go
-
-What is an interface?
 An interface is a collection of method signatures that an Object can implement. Hence interface defines the behavior of the object.
 
-The primary job of an interface is to provide only method signatures consisting of the method name, input arguments and return types. It is up to a Type (e.g. struct type) to declare methods and implement them.
+The primary job of an interface is to provide only method signatures consisting of the method name, input arguments and return types.
+It is up to a Type (e.g. struct type) to declare methods and implement them.
 
 For example, a Dog can walk and bark. If an interface declares method signatures of walk and bark while Dog implements walk and bark methods, then Dog is said to implement that interface.
 
-## Implement:
-If you are an OOP programmer, you might have used implement keyword a lot while implementing an interface. But in Go, you do not explicitly mention if a type implements an interface. If a type implements a method of signature that is defined in an interface, then that type is said to implement that interface. Like saying if it walks like a duck, swims like a duck and quacks like a duck, then it’s a duck.
 
 
 ## Declaring interface
 
-type Shape interface {
-    Area() float64
-    Perimeter() float64
+type InterfaceName interface {
+    method1 signature
+    method2 signature
+    ...
+    methodN signature
 }
+
+
+
+## Implement:
+If you are an OOP programmer, you might have used implement keyword a lot while implementing an interface. But in Go, you do not explicitly mention if a type implements an interface. If a type implements a method of signature that is defined in an interface, then that type is said to implement that interface. Like saying if it walks like a duck, swims like a duck and quacks like a duck, then it’s a duck.
+
+1. If a type want to implement any interface then, type need to implement all the methods of the interface, then only we can type has implemented interface.
+
+2. It is not mandatory for a type to implement all the methods of an interface, but to successfully implement, all the method shoul be implemented.
+
+
 
 ## Types of interface
 The interface has two types. 
 1. A static type of the interface is interface itself, for example Shape in the above program. 
 2. An interface does not have a static value, rather it points to a dynamic value. A variable of an interface type can hold a value of the Type that implements the interface. The value of that Type becomes dynamic value of the interface and that type becomes the dynamic type of the interface.
 
-Example 1:
 
+Example : A nil interface has a nil type.
 type Shape interface {
 	Area() float64
 	Perimeter() float64
@@ -37,12 +45,17 @@ func main() {
 	fmt.Println("value of s is", s) // value of s is <nil>
 	fmt.Printf("type of s is %T\n", s) // type of s is <nil>
 }
-From the above result, we can see that zero value and type of the interface is nil. This is because, at this moment, the interface has no idea who is implementing it. When we use Println function from fmt package with interface argument, it points to the dynamic value of the interface and %T syntax in Printf function refers to the dynamic type of interface. 
+
+From the above result, we can see that zero value and type of the interface is nil. This is because, at this moment, the interface has 
+no idea who is implementing it. When we use Println function from fmt package with interface argument, it points to the dynamic value 
+of the interface and %T syntax in Printf function refers to the dynamic type of interface. 
+
+
 
 
 ## Implementing interface
 
-Example 2:
+Example 1:
 
 package main
 import "fmt"
@@ -65,17 +78,20 @@ func main() {
 	var s Shape
 	s = Rect{5.0, 4.0}
 	r := Rect{5.0, 4.0}
-	fmt.Printf("type of s is %T\n", s) // type of s is main.Rect
-	fmt.Printf("value of s is %v\n", s) // value of s is {5 4}
-	fmt.Println("area of rectange s", s.Area()) // area of rectange s 20
-	fmt.Println("s == r is", s == r) // s == r is true
+	fmt.Printf("type of s is %T\n", s)                      // type of s is main.Rect
+	fmt.Printf("value of s is %v\n", s)                     // value of s is {5 4}
+	fmt.Println("area of rectange s", s.Area())             // area of rectange s 20
+	fmt.Println("s == r is", s == r)                        // s == r is true
 }
-We can confirm that by creating nil interface s and assigning struct of type Rect to it that. Since Rect implements Shape interface, this is perfectly valid. From the above result, we can see that, dynamic type of s is now Rect and dynamic value of s is the value of the struct Rect which is {5 4}. Dynamic because we can assign new struct to it of a different type which also implements the interface Shape.
+
+We can confirm that by creating nil interface s and assigning struct of type Rect to it that. Since Rect implements Shape interface, 
+this is perfectly valid. From the above result, we can see that, dynamic type of s is now Rect and dynamic value of s is the value of 
+the struct Rect which is {5 4}. Dynamic because we can assign new struct to it of a different type which also implements the interface 
+Shape.
 
 
 
-
-Example 3:
+Example 2:
 
 package main
 import (
@@ -123,6 +139,7 @@ func main() {
 
 
 ##### It is not mandatory to implement all the methods from interface but In order to successfully implement an interface, you need to implement all methods declared by the interface.
+
 type Shape interface {
 	Area() float64
 	Perimeter() float64
@@ -175,6 +192,8 @@ func main() {
 Since all types implement an empty interface interface{}, this is perfectly legal. Again polymorphism for the win. The parameter i 
 of the function explain is a type of interface but its dynamic value will point to whatever value we have passed to the function 
 as the argument.
+
+
 
 Example 2:
 type MyString string
@@ -230,6 +249,7 @@ func main() {
 }
 
 
+
 what will happen if we used Volume method on s and Area method on o.
 Let’s make changes to the above program to see what happens
 
@@ -241,7 +261,8 @@ Above changes yield the following result
 program.go:31: s.Volume undefined (type Shape has no field or method Volume)
 program.go:32: o.Area undefined (type Object has no field or method Area)
 
-The program won’t compile because of the static type of s is Shape and of o is Object. To make it work, we need to somehow extract the underlying value of these interfaces. This can be done using type assertion.
+The program won’t compile because of the static type of s is Shape and of o is Object. To make it work, we need to somehow extract 
+the underlying value of these interfaces. This can be done using type assertion.
 
 
 
@@ -343,6 +364,7 @@ c.side is possible
 2. Type assertion is not only used to check if an interface has a concrete value of some given type but also to convert a given variable of an interface type to a different interface type
 
 
+
 ## Type switch
 This can be done using Type switch. The syntax for type switch is similar to type assertion and it is i.(type)where i is interface and type is a fixed keyword. Using this we can get the concrete type of the interface instead of value. But this syntax will only work in switch statement.
 
@@ -372,9 +394,9 @@ func main() {
 When an explain function is called with any type, i receives its value and type as the dynamic type. Using i.(type) statement inside switch, we are getting access to that dynamic type.
 
 
-## Embedding interfaces
 
-In Go, an interface cannot implement other interfaces or extend them, but we can create new interface by merging two or more interfaces
+## Embedding interfaces
+An interface cannot implement other interfaces or extend them, but we can create new interface by merging two or more interfaces
 
 package main
 
@@ -421,30 +443,25 @@ dynamic type and value of interface o of static type Object is'main.Cube' and '{
 
 
 
-## pointer vs value receiver in Interface
+
+## pointer vs value receiver in Interface (Does not work similar to struct)
 
 package main
-
 import "fmt"
-
 type Shape interface {
 	Area() float64
 	Perimeter() float64
 }
-
 type Rect struct {
 	width  float64
 	height float64
 }
-
 func (r *Rect) Area() float64 {
 	return r.width * r.height
 }
-
 func (r Rect) Perimeter() float64 {
 	return 2 * (r.width + r.height)
 }
-
 func main() {
 	r := Rect{5.0, 4.0}
 	var s Shape = r
@@ -462,30 +479,22 @@ Well, we have seen ins structs lesson that a method with pointer receiver will w
 But in case of interfaces, if a method has a pointer receiver, then the interface will have a pointer of dynamic type rather than the value of dynamic type. Hence, instead of assigning a value to an interface variable, we need to assign a pointer. Let’s rewrite the above program with this concept.
 
 
-
-
 package main
-
 import "fmt"
-
 type Shape interface {
 	Area() float64
 	Perimeter() float64
 }
-
 type Rect struct {
 	width  float64
 	height float64
 }
-
 func (r *Rect) Area() float64 {
 	return r.width * r.height
 }
-
 func (r Rect) Perimeter() float64 {
 	return 2 * (r.width + r.height)
 }
-
 func main() {
 	r := Rect{5.0, 4.0}
 	var s Shape = &r // assigned pointer
@@ -499,29 +508,6 @@ perimeter of rectangle is 18
 
 The only change we made is in line no. 25 where instead of value of r, we used the pointer to r. Hence the concrete value of s is now a pointer. The above program will compile fine.
 
-
-
-## Use of interfaces
-
-We have learned interfaces and we saw they can take different forms. That’s the definition of polymorphism. Interfaces are very useful in case of functions and methods where you need argument of many types to be passed to them, like Println function which accepts all types of values. If you see the syntax of Println function, it is like
-
-func Println(a ...interface{}) (n int, err error)
-
-which is also a variadic function.
-
-When multiple types implement the same interface, it becomes easy to work with them using the same code. Hence whenever we can use interfaces, we should.
-
-
-
-##Interface comparison
-Two interfaces can be compared with == and != operators. Two interfaces are always equal if the underlying dynamic values are nil, which means, two nil interfaces are always equal, hence == operation returns true.
-
-var a, b interface{}
-fmt.Println( a == b ) // true
-
-If these interfaces are not nil, then their dynamic types (the type of their concrete values) should be the same and the concrete values should be equal.
-If the dynamic types of the interface are not comparable, like for example, slice, map and function, or the concrete value of an interface is a complex data structure like slice or array that contains these uncomparable values, then == or != operations will result in a runtime panic.
-If one interface is nil, then == operation will always return false.
 
 
 ## Nested interface
@@ -559,8 +545,10 @@ func main() {
 	fmt.Println("Ross's  salary is", ross.salary.getSalary())
 }
 
-# Similar to the field promotions we saw earlier, methods are also promoted when a struct field is an anonymous interface.
+
+
 ##anonymously nested interface.
+Similar to the field promotions we saw earlier, methods are also promoted when a struct field is an anonymous interface.
 
 # Example 2
 type Salaried interface {
@@ -590,7 +578,7 @@ func main() {
 
 #Similar to the field promotions of an anonymously nested struct, only the non-conflicting methods will get promoted. Hence, if the Employee struct type also implements the getSalary method, then that will be used instead.
 
-The most important thing to remember here is, in contrast with field promotion as we’ve seen earlier, only the methods are promoted when the anonymous field is an interface. 
+The most important thing to remember here is, in contrast with field promotion as we’ve seen earlier, only the methods are promoted when the anonymous field is an interface. (Can not access attribute)
 
 type Salaried interface {
 	getSalary() int
@@ -617,3 +605,27 @@ func main() {
 }
 
 # ross.basic undefined (type Employee has no field or method basic)
+
+
+
+## Use of interfaces
+
+We have learned interfaces and we saw they can take different forms. That’s the definition of polymorphism. Interfaces are very useful in case of functions and methods where you need argument of many types to be passed to them, like Println function which accepts all types of values. If you see the syntax of Println function, it is like
+
+func Println(a ...interface{}) (n int, err error)
+
+which is also a variadic function.
+
+When multiple types implement the same interface, it becomes easy to work with them using the same code. Hence whenever we can use interfaces, we should.
+
+
+
+##Interface comparison
+Two interfaces can be compared with == and != operators. Two interfaces are always equal if the underlying dynamic values are nil, which means, two nil interfaces are always equal, hence == operation returns true.
+
+var a, b interface{}
+fmt.Println( a == b ) // true
+
+If these interfaces are not nil, then their dynamic types (the type of their concrete values) should be the same and the concrete values should be equal.
+If the dynamic types of the interface are not comparable, like for example, slice, map and function, or the concrete value of an interface is a complex data structure like slice or array that contains these uncomparable values, then == or != operations will result in a runtime panic.
+If one interface is nil, then == operation will always return false.
