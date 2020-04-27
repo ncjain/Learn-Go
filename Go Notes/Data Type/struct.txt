@@ -185,30 +185,35 @@ To access any member of a structure, we use the member access operator dot (.)
 struct_variable.attribute = value
 
 func main() {
-type Vertex struct{
-Lat, Long float64
+	type Vertex struct{
+		Lat, Long float64
+	}
+	var v Vertex
+	fmt.Println(v) // {0 0}
+	v.Lat=10
+	fmt.Println(v) // {10 0}
 }
-var v Vertex
-fmt.Println(v) // {0 0}
-v.Lat=10
-fmt.Println(v) // {10 0}
-}
+
 
 ## Anonymous struct
 An anonymous struct is a struct with no explicitly defined struct type alias. In case of an anonymous struct, we do not define any struct type alias and create struct from inline struct type and initial values defined in the same syntax.
+
+This is useful when you don’t want to re-use a struct type.
+
 func main() {
 	monica := struct {
-		firstName, lastName string
-		salary              int
-		fullTime            bool
+		FirstName, LastName string
+		Salary              int
+		FullTime            bool
 	}{
-		firstName: "Monica",
-		lastName:  "Geller",
-		salary:    1200,
+		FirstName: "Monica",
+		LastName:  "Geller",
+		Salary:    1200,
 	}
 	fmt.Println(monica)
 }
-This is useful when you don’t want to re-use a struct type.
+
+
 Using fmt.Printf and %T format syntax, we got the following result
 struct { firstName string; lastName string; salary int; fullTime bool }
 
@@ -220,20 +225,25 @@ type Data struct {
 	int
 	bool
 }
+
 func main() {
 	sample1 := Data{"Monday", 1200, true}
 	sample1.bool = false
 	fmt.Println(sample1.string, sample1.int, sample1.bool)//Monday 1200 false
 }
 
-# You are allowed to mix some anonymous fields with named fields like below
+
+## You are allowed to mix some anonymous fields with named fields like below
 type Employee struct {
 	firstName, lastName string
 	salary              int
 	bool
 }
+
 Note: Can not have two field with same data type if they both are anonymous.
 
+
+# Invalid struct
 type Data struct {
 	string
 	string
@@ -249,15 +259,17 @@ func main() {
 ./prog.go:16:21: ambiguous selector sample1.string
 
 
+
 ## Embedded(Nested) Struct :
 Struct is a data type and can be used as an anonymous field (having only the type). One struct can be inserted or "embedded" into other struct.
 It is a simple 'inheritance' which can be used to implement implementations from other type or types.
 
+Example 1:
 type Person struct {  
    Fname string  
    Lname string}  
 type Employee struct {  
-   Person  or p Person // both are valid
+   Person                                                          // Valid
    EmpId int  
 }
 func main() {
@@ -266,14 +278,17 @@ func main() {
 	fmt.Println(e1) // {{Kapil Jain} 11}
 	fmt.Println(e1.Person) // {Kapil Jain}
 	fmt.Println(e1.Person.Fname) // Kapil
+	
 	p2 := Person{ Fname : "Tik", Lname : "Toi" }
 	e1.Person = p2
 	fmt.Println(e1) // {{Tik Toi} 11}
 	fmt.Println(e1.Person) // {Tik Toi}
 	fmt.Println(e1.Person.Fname) // Tik
 }
+
 Note: If a nested anonymous struct has a same field (field name) as in the parent struct, then inner struct field won’t get promoted. Only non-conflicting fields will get promoted.
 
+Example 2:
 type Salary struct {
 	basic     int
 	insurance int
@@ -281,7 +296,7 @@ type Salary struct {
 }
 type Employee struct {
 	firstName, lastName string
-	salary              Salary
+	salary              Salary                                            // Valid
 	bool
 }
 func main() {
@@ -293,6 +308,8 @@ func main() {
 	}
 	fmt.Println("Ross's basic salary", ross.salary.basic)
 }
+
+
 
 ## Promoted Fields:
 when we use an anonymous nested struct, all the nested struct fields are automatically available on parent struct. This is called field promotion.
@@ -315,13 +332,19 @@ func main() {
 	ross.basic = 1200
 	ross.insurance = 0
 	ross.allowance = 0
-	fmt.Println("Ross's basic salary", ross.basic)
+	fmt.Println("Ross's basic salary", ross.basic)          // Valid
+	fmt.Println("Ross's basic salary", ross.Salary.basic)   // Valid
 	fmt.Println("Ross is", ross)
 }
 
-## Exported fields
-any variable or type that starts with an uppercase letter is exported from that package. we can also control which fields of an exported struct are visible outside the package (or exported). To export the field names of a struct, we’ve to follow the same uppercase letter approach.
 
+
+## Exported fields
+any variable or type that starts with an uppercase letter is exported from that package. we can also control which fields of an exported
+struct are visible outside the package (or exported). To export the field names of a struct, we’ve to follow the same uppercase letter 
+approach.
+
+# Unexported field
 // employee.go
 package org
 type Employee struct {
@@ -331,7 +354,8 @@ type Employee struct {
 }
 
 // main.go
-package mainimport (
+package main
+import (
 	"fmt"
 	"org"
 )
@@ -342,14 +366,18 @@ func main() {
 		salary:    1200,
 	}	fmt.Println(ross)
 }
+
 Above program won’t compile and the compiler will throw below error.
 unknown field 'salary' in struct literal of type org.Employee
 
+# Exported field
 / main.go
-package mainimport (
+package main
+import (
 	"fmt"
 	"org"
-)type Employee org.Employeefunc main() {
+)
+type Employee org.Employeefunc main() {
 	ross := Employee{
 		FirstName: "Ross",
 		LastName:  "Geller",
@@ -358,12 +386,16 @@ package mainimport (
 Above program yields below result
 {Ross Geller 0 false}
 
-When we import any struct from another package, we get struct type as it is, just that we don’t have any control over unexported fields. This is useful when you want to protect some fields but still make them useful as the default or constant values or perhaps something complex
+
+When we import any struct from another package, we get struct type as it is, just that we don’t have any control over unexported fields.
+This is useful when you want to protect some fields but still make them useful as the default or constant values or perhaps something 
+complex
 
 What will happen in the case of a nested struct?
 A nested struct must also be declared with an uppercase letter so that other packages can import it.
 Nested struct fields starting with an uppercase letter are exported.
 If a nested struct is anonymous, then its fields starting with an uppercase letter will be available as promoted fields.
+
 
 
 ## Function fields
@@ -386,6 +418,7 @@ func main() {
 	}
 	fmt.Println(e.FullName(e.FirstName, e.LastName)) // Ross Geller
 }
+
 
 
 ## struct comparison
@@ -424,13 +457,12 @@ Instead of creating a struct, we can create a pointer which points to the struct
 The syntax to create a pointer struct is
 s := &StructType{...}
 
-You can define pointers to structures
-var struct_pointer *Person
+or
 
-Now, you can store the address of a structure variable
+var struct_pointer *Person
 struct_pointer = &Person1;
 
-To access the members of a structure using a pointer to that structure
+Note: To access the members of a structure using a pointer to that structure
 struct_pointer.title;
 (*struct_pointer).title;
 
@@ -446,33 +478,60 @@ fmt.Println("firstName", ross.firstName)
 both are valid,  We can access the fields of a struct pointer without dereferencing it first. Go will take care of dereferencing a pointer under the hood.
 
 
-## Struct as function parameter:
-1. Call by value
-func printPerson( person Person ) {
-fmt.Printf(person.Fname);
+
+## Structures as function arguments:
+type Employee struct {
+	firstName   string
+	lastName    string
+	salary      int
 }
-printPerson(p1)
+
+ross := Employee{
+	firstName: "Ross",
+	lastName:  "Geller",
+	salary:    500,
+}
+
+
+1. Call by value
+func ChangeName( e Employee ) {
+	e.firstName = "Kapil"
+}
+
+fmt.Println(ross)                                                            // {Ross Geller 500}
+ChangeName(ross)
+fmt.Println(ross)                                                            // {Ross Geller 500}
+
 
 2. Call by reference
-func printPerson( person *Person ) {
-fmt.Printf(person.Fname);
+func ChangeName( e *Employee ) {
+	(*e).firstName = "Kapil" // e.firstName = "Kapil"
 }
-printPerson(&p1)
+
+fmt.Println(ross)                                                            // {Ross Geller 500}
+ChangeName(&ross)
+fmt.Println(ross)                                                            // {Kapil Geller 500}
 
 
 ## Structures as method Arguments: 
-func (p Person) details() {  
-   fmt.Println(p, " "+" I am a person")  
-}  
-func (e Employee) details() {  
-   fmt.Println(e, " "+"I am a employee")  
-}  
-func main() {  
-   p1 := Person{"Raj", "Kumar"}  
-   p1.details()  
-   e1 := employee{Person:Person{"John", "Ponting"}, empId: 11}  
-   e1.details()  
+1. Value receiver
+func (e Employee) ChangeName() {
+	e.firstName = "Kapil"
 }
+
+fmt.Println(ross)                                                             // {Ross Geller 500}
+ross.ChangeName()
+fmt.Println(ross)                                                             // {Ross Geller 500}
+
+2. Pointer receiver
+func (e *Employee) ChangeName() {
+	(*e).firstName = "Kapil" // e.firstName = "Kapil"
+}
+
+fmt.Println(ross)                                                               // {Ross Geller 500}
+ross.ChangeName() // (&ross).ChangeName()
+fmt.Println(ross)                                                               // {Kapil Geller 500}
+
 
 
 ## struct field meta-data
