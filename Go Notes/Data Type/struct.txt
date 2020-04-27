@@ -1,43 +1,85 @@
-In Go, Struct can be used to create user-defined types.
-Struct is a composite type means it can have different properties and each property can have their own type and value.
-Struct can represent real-world entity with these properties. We can access a property data as a single entity. 
+1. Struct is a user-defined data types.
+2. Struct is a composite type means it can have different properties and each property can have their own type and value.
+3. Struct can represent real-world entity with these properties. We can access a property data as a single entity. 
 
-## Definacation:
+## Declaration:
 type StructName struct {
-    field1 fieldType1
-    field2 fieldType2
+    field1    fieldType1    `meta-data`
+    field2    fieldType2    `meta-data`
     ...
-    fieldN fieldTypeN
+    fieldN    fieldTypeN    `meta-data`
 }
 
-Examples:
+Note 1: there can be any number of spaces between fieldname and data type and meta-data. 
+
+# Valid Examples:
+1. Not fix length spaces between field name and data type
+type Employee struct {
+	firstName  string
+	lastName     string
+	salary int
+	fullTime           bool
+}
+
+2. Put similar data types fields in same line seperated by comma
 type Employee struct {
 	firstName, lastName string
 	salary int
 	fullTime bool
 }
 
-1. with semi colon
-type Vertex struct{
-Lat float64;
-Long float64;
+3. With semi colon
+type Employee struct {
+	firstName string;
+	lastName string;
+	salary int;
+	fullTime bool;
 }
 
-2. without semi colon
-type Vertex struct{
-Lat float64
-Long float64
+4. Without semi colon
+type Employee struct {
+	firstName string
+	lastName string
+	salary int
+	fullTime bool
 }
 
-3. Not mandatory to put curly brcket in same line
-type Vertex struct
-{Lat float64
-Long float64}
+5. Not mandatory to put curly brcket in same line
+type Employee struct 
+{
+	firstName string
+	lastName string
+	salary int
+	fullTime bool
+}
+
+type Employee struct 
+{	firstName string
+	lastName string
+	salary int
+	fullTime bool}
 
 
-4. type Vertex struct{Lat float64;Long float64}
+6. All field in same line with semicolon
+type Employee struct { firstName string; lastName string; salary int; fullTime bool;}
+type Employee struct { firstName string; lastName string; salary int; fullTime bool}
 
-5. type Vertex struct{Lat , Long float64}
+7. With meta data
+type Employee struct {
+	FirstName   string   `json:"firstName"`
+	LastName    string   `json:"lastName"`
+	Salary      int      `json: "salary"`
+	FullTime    int      `json: "fullTime"`
+}
+
+# Invalid Examples:
+type Employee struct {
+	firstName string,
+	lastName string,
+	salary int,
+	fullTime bool,
+}
+
 
 
 ## Object creation(Initialization):
