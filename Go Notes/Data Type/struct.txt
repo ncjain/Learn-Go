@@ -15,54 +15,54 @@ Note 1: there can be any number of spaces between fieldname and data type and me
 # Valid Examples:
 1. Not fix length spaces between field name and data type
 type Employee struct {
-	firstName  string
-	lastName     string
-	salary int
-	fullTime           bool
+	FirstName  string
+	LastName     string
+	Salary int
+	FullTime           bool
 }
 
 2. Put similar data types fields in same line seperated by comma
 type Employee struct {
-	firstName, lastName string
-	salary int
-	fullTime bool
+	FirstName, LastName string
+	Salary int
+	FullTime bool
 }
 
 3. With semi colon
 type Employee struct {
-	firstName string;
-	lastName string;
-	salary int;
-	fullTime bool;
+	FirstName string;
+	LastName string;
+	Salary int;
+	FullTime bool;
 }
 
 4. Without semi colon
 type Employee struct {
-	firstName string
-	lastName string
-	salary int
-	fullTime bool
+	FirstName string
+	LastName string
+	Salary int
+	FullTime bool
 }
 
 5. Not mandatory to put curly brcket in same line
 type Employee struct 
 {
-	firstName string
-	lastName string
-	salary int
-	fullTime bool
+	FirstName string
+	LastName string
+	Salary int
+	FullTime bool
 }
 
 type Employee struct 
-{	firstName string
-	lastName string
-	salary int
-	fullTime bool}
+{	FirstName string
+	LastName string
+	Salary int
+	FullTime bool}
 
 
 6. All field in same line with semicolon
-type Employee struct { firstName string; lastName string; salary int; fullTime bool;}
-type Employee struct { firstName string; lastName string; salary int; fullTime bool}
+type Employee struct { FirstName string; LastName string; Salary int; FullTime bool;}
+type Employee struct { FirstName string; LastName string; Salary int; FullTime bool}
 
 7. With meta data
 type Employee struct {
@@ -72,51 +72,105 @@ type Employee struct {
 	FullTime    int      `json: "fullTime"`
 }
 
+8. Standard
+type Employee struct { 
+	FirstName     string 
+	LastName      string
+	Salary        int
+	Fulltime      bool
+}
+
 # Invalid Examples:
 type Employee struct {
-	firstName string,
-	lastName string,
-	salary int,
-	fullTime bool,
+	FirstName string,
+	LastName string,
+	Salary int,
+	FullTime bool,
 }
 
 
 
 ## Object creation(Initialization):
 var variable_name = structure_variable_type {value1, value2...valuen}
+or
+variable_name := structure_variable_type {value1, value2...valuen}
 
-Examples:
-1. var v = Vertex{100, 100} // when creating a struct without declaring the field names, you need to provide all field values in the order of their appearance in the struct type
 
-2. var v = Vertex{Lat : 100, Long : 100} // Order of appearance of the fields does not matter
+# Valid Examples:
 
-3. var v = Vertex{} // default value {0 0}
-   v.Lat = 100
-   v.Long = 100
-4. var v Vertex  // default value {0 0}
-   v.Lat = 100
-   v.Long = 100
-5. You can also initialize only some fields of a struct and leave others to their zero values.
-var v = Vertex{Lat: 100}  // Long:0 is implicit
-	v.Long = 100
-6. Pointer to a struct
-var v = &Vertex{1, 2} // v type *Vertex
-(*v).Lat
-7. var v  = new(Vertex) // v type *Vertex &{0 0}
-8. v := Vertex{
-Lat : 100, 
-Long : 100,
+1. Values seperated by comma (Without declaring the field names)
+var e1 = Employee{"Kapil", "Jain", 12000, true}
+
+Note: when creating a struct without declaring the field names, you need to provide all field values in the order of their appearance in the struct type
+
+2. Values seperated by comma (With declaring the field names)
+var e1 = Employee{LastName : "Jain", FirstName : "Kapil", Salary: 12000, Fulltime: true} // {Kapil Jain 12000 true}
+
+Note: Order of appearance of the fields does not matter when creating object with fieldnames
+
+3. 
+var e1 = Employee{
+	LastName : "Jain", 
+	FirstName : "Kapil", 
+	Salary: 12000, 
+	Fulltime: true, // comma is mandatory at after last fields
 }
 The comma (,) is absolutely necessary after the value assignment of the last field while creating a struct using the above syntax. This way, Go won’t add a semicolon just after the last field while compiling the code.
 
 otherwise it will throw error
 syntax error: unexpected newline, expecting comma or }
 
-9. The order of the appearance of struct’s fields does not matter,
-v := Vertex{
-Long : 100,
-Lat : 100, 
+4. 
+var e = Employee{
 }
+	e.LastName = "Jain" 
+	e.FirstName = "Kapil" 
+	e.Salary = 12000
+	e.Fulltime = true
+default value: { "" "" 0 false}
+
+5. var e Employee  // default value {0 0}
+	e.LastName = "Jain" 
+	e.FirstName = "Kapil" 
+	e.Salary = 12000
+	e.Fulltime = true
+   
+default value: { "" "" 0 false}
+
+6. You can also initialize only some fields of a struct and leave others to their zero values.
+var e = Employee{
+	LastName : "Jain", 
+	FirstName : "Kapil", 
+}
+output: {Kapil Jain 0 false}
+// Salary:0 and Fulltime: false are implicit
+
+7. Pointer to a struct
+var e = &Employee{
+	LastName : "Jain", 
+	FirstName : "Kapil", 
+	Salary: 12000, 
+	Fulltime: true,
+}
+fmt.Println(e) // &{Kapil Jain 12000 true}
+fmt.Println(*e) // {Kapil Jain 12000 true}
+fmt.Println(e.FirstName) // Kapil
+fmt.Println((*e).FirstName) // Kapil
+
+Note: You can refer field in both ways either *e or e dot fieldname
+
+8. similar to 7
+ep := new(Employee)
+
+ep.LastName = "Jain" 
+ep.FirstName = "Kapil" 
+ep.Salary = 12000
+ep.Fulltime = true
+
+fmt.Println(ep) // &{ kapil jain 0 false}
+fmt.Println(*ep) // { kapil jain 0 false}
+fmt.Println(ep.FirstName) // Kapil
+fmt.Println((*ep).FirstName) // Kapil
 
 
 Note: 
