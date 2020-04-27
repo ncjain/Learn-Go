@@ -1,3 +1,4 @@
+# Background
 Since there is no class-object architecture and the closest thing to class we have is structure. Function with struct receiver is 
 a way to achieve methods in Go.
 
@@ -6,19 +7,20 @@ bark field of type function which takes no arguments and returns a string woof w
 as struct fields do not have any idea of struct they belong to. Hence methods come to the rescue.
 
 
+# Method
 A method is nothing but a function, but it belongs to a certain type. A method is defined with different syntax than normal function.
 It required an additional parameter known as a receiver which is a type to which the method belongs. A method can access properties 
 of the receiver it belongs to.
 
-The syntax for defining a method is
-
-func (r Type) functionName(...Type) Type {
+Syntax:
+func (r Type) functionName(var1 Type1, var2 Type2 ... varN TypeN) (Type1, Type2, ... TypeN) {
     ...
 }
+
 Type is any legal type in Go and function arguments and return value are optional.
 
 
-## without method
+## Without method
 type Employee struct {
 	FirstName, LastName string
 }
