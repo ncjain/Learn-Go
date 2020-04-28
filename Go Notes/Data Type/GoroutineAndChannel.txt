@@ -1,0 +1,3 @@
+Remove these two file once this is completed
+1. https://github.com/ncjain/Learn-Go/blob/master/Go%20Notes/Data%20Type/channels.txt
+2. https://github.com/ncjain/Learn-Go/blob/master/Go%20Notes/Data%20Type/Goroutine.txt
