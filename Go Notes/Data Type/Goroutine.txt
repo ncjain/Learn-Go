@@ -270,7 +270,8 @@ Let’s imagine a condition where you need to know if all goroutines finished th
 needed only one condition to be true, but here you need all conditions to be true in order to unblock the main goroutine. Here the 
 condition is successful channel operation.
 
-WaitGroup is a struct with a counter value which tracks how many goroutines were spawned and how many have completed their job. This counter when reaches zero, means all goroutines have done their job.
+WaitGroup is a struct with a counter value which tracks how many goroutines were spawned and how many have completed their job. 
+This counter when reaches zero, means all goroutines have done their job.
 
 "sync"
 var wg = sync.WaitGroup{} 
@@ -413,7 +414,8 @@ foo:  7 Count:  12
 foo:  8 Count:  13
 foo:  9 Count:  14
 last count value  14
-As you can see in the above example, the count resource is accessed by 2 go routines. Each routine iterates to 10 times. In such case, the count variable should be 20 at last. But it is not so because it is simulating race condition.
+As you can see in the above example, the count resource is accessed by 2 go routines. Each routine iterates to 10 times. In such case,
+the count variable should be 20 at last. But it is not so because it is simulating race condition.
 
 */
 
@@ -424,9 +426,11 @@ goroutines have their independent stack and hence they don’t share any data be
 data in heap is shared between multiple goroutines. In that case, multiple goroutines are trying to manipulate data at the same memory 
 location resulting in unexpected results.
 
-Mutual Exclusion locks, or mutexes can be used to synchronize access to state and safely access data across many goroutines. It acts as a guard to the entrance of the critical section of code so that only one thread can enter the critical section at a time.
+Mutual Exclusion locks, or mutexes can be used to synchronize access to state and safely access data across many goroutines. It acts 
+as a guard to the entrance of the critical section of code so that only one thread can enter the critical section at a time.
 
-We set a lock around particular lines of code with it. While one Goroutine holds the lock, all other Goroutines are prevented from executing any lines of code protected by the same mutex, and are forced to wait until the lock is yielded before they can proceed.
+We set a lock around particular lines of code with it. While one Goroutine holds the lock, all other Goroutines are prevented from 
+executing any lines of code protected by the same mutex, and are forced to wait until the lock is yielded before they can proceed.
 var mutex sync.Mutex
 mutex.Lock()
 mutex.Unlock() 
