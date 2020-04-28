@@ -87,7 +87,8 @@ Main completed
 
 
 ## 2. Read operation Block (without write)
-If you are trying to read data from a channel but channel does not have a value available with it, it blocks the current goroutine and unblocks other in a hope that some goroutine will push a value to the channel. Hence, this read operation will be blocking.
+If you are trying to read data from a channel but channel does not have a value available with it, it blocks the current goroutine 
+and unblocks other in a hope that some goroutine will push a value to the channel. Hence, this read operation will be blocking.
 
 func main(){
 	fmt.Println("Main started")
@@ -108,10 +109,13 @@ Main completed
 
 
 ## Deadlock:
-As discussed, when we write or read data from a channel, that goroutine is blocked and control is passed to available goroutines. What if there are no other goroutines available, imagine all of them are sleeping. That’s where deadlock error occurs crashing the whole program.
+As discussed, when we write or read data from a channel, that goroutine is blocked and control is passed to available goroutines.
+What if there are no other goroutines available, imagine all of them are sleeping. That’s where deadlock error occurs crashing the 
+whole program.
 
 ## 3. write operation Block(without read)
-if you are to send data to a channel, it will block current goroutine and unblock others until some goroutine reads the data from it. Hence, this send operation will be blocking.
+if you are to send data to a channel, it will block current goroutine and unblock others until some goroutine reads the data from it.
+Hence, this send operation will be blocking.
 
 package main
 import "fmt"
@@ -180,7 +184,10 @@ main.main()
         C:/Users/kjain4/go/src/github.com/ncjain/Learn-Go/worksheet.go:247 +0xfd
 exit status 2
 	
-Just to help you understand blocking concept, first send operation c <- "John" is blocking and some goroutine has to read data from the channel, hence greet goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read from, hence Go Scheduler activates main goroutine and program starts execution from close(c) function.
+Just to help you understand blocking concept, first send operation c <- "John" is blocking and some goroutine has to read data from
+the channel, hence greet goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is 
+present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read 
+from, hence Go Scheduler activates main goroutine and program starts execution from close(c) function.
 
 
 ## Importent Example
@@ -218,14 +225,19 @@ Channel  2 read 12
 Goroutine completed
 Main completed
 
-Just to help you understand blocking concept, first send operation c <- 10 is blocking and some goroutine has to read data from the channel, hence PrintChan goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read from, hence Go Scheduler activates main goroutine and Then second write operation c <-12 is non-blocking because of second read operation. So we added sleep to bloack it so that second read operation can be completed.
+Just to help you understand blocking concept, first send operation c <- 10 is blocking and some goroutine has to read data from the 
+channel, hence PrintChan goroutine is scheduled by the Go Scheduler. Then first read operation <-c is non-blocking because data is 
+present in channel c to be read from. Second read operation <-c will be blocking because channel c does not have any data to be read 
+from, hence Go Scheduler activates main goroutine and Then second write operation c <-12 is non-blocking because of second read 
+operation. So we added sleep to bloack it so that second read operation can be completed.
 
 
 
 ## For loop
 An infinite syntax for loop for{} can be used to read multiple values sent through a channel.
 
-Note 4: When channel is closed, value read by the goroutine is zero value of the data type of the channel. In this case, since channel is transporting int data type, it will be 0 as we can see from the result.
+Note 4: When channel is closed, value read by the goroutine is zero value of the data type of the channel. In this case, since channel 
+is transporting int data type, it will be 0 as we can see from the result.
 
 package main
 import "fmt"
@@ -279,7 +291,8 @@ main() stopped
 
 
 
-To avoid the pain of manually checking for channel closed condition, Go gives easier for range loop which will automatically close when the channel is closed. 
+To avoid the pain of manually checking for channel closed condition, Go gives easier for range loop which will automatically close when 
+the channel is closed. 
 
 
 package main
@@ -329,13 +342,16 @@ Note 6: In case of channel variable, for range return only one variable.
 
 
 ## Buffer size or channel capacity:
-By default, a channel buffer size is 0 also called as unbuffered channel. Whatever written to the channel is immediately available to read.
+By default, a channel buffer size is 0 also called as unbuffered channel. Whatever written to the channel is immediately available to 
+read.
 ch := make(chan Type, buffer_size)
 
 When the buffer size is non-zero n, goroutine is not blocked until after buffer is full.
-read operation on buffered is thirsty. That means, once read operation starts, it will continue until the buffer is empty. Technically, that means goroutine that reads buffer channel will not block until the buffer is empty.
+read operation on buffered is thirsty. That means, once read operation starts, it will continue until the buffer is empty. Technically, 
+that means goroutine that reads buffer channel will not block until the buffer is empty.
 
-This will create a channel of a data type Type with buffer size n. Until the channel receives n+1 send operations, it won’t block the current goroutine.
+This will create a channel of a data type Type with buffer size n. Until the channel receives n+1 send operations, it won’t block the 
+current goroutine.
 
 Example 1:
 package main
@@ -579,7 +595,8 @@ square() completed
 main() stopped
 
 
-## Using buffered channel and for range, we can read from closed channels. Since for closed channels, data lives in the buffer, we can still extract that data.
+## Using buffered channel and for range, we can read from closed channels. Since for closed channels, data lives in the buffer, we can 
+still extract that data.
 
 
 func main() {
@@ -665,17 +682,21 @@ reading in square 3
 [main] sum of square and cube of 3  is 36
 [main] main() stopped
 
-Importent Note 6: When one read operation is blocked then its write operation will not be blocked. And When one write operation is blocked then its read operation will not be blocked.
+Importent Note 6: When one read operation is blocked then its write operation will not be blocked. And When one write operation is 
+blocked then its read operation will not be blocked.
 
 
 ## Unidirectional channels
 
-So far, we have seen channels which can transmit data from both sides or in simple words, channels on which we can do read and write operations. But we can also create channels which are unidirectional in nature. For example, receive-only channels which allow only read operation on them and send-only channels which allow only to write operation on them.
+So far, we have seen channels which can transmit data from both sides or in simple words, channels on which we can do read and write 
+operations. But we can also create channels which are unidirectional in nature. For example, receive-only channels which allow only 
+read operation on them and send-only channels which allow only to write operation on them.
 
 roc := make(<-chan int) # receive-only
 soc := make(chan<- int) # write-only
 
-In the above program, roc is receive-only channel as arrow direction in make function points away from chan keyword. While soc is send-only channel where arrow direction in make function points towards chan keyword. They also have a different type.
+In the above program, roc is receive-only channel as arrow direction in make function points away from chan keyword. While soc is send-
+only channel where arrow direction in make function points towards chan keyword. They also have a different type.
 
 
 func main() {
@@ -689,7 +710,8 @@ func main() {
 
 ## what is the use of unidirectional channel?
 Using unidirectional channels increases the type-safety of a program. Hence the program is less prone to error.
-But let’s say that you have a goroutine where you need to only read data from a channel but main goroutine needs to read and write data from/to the same channel.
+But let’s say that you have a goroutine where you need to only read data from a channel but main goroutine needs to read and write data 
+from/to the same channel.
 
 Example 1:
 func greet(roc <-chan string) {
@@ -703,7 +725,8 @@ func main() {
 	fmt.Println("main() stopped")
 }
 
-Any write operation on it will result in a fetal error "invalid operation: roc <- "some text" (send to receive-only type <-chan string)".
+Any write operation on it will result in a fetal error "invalid operation: roc <- "some text" (send to receive-only type <-chan 
+string)".
 
 
 Example 2: Note: we can not convert write only channel variable to read only channel variable
@@ -737,7 +760,8 @@ main ended
 
 
 ## channel as the data type of channel
-Yes, channels are first-class values and can be used anywhere like other values: as struct elements, function arguments, returning values and even like a type for another channel. Here, we are interested in using a channel as the data type of another channel.
+Yes, channels are first-class values and can be used anywhere like other values: as struct elements, function arguments, returning 
+values and even like a type for another channel. Here, we are interested in using a channel as the data type of another channel.
 
 package main
 import "fmt"
@@ -778,9 +802,11 @@ main() stopped
 
 
 ## Select statement
-select is just like switch without any input argument but it only used for channel operations. The select statement is used to perform an operation on only one channel out of many, conditionally selected by case block.
+select is just like switch without any input argument but it only used for channel operations. The select statement is used to perform 
+an operation on only one channel out of many, conditionally selected by case block.
 
-we can see that select statement is just like switch but instead of boolean operations, we add channel operations like read or write or mixed of read and write
+we can see that select statement is just like switch but instead of boolean operations, we add channel operations like read or write or 
+mixed of read and write
 
 Example 1:
 package main
@@ -824,12 +850,21 @@ Response from service 1 Hello from service 1 3s
 main() stopped 3s
 
 
-Note 7: The select statement is blocking except when it has a default case (we will see that later). Once, one of the case conditions fulfill, it will unblock. So when a case condition fulfills?
-If all case statements (channel operations) are blocking then select statement will wait until one of the case statement (its channel operation) unblocks and that case will be executed. If some or all of the channel operations are non-blocking, then one of the non-blocking cases will be chosen randomly and executed immediately.
+Note 7: The select statement is blocking except when it has a default case (we will see that later). Once, one of the case conditions 
+fulfill, it will unblock. So when a case condition fulfills?
+If all case statements (channel operations) are blocking then select statement will wait until one of the case statement (its channel 
+operation) unblocks and that case will be executed. If some or all of the channel operations are non-blocking, then one of the non-
+blocking cases will be chosen randomly and executed immediately.
 
-When control is at select statement, the main goroutine will block and it will schedule all goroutines present in the select statement (one at a time), which are service1 and service2. service1 waits for 3 second and then unblocks by writing to the chan1. Similarly, service2waits for 5 second and then unblocks by writing to the chan2. Since service1 unblocks earlier than service2, case 1 will be unblocked first and hence that case will be executed and other cases (here case 2) will be ignored. Once done with case execution, main function execution will proceed further.
+When control is at select statement, the main goroutine will block and it will schedule all goroutines present in the select statement 
+(one at a time), which are service1 and service2. service1 waits for 3 second and then unblocks by writing to the chan1. Similarly, 
+service2waits for 5 second and then unblocks by writing to the chan2. Since service1 unblocks earlier than service2, case 1 will be 
+unblocked first and hence that case will be executed and other cases (here case 2) will be ignored. Once done with case execution, main 
+function execution will proceed further.
 
-Note: Above program simulates real world web service where a load balancer gets millions of requests and it has to return a response from one of the services available. Using goroutines, channels and select, we can ask multiple services for a response, and one which responds quickly can be used.
+Note: Above program simulates real world web service where a load balancer gets millions of requests and it has to return a response 
+from one of the services available. Using goroutines, channels and select, we can ask multiple services for a response, and one which 
+responds quickly can be used.
 
 Example 2:
 import (
@@ -914,7 +949,9 @@ the entire buffer is empty and we are reading only one value in case condition, 
 Hence, Go runtime will select any case statement at random.
 
 ## default case
-Like switch statement, select statement also has default case. A default case is non-blocking. But that’s not all, default case makes select statement always non-blocking. That means, send and receive operation on any channel (buffered or unbuffered) is always non-blocking.
+Like switch statement, select statement also has default case. A default case is non-blocking. But that’s not all, default case makes 
+select statement always non-blocking. That means, send and receive operation on any channel (buffered or unbuffered) is always non-
+blocking.
 
 package main
 
@@ -1024,7 +1061,9 @@ main() stopped 3.0003651s
 
 
 ## Avoid Deadlock
-default case is useful when no channels are available to send or receive data. To avoid deadlock, we can use default case. This is possible because all channel operations due to default case are non-blocking, Go does not schedule any other goroutines to send data to channels if data is not immediately available.
+default case is useful when no channels are available to send or receive data. To avoid deadlock, we can use default case. This is 
+possible because all channel operations due to default case are non-blocking, Go does not schedule any other goroutines to send data to 
+channels if data is not immediately available.
 
 import (
 	"fmt"
@@ -1154,7 +1193,9 @@ be printed, I guess that’s obvious now.
 
 
 ##  Empty select
-Like for{} empty loop, an empty select{} syntax is also valid but there is a gotcha. As we know, select statement is blocked until one of the cases unblocks, and since there are no case statements available to unblock it, the main goroutine will block forever resulting in a deadlock.
+Like for{} empty loop, an empty select{} syntax is also valid but there is a gotcha. As we know, select statement is blocked until one 
+of the cases unblocks, and since there are no case statements available to unblock it, the main goroutine will block forever resulting 
+in a deadlock.
 
 import "fmt"
 func service() {
