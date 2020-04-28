@@ -5,10 +5,11 @@ As goroutines are lightweight compared to OS threads, it is very common for a Go
 running concurrently. Concurrency can speed up application significantly as well as help us write code with separation of 
 concerns (SoC).
 
+
+
 ## Goroutines
 A goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function 
 or method definition that determines if it is a goroutine, it is determined by how we call it.
-
 Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or 
 method executes in a goroutine.
 
@@ -93,6 +94,7 @@ main execution stopped
 Note 2: we learned that only non-sleeping goroutines are considered for scheduling, main won’t be scheduled again for 10 milli-seconds while it’s sleeping
 
 
+
 ## Working with multiple goroutines
 
 Example 5:
@@ -123,7 +125,6 @@ H e l l o 1 2 3 4 5
 main execution stopped
 
 Note 3: It will schedule the goroutine whichever comes first then second and so on. which goroutines to schedule is determined by the scheduler. Above result again proves that goroutines are cooperatively scheduled.
-
 
 Example 6:
 
@@ -175,7 +176,15 @@ call in the main function. We want our goroutines to tell when they finished the
 how we can get data back from other goroutines or pass data to them, simply, communicate with them. This is where channels comes in.
 
 
+
 ## Anonymous Go routines
+In Go language, you can also start Goroutine for an anonymous function or in other words, you can create an anonymous Goroutine simply by using go keyword as a prefix of that function as shown in the below Syntax:
+
+// Anonymous function call
+go func (parameter_list){
+// statement
+}(arguments)
+
 
 Example 7:
 func main(){
@@ -187,47 +196,37 @@ func main(){
 	fmt.Println("Main completed")
 }
 
-Note 4: All goroutines are anonymous as we learned from concurrency lesson as goroutine does not have an identity. But we are calling that in the sense that function from which it was created was anonymous.
+Note 4: All goroutines are anonymous as we learned from concurrency lesson as goroutine does not have an identity. But we are calling 
+that in the sense that function from which it was created was anonymous.
 
 
-
-
-The parts of an application that run concurrently are called goroutines. Goroutines and channels are used for structuring concurrent programs.
-A process is an independently executing entity running in a machine which runs in its own address space in memory. A process has threads which are simultaneously executing entities. Threads share the same address space of the process.
-
+The parts of an application that run concurrently are called goroutines. Goroutines and channels are used for structuring concurrent 
+programs.
+A process is an independently executing entity running in a machine which runs in its own address space in memory. A process has 
+threads which are simultaneously executing entities. Threads share the same address space of the process.
 
 Goroutines are lightweight, much lighter than a thread. Goroutines run in the same address space, so access to shared memory must be synchronized; This can be done by sync package, but it is recommended to use channels to synchronize goroutines.
 
-A goroutine is implemented as a function or method. It is called (invoked) with the 'go' keyword. When the goroutine finishes, nothing is returned to the caller function.
+A goroutine is implemented as a function or method. It is called (invoked) with the 'go' keyword. When the goroutine finishes, nothing 
+is returned to the caller function.
+
+It is advised in most of the cases, to run all your goroutines on one core but if you need to divide goroutines among available CPU 
+cores of your system, you can use GOMAXPROCS environment variable or call to runtime using function runtime.GOMAXPROCS(n) where n is 
+the number of cores to use. But you may sometime feel that setting GOMAXPROCS > 1 is making your program slower. It truly depends on 
+the nature of your program but you can find a solution or explanation of your problem on the internet. In practical terms, programs 
+that spend more time communicating on channels than doing computation will experience performance degradation when using multiple cores
+, OS threads, and processes.
 
 
-
-
-It is advised in most of the cases, to run all your goroutines on one core but if you need to divide goroutines among available CPU cores of your system, you can use GOMAXPROCS environment variable or call to runtime using function runtime.GOMAXPROCS(n) where n is the number of cores to use. But you may sometime feel that setting GOMAXPROCS > 1 is making your program slower. It truly depends on the nature of your program but you can find a solution or explanation of your problem on the internet. In practical terms, programs that spend more time communicating on channels than doing computation will experience performance degradation when using multiple cores, OS threads, and processes.
-
-
-Anatomy of goroutines in Go -Concurrency in Go
-goroutine is lightweight execution thread running in the background. goroutines are key ingredients to achieve concurrency in Go.
-
-Immediately invoked function
 
 ## What is a goroutine?
+a goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function 
+or method definition that determines if it is a goroutine, it is determined by how we call it.
+Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or method 
+executes in a goroutine.
 
-a goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function or method definition that determines if it is a goroutine, it is determined by how we call it.
-Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or method executes in a goroutine.
-
-
-All goroutines are anonymous as we learned from concurrency lesson as goroutine does not have an identity. But we are calling that in the sense that function from which it was created was anonymous.
-
-
-
-
-
-
-
-
-
-
+All goroutines are anonymous as we learned from concurrency lesson as goroutine does not have an identity. But we are calling that
+in the sense that function from which it was created was anonymous.
 
 
 ## Example 1:
@@ -260,6 +259,8 @@ fun2,  -> 0
 all done
 Main goroutine will not to complete other go routine. It will exit once it is done.
 
+
+
 ## Go WaitGroup
 Let’s imagine a condition where you need to know if all goroutines finished their job. This is somewhat opposite to select where you
 needed only one condition to be true, but here you need all conditions to be true in order to unblock the main goroutine. Here the 
@@ -273,7 +274,6 @@ wg.Add(2)
 wg.Wait()
 wg.Done()
 wg.Done()
-
 
 Example 2:
 
@@ -359,8 +359,6 @@ Service called on instance 3
 Service called on instance 1
 main() stopped
 
-
-
 ## Example 3:
 package main  
 import (  
@@ -380,8 +378,7 @@ func  increment(s string)  {
 	  fmt.Println(s, i,"Count: ",count)  
 		
    }  
-   wait.Done()  
-	 
+   wait.Done()	 
 }  
 func main(){  
    wait.Add(2)  
@@ -415,6 +412,7 @@ last count value  14
 As you can see in the above example, the count resource is accessed by 2 go routines. Each routine iterates to 10 times. In such case, the count variable should be 20 at last. But it is not so because it is simulating race condition.
 
 */
+
 
 
 ## Go Mutex
@@ -539,7 +537,8 @@ last count value  20
 
 
 ## Go Atomic Variable
-Atomic variables are used to manage state, though sync/atomic package and avoid race conditions. Atomic counters can be accessed by multiple go routines.
+Atomic variables are used to manage state, though sync/atomic package and avoid race conditions. Atomic counters can be accessed 
+by multiple go routines.
 "sync/atomic" 
 var count int64  
 atomic.AddInt64(&count,10) 
@@ -563,10 +562,10 @@ func  increment(s string)  {
    wait.Done()  
 }  
 func main(){  
-   wait.Add(2)  
-   go increment("foo: ")  
-   go increment("bar: ")  
-   wait.Wait()  
+   wait.Add(2)
+   go increment("foo: ")
+   go increment("bar: ")
+   wait.Wait()
    fmt.Println("last count value " ,count)  
 } 
 
@@ -597,7 +596,6 @@ last count value  200
 
 
 ## Go Channel
-
 The channel acts as a pipe by which we send typed values from one Goroutine to another. It guarantees synchronization since only one Goroutine has access to a data item at any given time. The ownership of the data is passed between different Goroutine. Hence, By design it avoids the pitfalls of shared memory and prevent race condition.
 
 
@@ -624,15 +622,6 @@ Advantages of Goroutines
     Goroutine are stored in the stack and the size of the stack can grow and shrink according to the requirement of the program. But in threads, the size of the stack is fixed.
     Goroutines can communicate using the channel and these channels are specially designed to prevent race conditions when accessing shared memory using Goroutines.
     Suppose a program has one thread, and that thread has many Goroutines associated with it. If any of Goroutine blocks the thread due to resource requirement then all the remaining Goroutines will assign to a newly created OS thread. All these details are hidden from the programmers.
-
-Anonymous Goroutine
-
-In Go language, you can also start Goroutine for an anonymous function or in other words, you can create an anonymous Goroutine simply by using go keyword as a prefix of that function as shown in the below Syntax:
-
-// Anonymous function call
-go func (parameter_list){
-// statement
-}(arguments)
 
 
 
@@ -662,9 +651,6 @@ type of `c` is chan int
 value of `c` is 0xc0420160c0
 
 Notice value of the channel c. Looks like it is a memory address. Channels by default are pointers. Mostly, when you want to communicate with a goroutine, you pass the channel as an argument to the function or method. Hence when goroutine receives that channel as an argument, you don’t need to dereference it to push or pull data from that channel.
-
-
-
 
 
 
