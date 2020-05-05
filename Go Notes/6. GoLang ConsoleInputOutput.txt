@@ -78,3 +78,31 @@ func main() {
 
 	fmt.Println("")
 }
+
+
+package main
+import "fmt"
+
+func main(){
+	https://golang.org/pkg/fmt/
+	var n, m int
+	fmt.Println("Enter a number")
+	// fmt.Scanf("%d",&n)
+	// fmt.Scan(&n)
+	// fmt.Scanln(&n)
+	// fmt.Scan(&n,&m)
+	// fmt.Scanln(&n,&m) 11 21 , don't hit enter, space seperated value
+	// fmt.Scanf("%d,%d",&n,&m) Valid 10,11 or 10, 11 comma seperated values
+	// fmt.Scanf("%d,  %d",&n,&m) Valid 10, 11 Invalid 10,11
+	fmt.Scanf("%d%d",&n,&m)
+	fmt.Println(n,m)
+	/*
+	fmt.Printf("Factorial of numer is : %d",n)
+	fact := 1
+	for n > 0{
+		fact = fact * n
+		n -= 1
+	}
+	fmt.Printf("Factorial of numer is : %d",fact)
+	*/
+}
