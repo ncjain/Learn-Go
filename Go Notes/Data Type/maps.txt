@@ -1,4 +1,7 @@
-## Go Map: (Dynamic in size)
+One of the most useful data structures in computer science is the hash table. Many hash table implementations exist with varying 
+properties, but in general they offer fast lookups, adds, and deletes. Go provides a built-in map type that implements a hash table.
+
+## Go Map: (Dynamic in size) Hash Table
 A map is composite data type that can hold data represented by key:value pairs.
 Maps is an unordered collection of key and its associated value. They are very good for looking up values fast. 
 
@@ -198,7 +201,7 @@ m["Raj"] = 23
 
 4. Delete operation: 
 func delete(m map[KeyType]ValeType, key Type) 
-
+The delete function doesn't return anything, and will do nothing if the specified key doesn't exist.
 delete(m, "Raj")
 
 
@@ -272,7 +275,7 @@ duplicate key "mina" in map literal
 
 
 
-## Maps are referenced type
+## Maps are referenced type(Map types are reference types, like pointers or slices,)
 Like slice, map references an internal data structure. When you copy a map to a new map, the internal data structure is not copied, 
 just referenced.
 1. Referencing  to old map
