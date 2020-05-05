@@ -517,3 +517,49 @@ Important Points:
 1. You can use multiple Blank Identifier in the same program. So you can say a Golang program can have multiple variables using the same identifier name which is the blank identifier.
 2. There are many cases that arise the requirement of assignment of values just to complete the syntax even knowing that the values will not be going to be used in the program anywhere. Like a function returning multiple values. Mostly blank identifier is used in such cases.
 3. You can use any value of any type with the Blank Identifier.
+
+
+
+
+There are total 25 keywords present in the Go language as follows:
+
+break
+case
+chan
+const
+continue
+default
+defer
+else
+fallthrough
+for
+func
+go
+goto
+if
+import
+interface
+map
+package
+range
+return
+select
+struct
+switch
+type
+var
+
+Basic type: Numbers, strings, and booleans come under this category.
+Aggregate type: Array and structs come under this category.
+Reference type: Pointers, slices, maps, functions, and channels come under this category.
+Interface type
+
+Operators:
+1. Arithmetic Operators: +, -, *, /, %
+2. Relational Operators: ==, !=, >, <, <=, >=
+3. Logical Operators: &&, ||, !
+4. Bitwise Operators: &, |, ^, <<, >>, &^ (and not)
+5. Assignment Operators: =, +=, -=, *=, /=, %=, &=, |=, ^=
+6. Misc Operators: & address of operator, * dereferencing operator, <- (channel)
+
+Note: -, +, !, &, *, <-, and ^ are also known as unary operators and the precedence of unary operators is higher. ++ and — operators are from statements they are not expressions, so they are out from the operator hierarchy.
