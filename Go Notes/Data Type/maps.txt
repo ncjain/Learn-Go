@@ -2,16 +2,27 @@
 A map is composite data type that can hold data represented by key:value pairs.
 Maps is an unordered collection of key and its associated value. They are very good for looking up values fast. 
 
+The zero value of a map is nil. A nil map has no keys, nor can keys be added.
+
 1. The key type must have the operations == and != defined, like string, int, float.
 2. Hence arrays, slices and structs cannot be used as key type, but pointers and interface types can.
-3. structs can be used as a key when we provide Key() or Hash() method, so that a unique numeric or string key can be calculated from the struct's fields.
+3. structs can be used as a key when we provide Key() or Hash() method, so that a unique numeric or string key can be calculated 
+from the struct's fields.
 
-It’s not necessary that only string types should be the keys of a map. All comparable types such as boolean, integer, float, complex, string etc.
+Itâ€™s not necessary that only string types should be the keys of a map. All comparable types such as boolean, integer, float, complex,
+string etc.
+
+map[KeyType]ValueType
+where KeyType may be any type that is comparable (more on this later), and ValueType may be any type at all, including another map!
+
+As mentioned earlier, map keys may be of any type that is comparable. The language spec defines this precisely, but in short, comparable types are boolean, numeric, string, pointer, channel, and interface types, and structs or arrays that contain only those types. Notably absent from the list are slices, maps, and functions; these types cannot be compared using ==, and may not be used as map keys.
+
 {
   stringKey: intValue,
   stringKey: intValue
   ...
 }
+
 
 ## Declaration:
 var map_variable map[key_data_type]value_data_type
@@ -66,7 +77,8 @@ func main() {
 ## Accessing map data
 In case array or slice, when you are trying to access out of index element (when the index does not exist), go will throw an error. 
 
-But not in case of map. When you are trying to access the value by the key which is not present in the map, go will not throw an error, instead, it will return zero value of valueType.
+But not in case of map. When you are trying to access the value by the key which is not present in the map, go will not throw an error,
+instead, it will return zero value of valueType.
 func main() {
 	age := map[string]int{
 		"mina": 28,
@@ -109,7 +121,8 @@ func main() {
 	fmt.Println("len(age) =", len(age)) // 3
 }
 
-Note: There is nothing like capacity in map because go completely takes control of internal data structure of map. Hence don't try to use cap function on map.
+Note: There is nothing like capacity in map because go completely takes control of internal data structure of map. Hence don't try 
+to use cap function on map.
 
 1. Retrieve or accessing Element: 
 elem = m[key] 
@@ -139,7 +152,8 @@ delete(m, "Raj")
 
 
 ## maps comparison
-Like slice, a map can be only compared with nil. If you are thinking to iterate over a map and match each element, you are in grave trouble. But if you are in dire need to compare two maps, use reflect package’s DeepEqual function (https://golang.org/pkg/reflect/).
+Like slice, a map can be only compared with nil. If you are thinking to iterate over a map and match each element, you are in grave 
+trouble. But if you are in dire need to compare two maps, use reflect packageâ€™s DeepEqual function (https://golang.org/pkg/reflect/).
 
 
 ## map iteration
@@ -153,7 +167,8 @@ Like slice, a map can be only compared with nil. If you are thinking to iterate 
 		fmt.Println(key, "=>", value)
 	}
 You can also use _ (blank identifier) to ignore either key or value in case you don't need it, just like array and slice.
-Order of retrieval of elements in map is random when used in for iteration. Hence there is no guarantee that each time, they will be in order. That explains why we can’t compare two maps.
+Order of retrieval of elements in map is random when used in for iteration. Hence there is no guarantee that each time, they will be 
+in order. That explains why we canâ€™t compare two maps.
 
 ## duplicate keys
 Go does not allow to add duplicate keys in the map. It throws error if you try to add.
@@ -170,7 +185,8 @@ func main() {
 }
 
 ## Maps are referenced type
-Like slice, map references an internal data structure. When you copy a map to a new map, the internal data structure is not copied, just referenced.
+Like slice, map references an internal data structure. When you copy a map to a new map, the internal data structure is not copied, 
+just referenced.
 1. referencing  old map
 func main() {
 	var ages map[string]int
