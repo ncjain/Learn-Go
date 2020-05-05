@@ -629,3 +629,111 @@ fmt.Println( a == b ) // true
 If these interfaces are not nil, then their dynamic types (the type of their concrete values) should be the same and the concrete values should be equal.
 If the dynamic types of the interface are not comparable, like for example, slice, map and function, or the concrete value of an interface is a complex data structure like slice or array that contains these uncomparable values, then == or != operations will result in a runtime panic.
 If one interface is nil, then == operation will always return false.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Interface:
+1. In the Go language, it is necessary to implement all the methods declared in the interface for implementing an interface.
+2. The zero value of the interface is nil.
+3. When an interface contains zero methods, such types of interface is known as the empty interface. So, all the types implement the empty interface.
+4. A variable of the interface type containing the value of the Type which implements the interface, so the value of that Type is known as dynamic value and the type is the dynamic type. It is also known as concrete value and concrete type.
+5. Note: In Go language, you are not allowed to create same name methods in two or more interfaces. If you try to do so, then your program will panic.
+
+type interface_name1 interface {
+    Method1()
+}
+type interface_name2 interface {
+    Method2()
+}
+type finalinterface_name interface {
+    interface_name1
+    interface_name2
+}
+
+or
+
+type interface_name1 interface {
+    Method1()
+}
+type interface_name2 interface {
+    Method2()
+}
+type finalinterface_name interface {
+    Method1()
+    Method2()
+}
+
+or
+type AuthorDetails interface { 
+    details() 
+} 
+type AuthorArticles interface { 
+    articles() 
+    picked() 
+} 
+type FinalDetails interface { 
+    details() 
+    AuthorArticles 
+    cdeatils() 
+} 
+The word polymorphism means having many forms. Or in other words, we can define polymorphism as the ability of a message to be displayed in more than one form. Or in technical term polymorphism means same method name (but different signatures) being uses for different types. For example, a woman at the same time can have different characteristic. Like a mother, a wife, a sister, an employee, etc. So the same person posses different behavior in different situations. This is called polymorphism.
+In Go language, we cannot achieve polymorphism with the help of classes because Go language does not support classes but can achieve by using interfaces. As we already know that the interfaces are implicitly implemented in Go. So, when we create an interface and other types want to implement that interface, then those types use that interface with the help of the methods defined in the interface without knowing the type. In an interface, a variable of an interface type can contain any value which implements the interface. This property helps interfaces to achieve polymorphism in the Go language.
+
+ 
+type employee interface { 
+    develop() int
+    name() string 
+}
+type team1 struct { 
+    totalapp_1 int
+    name_1     string 
+}
+func (t1 team1) develop() int { 
+    return t1.totalapp_1 
+}
+func (t1 team1) name() string { 
+    return t1.name_1 
+}
+type team2 struct { 
+    totalapp_2 int
+    name_2     string 
+}
+func (t2 team2) develop() int { 
+    return t2.totalapp_2 
+}
+func (t2 team2) name() string { 
+    return t2.name_2 
+}
+func finaldevelop(i []employee) {
+    totalproject := 0 
+    for _, ele := range i {
+        fmt.Printf("\nProject environment = %s\n ", ele.name()) 
+        fmt.Printf("Total number of project %d\n ", ele.develop()) 
+        totalproject += ele.develop() 
+    } 
+    fmt.Printf("\nTotal projects completed by "+ 
+        "the company = %d", totalproject) 
+}
+func main() {
+    res1 := team1{totalapp_1: 20, 
+        name_1: "Android"}
+    res2 := team2{totalapp_2: 35, 
+        name_2: "IOS"}
+    final := []employee{res1, res2} 
+    finaldevelop(final)
+} 
