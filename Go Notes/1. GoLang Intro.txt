@@ -1,7 +1,7 @@
 ## Introduction to Go Programming Language (GoLang)
 
 Go or Golang is a programming language created at Google, by Google developers and other programmers. This programming language is free and open source and currently being maintained by Google. One of the founding member of Go is Ken Thompson who is best known for his work in Unix operating system development. Go compiler was initially written in C but now, it is written in Go itself, making it self hosted.
-So what�s so special about Go?
+So what’s so special about Go?
 
 1. Go is statically typed compiled language.
 2. It support built in concurrency model with the help of GoRoutines.
@@ -13,15 +13,15 @@ So what�s so special about Go?
 Things that make Go a great language is its simple concurrency model, its package based code management and its non-strict (type inference) typing system. Go does not support out of the box Object Oriented Programming experience, but is support structures (structs) which with the help of methods and pointers can help us achieve the same.
 
 
-## Motivation behind it�s creation
+## Motivation behind it’s creation
 
-There are tons of programming language to choose from nowadays. Each language has it�s own benefits and different programmers find different languages more friendlier than others. But a language should be perfect in all sense and should be easy to work with for any programmer. A programming language can be dedicated for one task like COBOL or can be used general purpose programming like Java or JavaScript on Node.
+There are tons of programming language to choose from nowadays. Each language has it’s own benefits and different programmers find different languages more friendlier than others. But a language should be perfect in all sense and should be easy to work with for any programmer. A programming language can be dedicated for one task like COBOL or can be used general purpose programming like Java or JavaScript on Node.
 
 The four important things a language must thrive to achieve is speed/efficiency, reliability, scale and simplicity. If we consider languages like C or C++, they are great at speed, scale and reliability but in terms of simplicity, they are not so great. Java on other hand is very reliable and highly scalable, but moderately simple to write and not so efficient compared to other low-level languages. Python is an widely adopted language and very simple to write but not so efficient and reliable.
 
-Whenever Google creates a language or a framework, I suppose it�s because they want to eventually use it in their own organization. Angular, Material design, Dart, Flutter etc. are few examples.
+Whenever Google creates a language or a framework, I suppose it’s because they want to eventually use it in their own organization. Angular, Material design, Dart, Flutter etc. are few examples.
 
-Google back in 2008�2010 was looking for a language which could be great at all these 4 things. I guess their idea was to replace traditional low-level programming languages with this language in their own infrastructure. Hence with the help of Ken Thompson, Rob Pike and Robert Griesemer, they created a language Go that was could give developers an experience of writing scripting (interpreted) language like Python or JavaScript but at the same time, provides quirks of low-level compiled language. Their major focus was on simplicity, scale, speed and reliability. Since, go is a commonly used english word which makes it difficult to target internet searches to Go Programming Language, many people use GoLang instead of Go.
+Google back in 2008–2010 was looking for a language which could be great at all these 4 things. I guess their idea was to replace traditional low-level programming languages with this language in their own infrastructure. Hence with the help of Ken Thompson, Rob Pike and Robert Griesemer, they created a language Go that was could give developers an experience of writing scripting (interpreted) language like Python or JavaScript but at the same time, provides quirks of low-level compiled language. Their major focus was on simplicity, scale, speed and reliability. Since, go is a commonly used english word which makes it difficult to target internet searches to Go Programming Language, many people use GoLang instead of Go.
 
 
 ## What is Go program?
@@ -80,15 +80,15 @@ If you are used to JavaScript or c++ comments, Go uses same comment format. For 
 
 
 ## Semicolons
-Like C, Go�s formal grammar uses semicolons to terminate statements, but unlike in C, those semicolons do not appear in the source code. Instead Go�s Lexer program uses a simple rule to insert semicolons automatically as it scans your Go program, so the source code is mostly free of them.
+Like C, Go’s formal grammar uses semicolons to terminate statements, but unlike in C, those semicolons do not appear in the source code. Instead Go’s Lexer program uses a simple rule to insert semicolons automatically as it scans your Go program, so the source code is mostly free of them.
 
 The rule is this. If the last token before a newline is an identifier (which includes words like int and float64), a basic literal such as a number or string constant, or one of the below tokens
 
 break continue fallthrough return ++ -- ) }
 
-then Lexer always inserts a semicolon after the token. This could be summarized as, �if the newline comes after a token that could end a statement, insert a semicolon�.
+then Lexer always inserts a semicolon after the token. This could be summarized as, “if the newline comes after a token that could end a statement, insert a semicolon”.
 
-You are free to use semicolons whenever you want, but that won�t be idiomatic Go code. For example, you could write following code and program will still execute.
+You are free to use semicolons whenever you want, but that won’t be idiomatic Go code. For example, you could write following code and program will still execute.
 
 
 ## Best practices
@@ -96,3 +96,206 @@ Go is a very clean and systematic language. Hence your code must follow communit
 
 ## Effective Go
 Follow Effective Go documentation to understand these standard practices. https://golang.org/doc/effective_go.html
+
+
+## So what’s so special about Go?
+Go is statically typed compiled language.
+It supports the built-in concurrency model with the help of GoRoutines.
+It has a built-in garbage collector and memory safety.
+Strings in Go are UTF-8 encoded by default.
+It has simpler syntax compared to other compiled programming languages.
+
+
+Hence with the help of Ken Thompson, Rob Pike, and Robert Griesemer, they created a language Go that could give developers the experience of writing a scripting (interpreted) language like Python or JavaScript but at the same time, provides quirks of low-level compiled programming languages.
+Their major focus was on simplicity, scale, speed, and reliability. Since Go is a commonly used English word, searching Go programming related things on the internet is not so easy, hence many people use GoLang instead.
+
+
+Things that make Go a great programming language is its simple concurrency model, its package based code management and its non-strict (type inference) typing system. Go does not support out of the box Object Oriented Programming experience, but is support structures (structs) which with the help of methods and pointers can help us achieve the OOP paradigm.
+
+
+## Go Installation Directory
+A language typically consists of the language specifications (syntax), standard library, a runtime environment, and a compiler.
+
+When you install Go on your system, it creates a directory /usr/local/go in UNIX or c:/go in Windows. Then it copies all necessary code and binaries needed for Go to function in this directory.
+This is where Go’s command-line tools, standard library and compiler lives. Whenever you import a package from Go’s standard library, Go looks for the package in this directory.
+
+export GOPATH = C:\Users\kjain4\go     # Working Directory
+
+Path = C:\Go\bin                       # Runtime env .exe file(Must be in set in Path)
+export GOBIN=$GOPATH/bin
+
+GOBIN is another environment variable that Go uses to put binary files created using go install command. By default, GOBIN is $GOPATH/bin but you can change it to whatever directory you like.
+
+## Custom Installation directory
+If somehow, your Go installation directory is different than what Go assumes where it would be, you can use GOROOT environment variable. Edit your ~/.bash_profile and add the below entry. For Windows, follow this answer.
+
+export GOROOT=/usr/local/custom-go
+
+
+## Go Workspace
+A workspace is Go’s way to facilitate project management. A workspace, in a nutshell, is a directory on your system where Go looks for source code files, manages dependency packages and build distribution binary files.
+
+# Note:
+1. Whenever a Go program encounters an import statement, it looks for the package in the Go’s standard library ($GOROOT/src). If the package is not available there, then Go refers to the system's environment variable GOPATH which is the path to Go workspace directory and looks for packages in $GOPATH/src directory.
+
+	Search an imported package
+	1. $GOROOT/src
+	2. $GOPATH/src
+
+2. You can have as many workspaces as you want, as long as you keep GOPATH environment variable pointed to the current working workspace directory whenever you are working on the given project.
+
+## Working directory structure
+
+# 1. src: contains .go files
+The src directory contains Go packages. A package in nutshell is a project directory containing Go source code (.go files). Any packages installed using go get command will reside here as well (and its dependency packages).
+
+In Go, every program is contained in a package. Hence, whenever you will be working with a new Go project, you need to create a new directory inside $GOPATH/src and work your way up from there.
+
+
+# 2. pkg: contains .a files
+The pkg directory contains Go package objects. They are the compiled versions of the original package source code and they have .a file extension (a stands for archived).
+
+Whenever you install a 3rd party package, a package object package-name.a is created for that package in this directory.
+Example: C:\Users\kapiljain\go\pkg\windows_amd64\github.com\gorilla\mux.a
+
+# Importent Note:
+In Go, you typically use import "<package-name>" or import "<main/child-package>" syntax to import a package (like ES6 syntax). Normally, Go looks for these packages in $GOROOT/src or $GOPATH/src directories. But if it finds a precompiled package object associated with an imported package, then Go uses that instead.
+
+Package objects are compiled and archived files for specific platforms. Hence you will see the platform architecture directory inside the pkg directory.
+
+The advantage of having a package object is to save compilation time. As a package is nothing but a collection of Go programs, it has to go through Go compiler every single time the main program (a program who imports it) compiles. If a package has a compiled object file in the pkg directory for current system architecture, then it doesn’t get compiled again.
+
+Therefore when you are referencing foo/bar package. It refers to $GOPATH/pkg/{arch}/foo/bar.a and not $GOPATH/src/foo/bar/*.go (for Go’s standard library package, it will be $GOROOT instead of $GOPATH).
+
+A package object is created when you use go install command on non-main packages. You will learn about main and non-main packages in packages lesson. Package object are also called as cached objects or cached packages.
+
+
+# 3. bin: contains .exe files
+A Go program can either meant to be used as utility inside a package or to perform some operation. We have seen packages and where they reside.
+
+A Go program that is meant to perform some operation like make a network request or write something to a file needs to be compiled first so that your machine can understand the instructions. When you run go run hello.go command, Go compiler first compiles the hello.go file and then executes the resultant binary code.
+
+You can output a binary file from a Go program or package using go build <package-name> (main package) or go build program/path.go command. This will create a binary file in the current directory.
+
+The bin directory contains the same binary executable files. These files are created by go install commands. go install command runs go build command internally and then outputs these files to the bin directory.
+
+Generally, this directory is in the executable path of the system. Hence all the programs inside this directory are executable from the terminal.
+
+
+
+
+
+
+## Install Package
+go get -u github.com/gorilla/mux
+go get -u github.com/jinzhu/gorm
+import (
+  "github.com/gorilla/mux"
+  log "fmt"
+)
+
+
+
+## Go program structure
+Every Go program must be included in a package. A standalone executable Go program must have a main function and must be included in the main package. The main function is the entry point of the execution.
+
+package main
+import "fmt"
+func main() {
+    fmt.Println("Hello World!")
+}
+
+
+## Run program
+Go compiler to compile and run a program using go run
+Run single file:
+$ go run hello.go
+
+Run multiple files:
+$ go run dir/*.go
+$ go run dir/**/*.go
+$ go run file-a.go file-b.go file-c.go
+
+
+## go build VS go install
+
+go\src\github.com\ncjain\Learn-Go\worksheet.go(main func)
+
+1. go install worksheet.go
+output: go\bin\worksheet.exe
+
+2. go build worksheet.go
+output : go\src\github.com\ncjain\Learn-Go\worksheet.exe
+
+go\src\github.com\ncjain\Learn-Go\temp.go(without main)
+
+1. go install temp.go
+output: nothing
+
+2. go build temp.go
+output : nothing
+If you are working with multiple files, the go install *.go or go install file-1.go file-2.go ... command will create a binary file in GOBIN directory with a non-specific filename.
+
+
+# Note:
+1. You can run multiple Go files at once. However, only one main method can exist among them since there can be only one entry point of the execution and all program files should belong to the same directory (usually in the parent directory of the project).
+
+2. If a file depends on a function or a variable that exists in another file, then you also need to add that file in the compilation phase using run or build command.
+
+\go\src\github.com\ncjain\Learn-Go\worksheet.go
+package main
+import "fmt"
+func main() {
+	fmt.Print("Hello Kapil")
+	temp()
+}
+
+\go\src\github.com\ncjain\Learn-Go\work.go
+package main
+import "fmt"
+func temp() {
+	fmt.Print("Hello Kapil")
+}
+
+
+## Comment
+Similar to C
+// I am a single line comment.
+// I am another single line comment.
+/*
+    I am a block comment.
+    And GoLang is awesome.
+    Say it with me, GoLang is awesome.
+*/
+
+
+## Semicolons
+Like C, Go’s formal grammar uses semicolons to terminate statements, but unlike in C, those semicolons do not appear in the source code. Instead Go’s Lexer program uses a simple rule to insert semicolons automatically as it scans your Go program, so the source code is mostly free of them.
+The rule is this. If the last token before a newline is an identifier (which includes words like int and float64), a basic literal such as a number or string constant, or one of the below tokens
+break continue fallthrough return ++ -- ) }
+then Lexer always inserts a semicolon after this token. 
+
+This could be summarized as, “if the newline comes after a token that could end a statement, insert a semicolon”.
+
+Hence, Go code is free of semicolons. If you accidentally write semicolons in the source code, VSCode plugin will strip them off on save. You can also use gofmt command to format your code as per the Go recommendations.
+
+The only place you will find semicolons is where statements have to be terminated deliberately using ; (semicolon) like for,switch, if statements or other variations of them.
+
+You are free to use semicolons whenever you want, but that won’t be idiomatic Go code. For example, you could write the following code and the program will still execute.
+
+package main
+import("fmt"; "math";);
+func main() {
+    fmt.Println(math.Sqrt(16));
+};
+
+
+But the following syntax is the idiomatic way to write Go code.
+package main
+import(
+    "fmt"                           // ;
+    "math"                          // ;
+)                                   // ;
+func main() {
+    fmt.Println(math.Sqrt(16))      // ;
+} 
