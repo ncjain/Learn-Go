@@ -2,93 +2,165 @@
 A map is composite data type that can hold data represented by key:value pairs.
 Maps is an unordered collection of key and its associated value. They are very good for looking up values fast. 
 
-The zero value of a map is nil. A nil map has no keys, nor can keys be added.
-
-1. The key type must have the operations == and != defined, like string, int, float.
-2. Hence arrays, slices and structs cannot be used as key type, but pointers and interface types can.
-3. structs can be used as a key when we provide Key() or Hash() method, so that a unique numeric or string key can be calculated 
-from the struct's fields.
-
-It’s not necessary that only string types should be the keys of a map. All comparable types such as boolean, integer, float, complex,
-string etc.
-
+Syntax:
 map[KeyType]ValueType
-where KeyType may be any type that is comparable (more on this later), and ValueType may be any type at all, including another map!
+where KeyType may be any type that is comparable and ValueType may be any type at all, including another map!
 
-As mentioned earlier, map keys may be of any type that is comparable. The language spec defines this precisely, but in short, comparable types are boolean, numeric, string, pointer, channel, and interface types, and structs or arrays that contain only those types. Notably absent from the list are slices, maps, and functions; these types cannot be compared using ==, and may not be used as map keys.
 
-{
-  stringKey: intValue,
-  stringKey: intValue
-  ...
-}
+1. Comparable types are :
+boolean, integer, float, complex, string, pointer, channel, interface , structs, arrays
+
+2. Non-comparable types are : these types cannot be compared using ==, and may not be used as map keys.
+slices, maps, and functions
+
 
 
 ## Declaration:
-var map_variable map[key_data_type]value_data_type
-map_variable = make(map[key_data_type]value_data_type)
-
-Example:
-var map1 map[int]string  
-m := make(map[string]int)  
+var MapVar map[KeyDataType]ValueDataType // Nil Map
+var MapVar = map[KeyDataType]ValueDataType{} // Empty Map
+MapVar = make(map[KeyDataType]ValueDataType) // Empty Map
 
 
-var m map[string]int // #nil map 
-fmt.Println(m) // output : map[]
-fmt.Println(m == nil) // true
 
-Note: m["a"]=1 // panic: assignment to entry in nil map
-
-## Creating a nil map
-A nil map has no keys, nor can keys be added. 
-package main  
-import "fmt"  
-func main() {
-   //m := make(map[string]int)
-   var m map[string]int // panic: assignment to entry in nil map
-   m["a"]=3
-   fmt.Print(m)
+Example 1: Nil Map
+package main
+import "fmt"
+func main(){
+	var m map[int]string
+	fmt.Println(m)
+	fmt.Println(m == nil)
+	m[1]= "kapil"
+	fmt.Println(m)	
 }
 
+Output:
+map[]
+true
+panic: assignment to entry in nil map
 
-## Creating an empty map
-m := make(map[keyType]valueType)
-func main() {
-	age := make(map[string]int)
-	age["mina"] = 28
-	age["john"] = 32
-	age["mike"] = 55
-	fmt.Println("age of john", age["john"]) // age of john 32
+Note: The zero value of a map is nil. A nil map has no keys, nor can keys be added.
+
+
+Example 2: Empty Map
+package main
+import "fmt"
+func main(){
+	m := make(map[int]string)
+	fmt.Println(m)
+	fmt.Println(m == nil)
+	m[1]= "kapil"
+	fmt.Println(m)
+	
 }
+
+Output:
+map[]
+false
+map[1:kapi]
+
+
+Example 3: Empty Map 
+package main
+import "fmt"
+func main(){
+	var m = map[string]int{}
+	fmt.Println(m)
+	fmt.Println(m == nil)
+	m["Kapil"] = 26 
+	fmt.Println(m)
+}
+
+Output:
+
+map[]
+false
+map[Kapil:26]
+
 
 ## Initialization:
 var m = map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
 m := map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
 
-func main() {
+
+Example 4:
+package main
+import fmt
+func main(){
 	age := map[string]int{
 		"mina": 28,
 		"john": 32,
 		"mike": 55,
 	}
-	fmt.Println(age) // map[john:32 mike:55 mina:28]
+	fmt.Println(age)
 }
+
+Output:
+map[john:32 mike:55 mina:28]
+
+
+
+## Assignment:
+We can assign values to nil slice.
+
+
+Example 5:
+package main
+import "fmt"
+func main(){
+	var m map[string]int
+	m = map[string]int{"Kate":28,"John":37, "Raj":20}
+	m["Kapil"] = 26 
+	fmt.Println(m)
+	fmt.Println(m == nil)
+}
+
+Output:
+map[John:37 Kapil:26 Kate:28 Raj:20]
+false
+
+
+Example 6:
+package main
+import "fmt"
+func main(){
+	m := make(map[string]int)
+	m = map[string]int{"Kate":28,"John":37, "Raj":20}
+	m["Kapil"] = 26 
+	fmt.Println(m)
+	fmt.Println(m == nil)
+}
+
+Output:
+map[John:37 Kapil:26 Kate:28 Raj:20]
+false
+
+
 
 ## Accessing map data
-In case array or slice, when you are trying to access out of index element (when the index does not exist), go will throw an error. 
+Note: In case array or slice, when you are trying to access out of index element (when the index does not exist), go will throw an 
+error. But not in case of map. When you are trying to access the value by the key which is not present in the map, go will not throw an 
+error, instead, it will return zero value of valueType.
 
-But not in case of map. When you are trying to access the value by the key which is not present in the map, go will not throw an error,
-instead, it will return zero value of valueType.
+
+Example 6: No Key Error in Map
+package main
+import "fmt"
 func main() {
 	age := map[string]int{
 		"mina": 28,
 		"john": 32,
 		"mike": 55,
 	}
-	fmt.Println(age["mina"])// 28
-	fmt.Println(age["jessy"]) //0
-	fmt.Println(age) // map[john:32 mike:55 mina:28]
+	fmt.Println(age["mina"])
+	fmt.Println(age["jessy"])
+	fmt.Println(age)
 }
+
+Output:
+28
+0
+map[john:32 mike:55 mina:28]
+
 
 
 ## Create Map using struct:
