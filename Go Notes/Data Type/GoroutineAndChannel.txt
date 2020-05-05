@@ -1956,3 +1956,82 @@ fatal error: all goroutines are asleep - deadlock!
 goroutine 1 [select (no cases)]:
 main.main() C:/Users/kjain4/go/src/github.com/ncjain/Learn-Go/worksheet.go:242 +0x9d
 exit status 2
+
+
+
+
+
+
+
+
+
+
+
+
+When we run a Go program, Go runtime will create few threads on a core on which all the goroutines are multiplexed (spawned). At any point in time, one thread will be executing one goroutine and if that goroutine is blocked, then it will be swapped out for another goroutine that will execute on that thread instead. This is like thread scheduling but handled by Go runtime and this is much faster.
+
+It is advised in most of the cases, to run all your goroutines on one core but if you need to divide goroutines among available CPU cores of your system, you can use GOMAXPROCS environment variable or call to runtime using function runtime.GOMAXPROCS(n) where n is the number of cores to use. But you may sometime feel that setting GOMAXPROCS > 1 is making your program slower. It truly depends on the nature of your program but you can find a solution or explanation of your problem on the internet. In practical terms, programs that spend more time communicating on channels than doing computation will experience performance degradation when using multiple cores, OS threads, and processes. 
+
+Go has an M:N scheduler that can also utilize multiple processors. At any time, M goroutines need to be scheduled on N OS threads that run on at most on GOMAXPROCS numbers of processors. At any time, at most only one thread is allowed to run per core. But scheduler can create more threads if required, but that rarely happens. If your program doesn’t start any additional goroutines, it will naturally run in only one thread no matter how many cores you allow it to use.
+
+As goroutines are lightweight compared to OS threads, it is very common for a Go application to have thousands of goroutines running concurrently. Concurrency can speed up application significantly as well as help us write code with separation of concerns (SoC).
+
+a goroutine is simply a function or method that is running in background concurrently with other goroutines. It’s not a function or method definition that determines if it is a goroutine, it is determined by how we call it.
+Go provides a special keyword go to create a goroutine. When we call a function or a method with go prefix, that function or method executes in a goroutine. 
+
+
+All the Goroutines are working under the main Goroutines if the main Goroutine terminated, then all the goroutine present in the program also terminated. Goroutine always works in the background.
+
+Advantages of Goroutines
+Goroutines are cheaper than threads.
+Goroutine are stored in the stack and the size of the stack can grow and shrink according to the requirement of the program. But in threads, the size of the stack is fixed.
+Goroutines can communicate using the channel and these channels are specially designed to prevent race conditions when accessing shared memory using Goroutines.
+Suppose a program has one thread, and that thread has many Goroutines associated with it. If any of Goroutine blocks the thread due to resource requirement then all the remaining Goroutines will assign to a newly created OS thread. All these details are hidden from the programmers.
+
+
+In Go language, the select statement is just like switch statement, but in the select statement, case statement refers to communication, i.e. sent or receive operation on the channel.
+
+1. Select statement waits until the communication(send or receive operation) is prepared for some cases to begin.
+2. If a select statement does not contain any case statement, then that select statement waits forever.
+3. The default statement in the select statement is used to protect select statement from blocking. This statement executes when there is no case statement is ready to proceed.
+4. The blocking of select statement means when there is no case statement is ready and the select statement does not contain any default statement, then the select statement block until at least one case statement or communication can proceed.
+5. In select statement, if multiple cases are ready to proceed, then one of them can be selected randomly.
+
+
+In Go language, a channel is a medium through which a goroutine communicates with another goroutine and this communication is lock-free. Or in other words, a channel is a technique which allows to let one goroutine to send data to another goroutine. By default channel is bidirectional, means the goroutines can send or receive data through the same channel 
+
+In Go language, a channel is created using chan keyword and it can only transfer data of the same type, different types of data are not allowed to transport from the same channel
+
+In the channel, the send and receive operation block until another side is not ready by default. It allows goroutine to synchronize with each other without explicit locks or condition variables.
+
+Values like int, float64, and bool can safe and easy to send through a channel because they are copied so there is no risk of accidental concurrent access of the same value. Similarly, strings are also safe to transfer because they are immutable. But for sending pointers or reference like a slice, map, etc. through a channel are not safe because the value of pointers or reference may change by sending goroutine or by the receiving goroutine at the same time and the result is unpredicted. So, when you use pointers or references in the channel you must make sure that they can only access by the one goroutine at a time
+
+close()
+
+ele, ok:= <- Mychannel
+Here, if the value of ok is true which means the channel is open so, read operations can be performed. And if the value of is false which means the channel is closed so, read operations are not going to perform.
+
+1. Blocking Send and Receive: In the channel when the data sent to a channel the control is blocked in that send statement until other goroutine reads from that channel. Similarly, when a channel receives data from the goroutine the read statement block until another goroutine statement.
+2. Zero Value Channel: The zero value of the channel is nil.
+3. For loop in Channel: A for loop can iterate over the sequential values sent on the channel until it closed.
+Syntax:
+
+for item := range Chnl { 
+     // statements..
+}
+4. len() and cap()
+5. Select and case statement in Channel: In go language, select statement is just like a switch statement without any input parameter. This select statement is used in the channel to perform a single operation out of multiple operations provided by the case block.
+6. In Go language, you are allowed to convert a bidirectional channel into the unidirectional channel, or in other words, you can convert a bidirectional channel into a receive-only or send-only channel, but vice versa is not possible.
+7.Use of Unidirectional Channel: The unidirectional channel is used to provide the type-safety of the program so, that the program gives less error. Or you can also use a unidirectional channel when you want to create a channel that can only send or receive data.
+
+
+Deadlock: When you trying to read or write data from the channel but the channel does not have value. So, it blocks the current execution of the goroutine and passes the control to other goroutines, but if there is no other goroutine is available or other goroutines are sleeping due to this situation program will crash. This phenomenon is known as deadlock.
+func main() { 
+    c := make(chan int) 
+    select { 
+    case <-c: 
+    } 
+} 
+
+To avoid this situation we use a default case in the select statement. Or in other words, when the deadlock arises in the program, then default case of the select statement executed to avoid deadlock.
+
