@@ -214,7 +214,7 @@ func calc(a int, b int, f CalcFunc) int {
 
 
 ##  Function as value (anonymous function)
-We have used Go�s type inference to get the type of anonymous function (as we haven�t mentioned the type of add)
+We have used Go’s type inference to get the type of anonymous function (as we haven’t mentioned the type of add)
 
 var add = func(a int, b int) int {
 	return a + b
@@ -250,7 +250,7 @@ func f(elem ...Type) wheere elem is a type of slice ([]Type)
 append([]Type, args, arg2, argsN)
 
 append function expects the first argument to be a slice of type Type, while there can be a variable number of arguments after that. If we have a slice s2 that we want to append to a slice s1, how that will work?
-As from append function syntax, we can�t pass another slice as an argument, it has to be one or many arguments of type Type. Hence, instead, we will use the unpack operator ... to unpack slice into the series of arguments (which is acceptable by append function).
+As from append function syntax, we can’t pass another slice as an argument, it has to be one or many arguments of type Type. Hence, instead, we will use the unpack operator ... to unpack slice into the series of arguments (which is acceptable by append function).
 
 append(s1, s2...)
 
@@ -291,3 +291,424 @@ func main() {
 	fmt.Println(s, mult1)// [20 40 60] [20 40 60]
 }
 From the above result, we can see values of slice s changed. This means, go in case of slice when passed to a variadic function using unpack operator, will use underneath array to build new slice.
+
+
+
+
+
+
+
+
+
+
+## Functions in Go
+Like JavaScript, functions in Go are first-class citizens. They can be assigned to variables, passed as an argument, immediately invoked or deferred for last execution.
+
+func function_name(v1 type, v2 type ...vn type) (type, type... type){
+    statements;
+}
+
+func greet(user string)
+func add(a int , b int)
+func add(a, b int)
+func add(a, b int, c float32) is also a valid syntax 
+
+# Function name convention
+Go recommends writing function names in simple word or camelCase. Even under_score function names are valid, but they are not idiomatic in Go.
+
+
+# Function parameters
+Note: By default Go language use call by value method to pass arguments in function.
+In Go language, the parameters passed to a function are called actual parameters, whereas the parameters received by a function 
+are called formal parameters.
+
+Go language supports two ways to pass arguments to your function:
+1. Call by value: : In this parameter passing method, values of actual parameters are copied to function’s formal parameters and the two types of parameters are stored in different memory locations. So any changes made inside functions are not reflected in actual parameters of the caller.
+
+func swap(a, b int)int{ 
+	var o int
+	o= a 
+	a=b 
+	b=o 
+	return o 
+} 
+
+func main() { 
+var p int = 10 
+var q int = 20 
+fmt.Printf("p = %d and q = %d", p, q)
+swap(p, q) 
+fmt.Printf("\np = %d and q = %d",p, q) 
+} 
+
+2. Call by reference: Both the actual and formal parameters refer to the same locations, so any changes made inside the function are actually reflected in actual parameters of the caller.
+
+func swap(a, b *int)int{ 
+	var o int
+	o = *a 
+	*a = *b 
+	*b = o 
+	return o 
+}
+func main() { 
+	var p int = 10
+	var q int = 20
+	fmt.Printf("p = %d and q = %d", p, q) 
+	swap(&p, &q)
+	fmt.Printf("\np = %d and q = %d",p, q) 
+}
+
+
+# Return value: (when you return single value you can remove paraenthesis)
+func add(a, b int) int64 {
+	return int64(a + b)
+}
+
+func add(a, b int) (int64) {
+	return int64(a + b)
+}
+
+# Multiple return values
+we must specify return types of the values inside parentheses just after the function parameter parentheses.
+func addMult(a, b int) (int, int) {
+	return a + b, a * b
+}
+
+Invalid:
+func addMult(a, b int) int, int {
+	return a + b, a * b
+}
+
+func addMult(a, b int) (int, float32) {
+	return a + b, a * b
+}
+
+# Note:
+1. To catch multiple values from a function that returns multiple values, we must specify the comma-separated variable declaration.
+
+func addMult(a, b int) (int, int) {
+	return a + b, a * b
+}
+addRes, multRes := addMult(2, 5)
+
+Invalid:
+addRes := addMult(2, 5)
+./prog.go:10:9: assignment mismatch: 1 variable but addMult returns 2 values
+
+
+2. In case of multiple returns values but you are only interested in one single value returned by the function, you can assign other value(s) to _ (blank identifier) which stores the value to an empty variable.
+This is needed because if a variable is defined but not used in Go, the compiler complains about it.
+_,addRes := addMult(2, 5)
+or
+addRes,_ := addMult(2, 5)
+
+
+# Named return values
+Named return values are a great way to explicitly mention return variables in the function definition itself. These variables will be created automatically and made available inside the function body. You can change the values of these variables inside a function.
+After using named return parameters the return statement is generally termed as Naked or Bare return.
+
+By default, Golang defines all the named variables with the zero value and function will able to use them. In case function doesn’t modify the values then automatically zero value will return.
+
+# A return statement at the end of the function is necessary to return named values. Go will automatically return these variables when the function hits the return statement.
+func addMult(a, b int) (add int, mul int) {
+	add = a + b
+	mul = a * b
+	return // necessary
+}
+
+func addMult(a, b int) (add, mul int) {
+	add = a + b
+	mul = a * b
+	return // necessary
+}
+func math() (add, mult int, div float32)
+func addMult(a, b int) (add int) {
+	add = a + b
+	return // necessary
+}
+
+#Invalid:
+when you return single named value, then you must put the variable inside parentheses
+func addMult(a, b int) add int {
+	add = a + b
+	return // necessary
+}
+
+# Recursive function
+A function is called recursive when it calls itself from inside the body. A simple syntax for the recursive function is
+func r() {
+    r()
+}
+
+If we run the above function r, it will loop infinitely. Hence, in a recursive function, we generally use a conditional statement such as if-else to come out of the infinite loop.
+
+
+// n! = n*(n-1)! where n>0
+func getFactorial(num int) int {
+	if num > 1 {
+		return num * getFactorial(num-1)
+	} else {
+		return 1 // 1! == 1
+	}
+}
+
+
+func getFactorial(num int) int {
+	if num > 1 {
+		return num * getFactorial(num-1)
+	}
+	return 1
+}
+
+
+# defer keyword
+defer is a keyword in Go that makes a function executes at the end of the execution of parent function or when parent function hits return statement. 
+1. In Go language, multiple defer statements are allowed in the same program and they are executed in LIFO(Last-In, First-Out) order as shown in Example 
+2. In the defer statements, the arguments are evaluated when the defer statement executed, not when they called.
+3. Defer statements are generally used to ensure that the files are closed when your work is finished with them, or to close the channel, or to catch the panics in the program.
+
+# Example 1:
+func main(){
+	fmt.Println("main started")
+	defer sayStart()
+	defer sayDone()
+	fmt.Println("main finished")
+}
+func sayDone() {
+	fmt.Println("I am done")
+}
+func sayStart() {
+	fmt.Println("I am Started")
+}
+
+
+# Example 2:
+func main(){
+	fmt.Println("main started")
+	defer sayStart()
+	fmt.Println("main finished")
+}
+func sayDone() {
+	fmt.Println("I am done")
+}
+func sayStart() {
+	fmt.Println("I am Started")
+	defer sayDone()
+	return
+	fmt.Println("I am Ended")
+}
+
+# Example 3:
+func endTime(timestamp string) {
+	fmt.Println("Program ended at", timestamp)
+}
+
+func main() {
+	time := "1 PM"
+
+	defer endTime(time) // pushed into stack endTime("1 PM")
+
+	time = "2 PM"
+
+	fmt.Println("doing something")
+	fmt.Println("main finished")
+	fmt.Println("time is", time)
+}
+In the above program, we deferred execution of endTime function which means it will get executed at the end of main function but since at the end main function, time === "2 PM", we were expecting Program ended at 2 PM message. Even though because of deferred execution, endTime function is executing at the end of main function, it was pushed into the stack with all available argument values earlier when time variable was still 1 PM.
+
+# Function as type
+A function in Go is also a type. If two function accepts the same parameters and returns the same values, then these two functions are of the same type.
+
+For example, add and substract which individually takes two integers of type int and return an integer of type int are of the same type.So in Go, the function body does not have anything to do with the function type.
+
+
+This can be useful if you are passing a function as an argument to another function or when a function returns another function and you need to give a return type in a function definition.
+
+
+
+func add(a int, b int) int {
+	return a + b
+}
+
+func subtract(a int, b int) int {
+	return a - b
+}
+
+func calc(a int, b int, f func(int, int) int) int {
+	r := f(a, b)
+	return r
+}
+
+func main() {
+	fmt.Printf("Type of function add is			%T\n", add)
+	fmt.Printf("Type of function subtract is		%T\n", subtract)
+	addResult := calc(5, 3, add)
+	subResult := calc(5, 3, subtract)
+	fmt.Println("5+3 =", addResult)
+	fmt.Println("5-3 =", subResult)
+}
+Type of function add is			    func(int, int) int
+Type of function subtract is		func(int, int) int
+5+3 = 8
+5-3 = 2
+
+
+# We can create a derived type that will make things simpler
+type CalcFunc func(int, int) int
+func calc(a int, b int, f CalcFunc) int {
+	r := f(a, b) // calling add(a,b) or substract(a,b)
+	return r
+}
+
+# we can declare a variable of type function and assign it layer, like below.
+var add func(int, int) int
+
+
+fmt.Println(add) // <nil>
+💡 nil is a zero value for many types like function, pointer, slice, interface, channel, map, etc. You can read about nil from this article.
+
+# Function as value (anonymous function)
+this function can contain any number of lines, unlike lambda function in python.
+A function in Go can also be a value. This means you can assign a function to a variable.
+
+var add = func(a int, b int) int {
+	return a + b
+}
+
+func main() {
+	fmt.Println("5+3 =", add(5, 3))
+}
+
+In the above program, we have created a global variable add and assigned a newly created function to it. We have used Go’s type inference to get the type of anonymous function (as we haven’t mentioned the type of add). In this case, add is an anonymous function as it was created from a function that doesn’t have a name.
+
+
+# Immediately-invoked function expression (IIFE)
+In Go, we can create an anonymous function that can be defined and executed at the same time.
+Some can argue that it’s not truly anonymous because we can still refer to the add function from anywhere in main function (in other cases, from anywhere in the program). But not in the case when a function is immediately invoked or executed. 
+
+func main() { 
+   func(){
+      fmt.Println("Welcome! to GeeksforGeeks") 
+  }() 
+} 
+
+Note:  Immediately invoked function can also be used outside main function in global context. This can be useful when you need to create a global variable using return value of a function execution and you don’t want to reveal the function to the other parts of your program.
+
+1. In Go language, you are allowed to assign an anonymous function to a variable. When you assign a function to a variable, then the type of the variable is of function type and you can call that variable like a function call
+func main() {
+	sum := func(a int, b int) int {
+		return a + b
+	}(3, 5)
+	
+	fmt.Println("5+3 =", sum)
+}
+
+2. You can also pass an anonymous function as an argument into other function.
+func GFG(i func(p, q string)string){ 
+     fmt.Println(i ("Geeks", "for")) 
+       
+}   
+func main() { 
+    value:= func(p, q string) string{ 
+        return p + q + "Geeks"
+    } 
+    GFG(value) 
+}
+
+3. You can also return an anonymous function from another function.
+func GFG() func(i, j string) string{ 
+     myf := func(i, j string)string{ 
+          return i + j + "GeeksforGeeks"
+     } 
+    return myf 
+}
+func main() { 
+    value := GFG() 
+    fmt.Println(value("Welcome ", "to ")) 
+} 
+
+
+# Variadic functions in Go
+A variadic function accepts an infinite number of arguments and all these arguments are stored in a parameter of the slice type.
+
+Variadic functions are also functions but they can take an infinite or variable number of arguments.
+
+Suntax: func funtion_name(variable_args ...Type)
+
+Note:
+1. Pack/Unpack operator: ...  []
+2. Type of variable:  a slice.
+... signifies both pack and unpack operator but if three dots are in the tail position, it will unpack a slice.
+3. One important thing to notice is that only the last argument of a function is allowed to be variadic. 
+4.  Unpack operator ends with ... like slice... while pack operator starts with ... like ...Type.
+Example:
+func main() {
+	s := []int{1,2,3,4,5}
+	fmt.Println(add(s...)) // 15	
+}
+func add(num ...int) int{
+	sum := 0
+	fmt.Printf("Type of variable argument is: %T",num) // []int
+	for _,v := range num{
+		sum = sum + v
+	}
+	return sum
+}
+
+When we use a Variadic function:
+1. Variadic function is used when you want to pass a slice in a function.
+2. Variadic function is used when we don’t know the quantity of parameters.
+
+# if we have a slice s2 that we want to append to a slice s1
+we will use the unpack operator ... to unpack slice into the series of arguments (which is acceptable by append function).
+
+// append([]Type, args, arg2, argsN) []int
+s := []int{1,2,3,4,5}
+s1 := []int{1,2,3,4,5}
+s2 := append(s1,s...)
+fmt.Println(s) // [1 2 3 4 5]
+fmt.Println(s1) // [1 2 3 4 5]
+fmt.Println(s2) // [1 2 3 4 5 1 2 3 4 5]
+fmt.Println(append(s1,10)) // [1 2 3 4 5 10]
+
+
+func getMultiples(factor int, args ...int) []int {
+	multiples := make([]int, len(args))
+	for index, val := range args {
+		multiples[index] = val * factor
+	}
+	return multiples
+}
+
+
+// get multiples of 2, pass parameters from slice using `unpack` operator
+mult1 := getMultiples(2, s...)
+
+// get multiples of 3
+mult2 := getMultiples(3, 1, 2, 3, 4)
+
+
+# How slice is passed to a variadic function?
+A slice is a reference to an array, what happens when you pass a slice to a variadic function using unpack operator. Does Go creates a new slice args or keeps the same slice s?
+
+Note: it does not create any new slice
+
+func getMultiples(factor int, args ...int) []int {
+	for index, val := range args {
+		args[index] = val * factor
+	}
+
+	return args
+}
+
+func main() {
+	s := []int{10, 20, 30}
+
+	mult1 := getMultiples(2, s...)
+	
+	fmt.Println(s, mult1)
+}
+
+From the above result, we can see values of slice s changed. This means, Go in case of slice when passed to a variadic function using unpack operator, will use underneath array to build new slice.
+
+
