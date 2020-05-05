@@ -78,8 +78,9 @@ map[Kapil:26]
 
 
 ## Initialization:
-var m = map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
-m := map[string]int{"Kate":28,"John":37, "Raj":20}  // map[John:37 Raj:20 Kate:28]
+var m = map[string]int{"Kate":28,"John":37, "Raj":20}
+m := map[string]int{"Kate":28,"John":37, "Raj":20}
+var m = map[string]int{}
 
 
 Example 4:
@@ -163,38 +164,15 @@ map[john:32 mike:55 mina:28]
 
 
 
-## Create Map using struct:
-Map literals are like struct literals, but the keys are required. 
-type Vertex struct { Latitude, Longitude float64 }  
-var m = map[string]Vertex{  
-   "JavaTpoint": Vertex{     40.68433, -74.39967,   },  
-   "SSS-IT": Vertex{     37.42202, -122.08408,  },  
-}  
-
-type Vertex struct {
-	Lat, Long float64
-}
-var m map[string]Vertex
-func main() {
-	m = make(map[string]Vertex)
-	m["Bell Labs"] = Vertex{
-		40.68433, -74.39967,
-	}
-	fmt.Println(m["Bell Labs"])
-}
-
 # Length of map
-func main() {
-	age := map[string]int{
-		"mina": 28,
-		"john": 32,
-		"mike": 55,
-	}
-	fmt.Println("len(age) =", len(age)) // 3
-}
+age := map[string]int{"mina": 28, "john": 32, "mike": 55}
+len(age)
+
+Output: 3
 
 Note: There is nothing like capacity in map because go completely takes control of internal data structure of map. Hence don't try 
 to use cap function on map.
+
 
 1. Retrieve or accessing Element: 
 elem = m[key] 
@@ -207,11 +185,12 @@ elem, ok := m[key]
  
 elem, ok = m["Raj"]  // elem =20, ok=true
 elem, ok = m["Kapil"]  // elem =0, ok=false
+
 If key is in m, ok is true. If not, ok is false.
 If key is not in the map, then elem is the zero value for the map's element type. 
 
 
-3.  Insert or update an element in map m:
+3.  Insert or update:
 m[key] = elem
 
 m["Raj"] = 23
@@ -223,27 +202,59 @@ func delete(m map[KeyType]ValeType, key Type)
 delete(m, "Raj")
 
 
-## maps comparison
-Like slice, a map can be only compared with nil. If you are thinking to iterate over a map and match each element, you are in grave 
-trouble. But if you are in dire need to compare two maps, use reflect package’s DeepEqual function (https://golang.org/pkg/reflect/).
 
+## Map iteration
 
-## map iteration
+Example 7:
+package main
+import "fmt"
+func main(){
 	age := map[string]int{
 		"mina": 28,
 		"john": 32,
 		"mike": 55,
 	}
-
 	for key, value := range age {
 		fmt.Println(key, "=>", value)
 	}
-You can also use _ (blank identifier) to ignore either key or value in case you don't need it, just like array and slice.
-Order of retrieval of elements in map is random when used in for iteration. Hence there is no guarantee that each time, they will be 
+	for _, value := range age {
+		fmt.Println(value)
+	}
+	for key, _ := range age {
+		fmt.Println(key)
+	}
+}
+
+Output:
+mina => 28
+john => 32
+mike => 55
+28
+32
+55
+mina
+john
+mike
+
+Note:
+1. You can also use _ (blank identifier) to ignore either key or value in case you don't need it, just like array and slice.
+2. Order of retrieval of elements in map is random when used in for iteration. Hence there is no guarantee that each time, they will be 
 in order. That explains why we can’t compare two maps.
 
-## duplicate keys
-Go does not allow to add duplicate keys in the map. It throws error if you try to add.
+
+
+## Maps comparison
+Like slice, a map can be only compared with nil. If you are thinking to iterate over a map and match each element, you are in grave 
+trouble. But if you are in dire need to compare two maps, use reflect package’s DeepEqual function (https://golang.org/pkg/reflect/).
+
+
+
+## Duplicate keys
+Note: Go does not allow to add duplicate keys in the map. It throws error if you try to add. 
+
+Example 8:
+package main
+import "fmt"
 func main() {
 	age := map[string]int{
 		"mina": 28,
@@ -256,10 +267,18 @@ func main() {
 	}
 }
 
+Output:
+duplicate key "mina" in map literal
+
+
+
 ## Maps are referenced type
 Like slice, map references an internal data structure. When you copy a map to a new map, the internal data structure is not copied, 
 just referenced.
-1. referencing  old map
+1. Referencing  to old map
+Example 9:
+package main
+import "fmt"
 func main() {
 	var ages map[string]int
 	age := map[string]int{
@@ -269,11 +288,19 @@ func main() {
 	}
 	ages = age
 	delete(ages, "john")
-	fmt.Println("age", age) // age map[mike:55 mina:28]
-	fmt.Println("ages", ages) // ages map[mike:55 mina:28]
-} 
+	fmt.Println("age", age)
+	fmt.Println("ages", ages)
+}
+
+Output:
+age map[mike:55 mina:28]
+ages map[mike:55 mina:28]
+
 
 2. Here we are creating a new map
+Example 10:
+package main
+import "fmt"
 func main() {
 	ages := make(map[string]int)
 	age := map[string]int{
@@ -289,20 +316,59 @@ func main() {
 	fmt.Println("ages", ages) // ages map[mike:55 mina:28]
 }
 
-## Call by reference
-map is call by reference
+Output:
+age map[john:32 mike:55 mina:28]
+ages map[mike:55 mina:28]
+
+
+
+## Call by reference:
+Note: map is call by reference by default.
+
+Example 11:
+package main
+import "fmt"
 func main() {
 	age := map[string]int{
 		"mina": 28,
 	}
-	fmt.Println("before change", age) // before change map[mina:28]
+	fmt.Println("before change", age)
 	changeMap(age)
-	fmt.Println("After change", age)  // After change map[mina:35]
+	fmt.Println("After change", age)
 } 
 func changeMap(m map[string]int) {
 	m ["mina"] = 35
 }
 
+Output:
+before change map[mina:28]
+After change map[mina:35]
+
+
+
+## Create Map using struct:
+Map literals are like struct literals, but the keys are required. 
+
+
+Example 12:
+package main
+import "fmt"
+type Vertex struct { 
+	Latitude, Longitude float64 
+}  
+func main() {
+	var m = map[string]Vertex{  
+		"Jw": Vertex{ 40.68433, -74.39967, },  
+		"Jt": Vertex{ 37.42202, -122.08408, },  
+	}
+	m["Bl"] = Vertex{
+		40.68433, -74.39967,
+	}
+	fmt.Println(m["Bl"])
+}
+
+Output:
+{40.68433 -74.39967}
 
 
 
@@ -410,3 +476,9 @@ PASS
 PASS
  f("A man a plan a canal panama.") = 
   map[string]int{"A":1, "a":2, "canal":1, "man":1, "panama.":1, "plan":1} 
+
+
+
+
+
+
