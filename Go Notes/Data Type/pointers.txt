@@ -283,3 +283,201 @@ fmt.Println(pi.a,pi.b) //1,3
 fmt.Println((*pi).a,(*pi).b) //1,3
 //fmt.Println(*pi.a,*pi.a) // invalid indirect of pi.a (type int)
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Pointers in Go
+A pointer is a variable that stores the memory address data referenced by another variable. Pointers have the power to mutate data they are pointing to.
+
+When you are declaring a variable and providing some value (data), the Go runtime will allocate some memory for the value in the RAM and depending on data type, it will allocate a specific size of memory to store that value.
+That memory will have some memory address (like a postal address) so that Go can find that variable’s value when asked for it. These memory addresses are represented in hexadecimal values.
+
+1. The default value or zero-value of a pointer is always nil. Or you can say that an uninitialized pointer will always have a nil value.
+2. If you are specifying the data type along with the pointer declaration then the pointer will be able to handle the memory address of that specified data type variable. For example, if you taking a pointer of string type then the address of the variable that you will give to a pointer will be only of string data type variable, not any other type.
+
+# How to access the memory address of a variable?
+&variable_name expression returns the memory address of the value (data) referenced by variable_name variable.
+
+#  What is a pointer:  zero-value is nil.
+A pointer is a variable that points to the memory location of another variable (actually to the value referenced by the variable).
+
+var pointer_variable *Type 
+
+where Type is a data type the value (data) it will be pointing to
+
+
+# Dereferencing a Pointer (*)
+
+* pointer_variable
+
+
+# new function
+Go provides the new built-in function which allocates memory and returns a pointer to that memory. The syntax of new function is as follows.
+
+The first argument of the new function is the data type and the returned value of this function is the pointer of that data type. This function will allocate some memory, write a zero-value of the Type at that memory location and return a pointer to that memory location.
+
+func new(Type) *Type
+
+
+Go stores zero-value of data type passed to the new function and returns the memory address of it. Therefore, if you are interested in a pointer only, then you can use the new function instead of creating a new variable and then a pointer which points to the value of the variable (as we saw earlier).
+
+“A pointer is a variable that points the memory address of another variable” is strictly not true. “A pointer is a variable which points a memory address” is more accurate.
+
+
+	var a int
+	var ptr, p *int // int *p
+	
+	a = 2
+	ptr = &a
+	fmt.Println(a)
+	fmt.Println(ptr)
+	fmt.Printf("%T",ptr)  // *int
+	
+	ptr1 := &a
+	fmt.Println(ptr1)
+	
+	*ptr1 = 3
+	fmt.Println(a)
+	fmt.Println(*ptr)
+	fmt.Println(*ptr1)
+	
+
+	
+	
+	var p *int
+	fmt.Println(p) // nil
+	//fmt.Println(*p)
+	
+	pt := new(int)
+	fmt.Println(pt) // 0xc000010130
+	fmt.Println(*pt) // 0
+	fmt.Printf("%T",pt)  // *int
+
+
+# Pointers to a Function(Call by reference)
+1. Create a pointer and simply pass it to the function
+2. Passing an address of the variable
+func changeValue(p *int) {
+	*p = 2
+}
+func main() {
+	a := 1
+	pa := &a
+	fmt.Printf("a = %v\n", a)
+	changeValue(pa)
+	fmt.Printf("a = %v\n", a)
+	changeValue(&a)
+	fmt.Printf("a = %v\n", a)
+}
+
+# Return pointer from function
+func main() { 
+    n := rpf()
+    fmt.Println("Value of n is: ", *n) 
+}
+func rpf() *int { 
+    lv := 100 
+    return &lv 
+}
+
+# pointer of array
+
+package main
+
+import "fmt"
+
+func changeValue(p *[3]int) {
+	//*p == original array `a`
+	// *p[0] != (*p)[0]
+	(*p)[0] = 2
+	(*p)[1] = 3
+	(*p)[2] = 4
+}
+
+func main() {
+	a := [3]int{1, 2, 3}
+	changeValue(&a)
+	
+	fmt.Printf("a = %v\n", a)
+}
+
+
+or 
+func changeValue(p *[3]int) {
+	p[0] = 2
+	p[1] = 3
+	p[2] = 4
+}
+
+# Pointer arithmetic
+Unlike C language, where a pointer can be incremented or decremented, Go does not allow pointer arithmetic.
+
+# Pointer of pointer
+var pptr **int
+
+# Comparing Pointers (!=, ==)
+func main() {
+    val1 := 2345 
+    val2 := 567 
+
+    p1 := &val1 
+    p2 := &val2 
+    p3 := &val1 
+  
+    res1 := &p1 == &p2 
+    fmt.Println("Is p1 pointer is equal to p2 pointer: ", res1) // false
+    res2 := p1 == p2 
+    fmt.Println("Is p1 pointer is equal to p2 pointer: ", res2) // false
+    res3 := p1 == p3 
+    fmt.Println("Is p1 pointer is equal to p3 pointer: ", res3) // true
+    res4 := p2 == p3 
+    fmt.Println("Is p2 pointer is equal to p3 pointer: ", res4) // false
+    res5 := &p3 == &p1 
+    fmt.Println("Is p3 pointer is equal to p1 pointer: ", res5) // false
+}
+
+# pointer to array
+capacity defines the maximum number of elements stored in a pointer to array.
+func cap(l Type) int
+
+var ptr1 [7]*int
+cap(ptr1) // 7
+
+func len(l Type) int
+
+var ptr1 [7]*int
+cap(ptr1) // 7
+
+/*
+func main() {
+	var a []int
+	var p *[]int
+	a = []int{1,2}
+	p = &a
+	fmt.Println(a) // [1 2]
+	fmt.Println(p) // &[1 2]
+}
+
+
+func main() {
+	var a []*int
+	//var p *[]int
+	l := 1
+	m := 2
+	a = []*int{&l,&m}
+	fmt.Printf("%T",a)
+	fmt.Printf("%v",a)
+}
+*/
