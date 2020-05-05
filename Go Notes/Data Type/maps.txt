@@ -372,34 +372,9 @@ Output:
 
 
 
-Exercise 1:
-package main  
-import "fmt"  
-func main() {
-   var o map[string]int //Declaration
-   fmt.Println(o) //map[]
-   m := make(map[string]int) //Declaration
-   fmt.Println(m) //map[]
-   n := map[string]int{"Kate":28,"John":37, "Raj":20} // Assignment
-   fmt.Println(n) //map[John:37 Kate:28 Raj:20]
-   
-   m["a"]=3 // Insert 
-   fmt.Println(m) //map[a:3]
-   m["a"]=5 // update
-   fmt.Println(m) //map[a:5]
-   
-   fmt.Println(m["a"]) // Retrieve 5
-   elem1, ok := m["a"] // Testing if a key present
-   fmt.Println(elem1,ok) //5 true
-   elem2, ok := m["b"]
-   fmt.Println(elem2,ok) //0 false
-   fmt.Println(m) //map[a:5]
-   delete(m,"a")
-   fmt.Println(m) //map[]
-}
- 
- 
-Exercise 2:
+## Create Map using struct pointer:
+
+Example 13:
 package main
 import "fmt"
 type Test struct{
@@ -407,78 +382,13 @@ type Test struct{
     code map[string]float64
 }
 func main() {
-    z := make(map[string]float64)
-    z["obi"] = 0.003
     x := &Test{ name:"testing", code:z,}
-
     y := make(map[*Test] string)
     y[x] = "go home"
     for key, val := range y{
         fmt.Println(key.name, key.code, val)
     }
 }
-//testing map[obi:0.003] go home
 
-
-Exercise 3:
-package main
-import "fmt"
-type Test struct{
-    name string
-    code int
-}
-func main() {
-    x := &Test{ name:"testing", code:1,}
-	o := make(map[Test] string)
-    o[*x] = "go home"
-    for key, val := range o{
-        fmt.Println(key.name, key.code, val)
-    }
-}
-//testing 1 go home
-
-
-
-Exercise 4:
-package main  
-import "fmt"  
-import "strings"  
-
-func WordCount(str string) map[string]int {
-    map1 := make(map[string]int)
-	var arr []string = strings.Split(str, " ")
-	var count int
-	for _, key := range arr{
-		count = 0
-		for _, val2 := range arr{
-			if key == val2{
-			count++
-			}
-		}
-		map1[key] = count
-	}
-	return map1
-}
-
-func main() {  
-   fmt.Print(WordCount("The quick brown fox jumped over the lazy dogs."))  
-}
-
-PASS
- f("I am learning Go!") = 
-  map[string]int{"Go!":1, "I":1, "am":1, "learning":1}
-PASS
- f("The quick brown fox jumped over the lazy dogs.") = 
-  map[string]int{"The":1, "brown":1, "dogs.":1, "fox":1, "jumped":1, "lazy":1, "over":1, "quick":1, "the":1}
-PASS
- f("I ate a donut. Then I ate another donut.") = 
-  map[string]int{"I":2, "Then":1, "a":1, "another":1, "ate":2, "donut.":2}
-PASS
- f("A man a plan a canal panama.") = 
-  map[string]int{"A":1, "a":2, "canal":1, "man":1, "panama.":1, "plan":1} 
-
-
-
-
-
-
+Output:
+testing map[obi:0.003] go home
