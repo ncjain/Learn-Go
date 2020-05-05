@@ -476,3 +476,44 @@ var a = 11/2 // a == 5
 This happens as both operands hold data type of int. If you change any of the operand’s data type to float32, the result will be a float32 value.
 var a = 11.0/2 // 5.5 (float64)
 var b = float32(11)/2 // 5.5 (float32)
+
+
+Local Variables
+Variables that are declared inside a function or a block are termed as Local variables. 
+A variable which is declared inside a loop body will not be visible to the outside of loop body.
+
+Global Variables
+The variables which are defined outside of a function or a block is termed as Global variables.
+These are available throughout the lifetime of a program.
+These are declared at the top of the program outside all of the functions or blocks.
+
+Note: What will happen there exists a local variable with the same name as that of the global variable inside a function?
+
+The answer is simple i.e. compiler will give preference to the local variable. Usually when two variable with the same name is defined then the compiler produces a compile-time error. But if the variables are defined in different scopes then the compiler allows it. Whenever there is a local variable defined with the same name as that of a global variable then the compiler will give precedence to the local variable.
+
+var myvariable1 int = 100 
+  
+func main() { 
+var myvariable1 int = 200  
+fmt.Printf("The value of myvariable1 is : %d\n",  
+                    myvariable1)                 
+}
+
+Blank identifier:
+As you know, Golang is more concise and readable programming language so it doesn’t allow the programmer to define an unused variable if you do such, then the compiler will throw an error.
+
+The real use of Blank Identifier comes when a function returns multiple values, but we need only a few values and want to discard some values. Basically, it tells the compiler that this variable is not needed and ignored it without any error. It hides the variable’s values and makes the program readable. So whenever you will assign a value to Bank Identifier it becomes unusable.
+
+func mul_div(n1 int, n2 int) (int, int) { 
+    return n1 * n2, n1 / n2 
+}
+    mul, div := mul_div(105, 7) 
+    fmt.Println("105 x 7 = ", mul) // ./prog.go:15:7: div declared and not used
+
+mul, _ := mul_div(105, 7)
+
+Important Points:
+
+1. You can use multiple Blank Identifier in the same program. So you can say a Golang program can have multiple variables using the same identifier name which is the blank identifier.
+2. There are many cases that arise the requirement of assignment of values just to complete the syntax even knowing that the values will not be going to be used in the program anywhere. Like a function returning multiple values. Mostly blank identifier is used in such cases.
+3. You can use any value of any type with the Blank Identifier.
